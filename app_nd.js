@@ -2837,7 +2837,39 @@ if('serviceWorker' in navigator){
       .replace(/\n/g, '<br>');
   }
 
-  /* ── 2. Live AI Query Engine ── */
+  /* ── 2. Live AI Query Engine (Auto-Discovery + Multi-Version Fallback) ── */
+  let cachedGeminiModel = null;
+  let cachedApiVersion = 'v1beta';
+
+  async function discoverGeminiModel(key){
+    if(cachedGeminiModel) return { model: cachedGeminiModel, ver: cachedApiVersion };
+
+    for (const ver of ['v1beta', 'v1']) {
+      try {
+        const resp = await fetch(`https://generativelanguage.googleapis.com/${ver}/models?key=${encodeURIComponent(key)}`, {
+          signal: AbortSignal.timeout(4000)
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data.models && Array.isArray(data.models)) {
+            const genModels = data.models.filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'));
+            // Prefer flash, pro, or any usable model
+            const picked = genModels.find(m => m.name.includes('flash') && !m.name.includes('2.0'))
+                        || genModels.find(m => m.name.includes('pro'))
+                        || genModels[0];
+            if (picked) {
+              cachedGeminiModel = picked.name.replace('models/', '');
+              cachedApiVersion = ver;
+              return { model: cachedGeminiModel, ver: cachedApiVersion };
+            }
+          }
+        }
+      } catch(e) {}
+    }
+
+    return { model: 'gemini-1.5-flash-latest', ver: 'v1beta' };
+  }
+
   async function callLiveAI(userText, lang = 'en'){
     const key = cleanAiKey(localStorage.getItem(LS_AI_KEY));
     if(!key) return null;
@@ -2854,15 +2886,23 @@ Respond accurately with this ground truth knowledge:
 
     try {
       if(provider === 'gemini'){
-        // Primary models for Gemini: 1.5-flash, 1.5-pro, 2.0-flash
-        const models = ['gemini-3.8-flash', 'gemini-3.8-pro', 'gemini-2.5-flash', 'gemini-1.5-flash'];
-        let lastErr = null;
+        // Auto-discover models dynamically from Google's ModelService
+        const disc = await discoverGeminiModel(key);
+        const candidates = [
+          { ver: disc.ver, model: disc.model },
+          { ver: 'v1', model: 'gemini-1.5-flash' },
+          { ver: 'v1', model: 'gemini-1.5-pro' },
+          { ver: 'v1beta', model: 'gemini-1.5-flash-latest' },
+          { ver: 'v1beta', model: 'gemini-1.5-flash' },
+          { ver: 'v1beta', model: 'gemini-pro' }
+        ];
 
-        for (const model of models) {
+        let lastErr = null;
+        for (const item of candidates) {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 7000);
+          const timeoutId = setTimeout(() => controller.abort(), 6000);
           try {
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+            const endpoint = `https://generativelanguage.googleapis.com/${item.ver}/models/${item.model}:generateContent?key=${encodeURIComponent(key)}`;
             const resp = await fetch(endpoint, {
               method: 'POST',
               signal: controller.signal,
@@ -2886,15 +2926,15 @@ Respond accurately with this ground truth knowledge:
 
             const data = await resp.json();
             if(data.candidates && data.candidates[0]?.content?.parts?.[0]?.text){
+              cachedGeminiModel = item.model;
+              cachedApiVersion = item.ver;
               return formatAiMarkdown(data.candidates[0].content.parts[0].text);
             }
             if(data.error){
-              lastErr = new Error(data.error.message || `Gemini ${model} Error (${data.error.code})`);
-              // If API key is definitely invalid, stop early
+              lastErr = new Error(data.error.message || `Gemini ${item.model} Error (${data.error.code})`);
               if(data.error.code === 400 && data.error.message && data.error.message.includes('API key not valid')) {
                 throw lastErr;
               }
-              // For 503 (unavailable), 404 (deprecated), 429 (quota), try next model!
               continue;
             }
           } catch(fetchErr) {
