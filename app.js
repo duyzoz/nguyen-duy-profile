@@ -2855,7 +2855,7 @@ Respond accurately with this ground truth knowledge:
     try {
       if(provider === 'gemini'){
         // Primary models for Gemini: 1.5-flash, 1.5-pro, 2.0-flash
-        const models = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash'];
+        const models = ['gemini-3.8-flash', 'gemini-3.8-pro', 'gemini-2.5-flash', 'gemini-1.5-flash'];
         let lastErr = null;
 
         for (const model of models) {
@@ -2890,20 +2890,17 @@ Respond accurately with this ground truth knowledge:
             }
             if(data.error){
               lastErr = new Error(data.error.message || `Gemini ${model} Error (${data.error.code})`);
-              if(data.error.code === 404 || data.error.status === 'NOT_FOUND') {
-                continue;
+              // If API key is definitely invalid, stop early
+              if(data.error.code === 400 && data.error.message && data.error.message.includes('API key not valid')) {
+                throw lastErr;
               }
-              throw lastErr;
+              // For 503 (unavailable), 404 (deprecated), 429 (quota), try next model!
+              continue;
             }
           } catch(fetchErr) {
             clearTimeout(timeoutId);
             lastErr = fetchErr;
-            if(fetchErr.name === 'AbortError') {
-              throw new Error('Timeout: Máy chủ Google AI phản hồi quá lâu (>7s)');
-            }
-            if(!fetchErr.message?.includes('404')) {
-              throw fetchErr;
-            }
+            continue;
           }
         }
         if(lastErr) throw lastErr;
