@@ -609,13 +609,12 @@ window.TYPING_DATA = {
 })();
 
 /* ════════════════════════════════
-   TOOL CARD — Zero-Delay Peek & Mobile Navigation Dock
+   TOOL CARD & MOBILE NAVIGATION DOCK CONTROLLER
 ════════════════════════════════ */
 (function(){
   const toolCard    = document.getElementById('toolCard');
   const profileCard = document.getElementById('profileCard');
   const mobClose    = document.getElementById('toolCardMobClose');
-  const mobHandle   = document.getElementById('toolCardMobHandle');
   const CARD_W      = 320;
   const PEEK_W      = Math.ceil(CARD_W * 0.333);
   const isMobile    = () => window.innerWidth < 768;
@@ -632,7 +631,7 @@ window.TYPING_DATA = {
   window.addEventListener('resize', updateCachedRects, {passive:true});
   setTimeout(updateCachedRects, 2000);
 
-  /* ── open / close ── */
+  /* ── Open / Close (Desktop Peek) ── */
   function openCard(){
     if(closeTimer){clearTimeout(closeTimer);closeTimer=null;}
     if(isOpen)return;
@@ -641,9 +640,6 @@ window.TYPING_DATA = {
       toolCard.classList.remove('closing');
       toolCard.style.transition='transform .26s cubic-bezier(.16,1,.3,1)';
       toolCard.classList.add('open');
-    }
-    if(isMobile()){
-      document.body.classList.add('tool-open');
     }
     setTimeout(updateCachedRects, 280);
   }
@@ -661,11 +657,6 @@ window.TYPING_DATA = {
       toolCard.style.transition='transform .18s ease-in';
       toolCard.classList.remove('open');
     }
-    document.body.classList.remove('tool-open');
-    // Set mobile nav dock back to profile
-    document.querySelectorAll('.mob-nav-item').forEach(btn => {
-      btn.classList.toggle('active', btn.id === 'mobNavProfile');
-    });
     setTimeout(()=>{
       if(toolCard) toolCard.classList.remove('closing');
       updateCachedRects();
@@ -686,7 +677,7 @@ window.TYPING_DATA = {
   window.openToolCard = openCard;
   window.closeToolCard = closeCard;
 
-  /* ── Desktop: instant peek zone ── */
+  /* ── Desktop: instant peek zone (Only for desktop width >= 768) ── */
   function checkZones(){
     rafPending=false;
     if(isMobile())return;
@@ -707,61 +698,80 @@ window.TYPING_DATA = {
     if(rafPending)return;rafPending=true;requestAnimationFrame(checkZones);
   },{passive:true});
 
-  /* ── Mobile Navigation Dock Controller ── */
+  /* ── Dedicated Mobile View Switcher (100% Direct, Zero Black Screen, Zero Lag) ── */
+  function setMobileTab(target) {
+    const mobDockItems = document.querySelectorAll('.mob-nav-item');
+    mobDockItems.forEach(item => {
+      const itTarget = item.getAttribute('data-target');
+      item.classList.toggle('active', itTarget === target);
+    });
+
+    if (isMobile()) {
+      if (target === 'profile') {
+        if (toolCard) toolCard.classList.remove('active-mobile');
+        if (profileCard) profileCard.style.display = 'flex';
+      } else {
+        if (profileCard) profileCard.style.display = 'none';
+        if (toolCard) {
+          toolCard.classList.add('active-mobile');
+          // Activate corresponding panel tab
+          const tabEl = document.querySelector(`.tc-tab[data-panel="${target}"]`);
+          if (tabEl) tabEl.click();
+        }
+
+        // Auto-scroll chat to latest messages on mobile
+        if (target === 'panelGuestbook') {
+          setTimeout(() => {
+            const gbList = document.getElementById('gbList');
+            if (gbList) gbList.scrollTop = gbList.scrollHeight;
+          }, 60);
+        }
+      }
+    } else {
+      // Desktop behavior
+      if (target !== 'profile') {
+        openCard();
+        const tabEl = document.querySelector(`.tc-tab[data-panel="${target}"]`);
+        if (tabEl) tabEl.click();
+      }
+    }
+  }
+
+  window.setMobileTab = setMobileTab;
+
+  /* Mobile Navigation Dock items click listener */
   const mobDockItems = document.querySelectorAll('.mob-nav-item');
   mobDockItems.forEach(item => {
     item.addEventListener('click', e => {
       e.preventDefault();
       e.stopPropagation();
       const target = item.getAttribute('data-target');
-      mobDockItems.forEach(b => b.classList.remove('active'));
-      item.classList.add('active');
-
-      if (target === 'profile') {
-        closeCard();
-      } else {
-        openCard();
-        // Activate the corresponding panel tab
-        const tabEl = document.querySelector(`.tc-tab[data-panel="${target}"]`);
-        if (tabEl) tabEl.click();
-      }
+      setMobileTab(target);
     });
   });
 
-  /* Mobile Sheet Close button */
+  /* Mobile Close button -> Returns to Profile */
   if (mobClose) {
     mobClose.addEventListener('click', e => {
       e.preventDefault();
       e.stopPropagation();
-      closeCard();
+      setMobileTab('profile');
     });
   }
 
-  /* Close khi click ngoài backdrop (mobile) */
-  document.addEventListener('click', e => {
-    if (!isMobile() || !isOpen) return;
-    const mobDock = document.getElementById('mobileNavDock');
-    if (toolCard && !toolCard.contains(e.target) && (!mobDock || !mobDock.contains(e.target))) {
-      closeCard();
-    }
-  });
-
-  /* Touch swipe down trên header để đóng sheet (mobile) */
-  let touchStartY = 0;
-  if (toolCard) {
-    toolCard.addEventListener('touchstart', e => {
-      touchStartY = e.touches[0].clientY;
-    }, {passive: true});
-    toolCard.addEventListener('touchend', e => {
-      const diffY = e.changedTouches[0].clientY - touchStartY;
-      if (diffY > 60 && touchStartY < 140) {
-        closeCard();
-      }
-    }, {passive: true});
-  }
-
+  /* Sync on screen resize */
   window.addEventListener('resize', () => {
-    if (!isMobile() && isOpen) closeCard();
+    if (!isMobile()) {
+      if (profileCard) profileCard.style.display = '';
+      if (toolCard) {
+        toolCard.classList.remove('active-mobile');
+        toolCard.style.display = '';
+      }
+    } else {
+      const activeDock = document.querySelector('.mob-nav-item.active');
+      const curTarget = (activeDock && activeDock.getAttribute('data-target')) || 'profile';
+      setMobileTab(curTarget);
+    }
   });
 })();
 
