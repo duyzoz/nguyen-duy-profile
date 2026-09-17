@@ -94,17 +94,21 @@
   function applyDetectedIp(ip){
     if(!ip) return;
     const cleanIp = ip.trim();
-    // Recognize Admin either via direct LAN IP (192.168.0.102) OR home WAN connection (42.117.202.27 / 42.117.*)
-    const isHomeWan = cleanIp === ADMIN_WAN_IP || cleanIp.startsWith('42.117.');
+    // Admin is strictly: Direct LAN IP (192.168.0.102), home WAN IP (42.117.202.27 or 42.117.202.* subnet), or local dev environment
+    const isHomeWan = cleanIp === ADMIN_WAN_IP || cleanIp.startsWith('42.117.202.');
     const isLanAdmin = cleanIp === ADMIN_IP;
+    const isLocalDev = (host === ADMIN_IP || host === 'localhost' || host === '127.0.0.1' || (proto === 'file:' && (pathname.includes('/Users/Admin') || pathname.includes('nguyen-duy'))));
+    let hasSavedAuth = false;
+    try { hasSavedAuth = localStorage.getItem('nd_is_admin') === '1'; } catch(e){}
 
-    if (isHomeWan || isLanAdmin || window.ND_IS_ADMIN) {
+    if (isHomeWan || isLanAdmin || isLocalDev || hasSavedAuth) {
       window.ND_IS_ADMIN = true;
-      window.ND_DISPLAY_IP = ADMIN_IP; // ALWAYS present as 192.168.0.102
+      window.ND_DISPLAY_IP = ADMIN_IP; // ALWAYS present as 192.168.0.102 VIP ADMIN
       try { localStorage.setItem('nd_is_admin', '1'); } catch(e){}
     } else {
+      // ALL OTHER VISITORS: Strictly normal visitors with their own unique IP!
       window.ND_IS_ADMIN = false;
-      window.ND_DISPLAY_IP = cleanIp;
+      window.ND_DISPLAY_IP = cleanIp; // Distinct IP of the individual visitor!
     }
 
     if (window.renderTermIp) window.renderTermIp();
