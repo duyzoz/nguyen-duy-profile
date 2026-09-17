@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Nguyễn Duy — Profile</title>
+  <meta name="theme-color" content="#06060a" />
+  <meta name="description" content="Nguyễn Duy — Developer & 3D Designer Profile" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="assets/avatar.png" />
+  <link rel="apple-touch-icon" href="assets/avatar.png" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- VIDEO & IMAGE BG (Cross-fade) -->
+  <div class="bg-wrap">
+    <video id="bgVideo" autoplay muted loop playsinline>
+      <source src="assets/Wallpaper.mp4" type="video/mp4" />
+    </video>
+    <img id="bgImage" src="assets/Background.png" alt="Background" class="bg-static-img" />
+    <div class="bg-overlay"></div>
+  </div>
+
+  <!-- TERMINAL LOADER -->
+  <div id="loader">
+    <div class="terminal-box">
+      <div class="term-header">
+        <span class="tdot tdot-r"></span>
+        <span class="tdot tdot-y"></span>
+        <span class="tdot tdot-g"></span>
+        <span class="term-title-bar">system.exe — bash</span>
+      </div>
+      <div class="term-body">
+        <pre class="ascii-art" id="asciiArt"></pre>
+        <div class="term-output" id="termOutput"></div>
+        <div class="term-continue" id="termContinue" style="display:none">
+          Press Enter / Click To Continue<span class="term-blink">█</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL CANVASES -->
+  <canvas id="snowCanvas"></canvas>
+  <canvas id="dustCanvas"></canvas>
+  <canvas id="matrixCanvas" style="display:none"></canvas>
+
+  <!-- HUD TOP-LEFT: FPS COUNTER & REGION/LANG & FIX LAG & CLI -->
+  <div class="hud-top-left">
+    <div class="fps-hud-box" id="fpsHudBox" title="Tốc độ khung hình thực tế theo máy">
+      <div class="fps-hud-dot" id="fpsDot"></div>
+      <div class="fps-hud-val"><span id="fpsCount">60</span><small>FPS</small></div>
+      <div class="fps-hud-tag" id="fpsTag">Smooth</div>
+    </div>
+
+    <!-- WAVE 13: MULTI-LANGUAGE CYBER SWITCHER WITH AUTO REGION -->
+    <div class="lang-switch-box" id="langSwitchBox">
+      <div class="lang-region-badge" id="langRegionBadge" title="Region">🌐 US</div>
+      <div class="lang-buttons">
+        <button class="lang-btn" id="langBtnVi" data-lang="vi" title="Tiếng Việt (Vietnam)">
+          <span class="lang-flag">🇻🇳</span><span class="lang-txt">VI</span>
+        </button>
+        <button class="lang-btn active" id="langBtnEng" data-lang="en" title="English (Global)">
+          <span class="lang-flag">🇺🇸</span><span class="lang-txt">ENG</span>
+        </button>
+        <button class="lang-btn" id="langBtnJp" data-lang="ja" title="日本語 (Japan)">
+          <span class="lang-flag">🇯🇵</span><span class="lang-txt">JP</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="perf-toggle-btn" id="perfToggle" title="Toggle background video for max performance">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <span id="perfToggleText">⚡ Disable Video (Fix Lag)</span>
+    </button>
+    <button class="cli-toggle-btn" id="cliToggleBtn" title="Open Cyber Terminal CLI (~ or Ctrl+K)">
+      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      <span>_CLI</span>
+    </button>
+  </div>
+
+  <!-- MUSIC PLAYER — floating cyber card -->
+  <div class="music-player" id="musicPlayer">
+    <div class="mp-art-wrap">
+      <div class="mp-art-glow" id="mpSpin"></div>
+      <img src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg" alt="cover" class="mp-art" id="mpArt" />
+    </div>
+    <div class="mp-info">
+      <div class="mp-marquee-wrap">
+        <div class="mp-marquee" id="mpMarquee">
+          <span>2IN1 - Người Đã Yêu Ai Remix</span>
+          <span aria-hidden="true">    2IN1 - Người Đã Yêu Ai Remix</span>
+        </div>
+      </div>
+      <div class="mp-timeline-wrap">
+        <span class="mp-time" id="mpCur">0:00</span>
+        <div class="mp-track" id="mpTrack">
+          <div class="mp-fill" id="mpFill"></div>
+          <input class="mp-seek" id="mpSeek" type="range" min="0" max="100" value="0" step="0.1" />
+        </div>
+        <span class="mp-time" id="mpDur">0:00</span>
+      </div>
+      <div class="mp-controls">
+        <button class="mp-btn mp-repeat-btn" id="mpRepeat" title="Lặp tất cả">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="17 1 21 5 17 9"/>
+            <path d="M3 11V9a4 4 0 014-4h14"/>
+            <polyline points="7 23 3 19 7 15"/>
+            <path d="M21 13v2a4 4 0 01-4 4H3"/>
+          </svg>
+        </button>
+        <button class="mp-btn mp-skip" id="mpPrev" title="Bài trước">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <polygon points="19 20 9 12 19 4 19 20"/><rect x="5" y="4" width="2" height="16" rx="1"/>
+          </svg>
+        </button>
+        <button class="mp-btn mp-play" id="mpPlay">
+          <svg id="mpPlayIcon" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </button>
+        <button class="mp-btn mp-skip" id="mpNext" title="Bài tiếp">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <polygon points="5 4 15 12 5 20 5 4"/><rect x="17" y="4" width="2" height="16" rx="1"/>
+          </svg>
+        </button>
+        <button class="mp-btn" id="mpMute" title="Tắt tiếng">
+          <svg id="mpVolIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
+          </svg>
+        </button>
+      </div>
+      <div class="mp-vol-wrap">
+        <svg class="mp-vol-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        </svg>
+        <input class="mp-vol-slider" id="mpVol" type="range" min="0" max="1" value="0.8" step="0.01" />
+        <svg class="mp-vol-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
+        </svg>
+      </div>
+      <div class="mp-bottom-row">
+        <!-- WAVE 10: REAL-TIME CYBER AUDIO VISUALIZER -->
+        <canvas id="audioVisualizerCanvas" class="mp-visualizer-canvas" width="120" height="18"></canvas>
+        <div class="mp-eq-bars" id="mpEqBars" style="display:none">
+          <span class="eq-b"></span><span class="eq-b"></span><span class="eq-b"></span><span class="eq-b"></span>
+          <span class="eq-b"></span><span class="eq-b"></span><span class="eq-b"></span><span class="eq-b"></span>
+        </div>
+        <span class="mp-hotkey-tip" title="Space: Play/Pause | M: Mute | ← →: Đổi bài | ↑ ↓: Âm lượng">⌨️ Space · M · ← →</span>
+      </div>
+    </div>
+    <audio id="mpAudio" preload="none">
+      <source src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/sound1.mp3" type="audio/mpeg" />
+    </audio>
+  </div>
+
+  <!-- STAGE -->
+  <div class="stage" id="stage">
+    <div class="scene" id="scene">
+
+      <!-- TOOL CARD -->
+      <div class="tool-card" id="toolCard">
+        <div class="card-hdr tool-hdr" id="toolHdr">⚡ Tools &amp; Utilities</div>
+
+        <!-- TABS (Icon-only taskbar) -->
+        <div class="tc-tabs">
+          <button class="tc-tab active" id="tabBypass" data-panel="panelBypass" title="Bypass">⚡</button>
+          <button class="tc-tab" id="tabCreateVPS" data-panel="panelCreateVPS" title="Create VPS">➕</button>
+          <button class="tc-tab" id="tabManage" data-panel="panelManage" title="Manage Tokens">🔑</button>
+          <button class="tc-tab" id="tabProjects" data-panel="panelProjects" title="Projects">🚀</button>
+          <button class="tc-tab" id="tabTools" data-panel="panelTools" title="Dev Tools">🛠️</button>
+          <button class="tc-tab" id="tabGuestbook" data-panel="panelGuestbook" title="Guestbook">💬</button>
+          <button class="tc-tab" id="tabAi" data-panel="panelAi" title="AI Assistant">🤖</button>
+          <button class="tc-tab" id="tabGame" data-panel="panelGame" title="Echo Hunter Mini-Game">🎮</button>
+        </div>
+
+        <!-- PANEL: BYPASS -->
+        <div class="tc-panel" id="panelBypass">
+          <div class="log-win">
+            <div class="log-win-hdr">
+              <span class="lw-dot lw-r"></span>
+              <span class="lw-dot lw-y"></span>
+              <span class="lw-dot lw-g"></span>
+              <span class="lw-title">bypass.log</span>
+              <button class="lw-clear" id="lwClear">clear</button>
+            </div>
+            <div class="log-body" id="logBody">
+              <div class="le dim" id="logInitMsg">[--:--:--] Ready for commands...</div>
+            </div>
+          </div>
+
+          <div class="bypass-result-box" id="bypassResultBox" style="display:none">
+            <div class="brb-label">✅ Bypass Successful</div>
+            <div class="brb-row">
+              <a class="brb-link" id="brbLink" href="#" target="_blank" rel="noopener noreferrer"></a>
+              <button class="brb-copy" id="brbCopy" title="Copy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2"/>
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                </svg>
+              </button>
+              <a class="brb-open" id="brbOpen" href="#" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="t-inner">
+            <div class="t-block">
+              <div class="t-title" id="tokenTitle">🔑 GitHub Token</div>
+              <div class="t-sub" id="tokenSub">
+                How to get GitHub token
+                <a href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=VPS-Bypass" target="_blank" class="t-link t-link-glow">click here</a>
+              </div>
+              <!-- Tên token (bắt buộc) -->
+              <input id="tokenLabel" class="bp-input" type="text" placeholder="Token label/name (Required) *" autocomplete="off" style="margin-bottom:6px" />
+              <div class="key-err" id="tokenLabelErr" style="display:none">⚠️ Token name is required!</div>
+              <div class="key-row">
+                <input id="githubToken" class="bp-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+                <button class="key-eye-btn" id="keyEyeBtn" title="Show/Hide token">
+                  <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+                <button class="key-save-btn" id="keySaveBtn" title="Save">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                    <polyline points="17 21 17 13 7 13 7 21"/>
+                    <polyline points="7 3 7 8 15 8"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="key-status" id="keyStatus" style="display:none"></div>
+            </div>
+
+            <div class="t-divider"></div>
+
+            <div class="t-block">
+              <div class="t-title-row">
+                <span class="t-title" id="bpTitle">🔗 Link Bypass</span>
+                <button class="sl-badge" id="slBadgeBtn">✅ Supported Links</button>
+              </div>
+              <div class="t-sub" id="bpSub">Automated all-in-one link bypass</div>
+              <input id="bypassInput" class="bp-input" type="url" placeholder="https://link-to-bypass.net/..." autocomplete="off" />
+              <button class="bp-btn" id="bypassBtn">
+                <span class="bp-txt">⚡ Bypass Now</span>
+                <span class="bp-spin" style="display:none"><i></i><i></i><i></i></span>
+              </button>
+              <div class="bp-err" id="bpErr" style="display:none"></div>
+            </div>
+
+            <div class="t-divider"></div>
+            <div class="t-soon">
+              <span class="sd"></span><span class="sd"></span><span class="sd"></span>
+              More utilities coming soon
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL: TẠO VPS -->
+        <div class="tc-panel" id="panelCreateVPS" style="display:none">
+          <div class="t-inner">
+            <div class="t-block">
+              <div class="t-title" id="vpsTitle">🖥️ Create New VPS</div>
+              <div class="t-sub" id="vpsSub">Deploy 6-hour free cloud VPS via GitHub Actions</div>
+              <div class="vps-scope-note" id="vpsScopeNote">ℹ️ Token requires scopes: <code>repo</code> + <code>workflow</code></div>
+              <div class="vps-form">
+                <label class="vps-label" id="vpsTokenLabel">GitHub Token</label>
+                <input id="vpsToken" class="bp-input" type="password" placeholder="— Auto-filled from Bypass tab —" readonly />
+                <button class="bp-btn" id="vpsCreateBtn" style="margin-top:12px">
+                  <span class="bp-txt">🚀 Deploy VPS Now</span>
+                  <span class="bp-spin" style="display:none"><i></i><i></i><i></i></span>
+                </button>
+              </div>
+              <!-- Hiển thị sau khi tạo xong -->
+              <div class="vps-ready-box" id="vpsReadyBox" style="display:none">
+                <a class="vps-access-btn" id="vpsAccessBtn" href="#" target="_blank" rel="noopener">🖥️ Connect Now</a>
+                <div class="vps-pass-notice">⚠️ DEFAULT PASSWORD: <strong>Admin@123</strong></div>
+                <div class="vps-countdown-wrap">
+                  <span class="vcd-label" id="vcdLabel">⏳ Expires in</span>
+                  <span class="vcd-timer" id="vpsCountdown">6:00:00</span>
+                </div>
+              </div>
+            </div>
+            <div class="t-divider"></div>
+            <div class="vps-status-box" id="vpsStatusBox" style="display:none">
+              <div class="vps-status-title" id="vpsStatusTitle">⚡ Status</div>
+              <div class="vps-status-msg" id="vpsStatusMsg"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL: QUẢN LÝ -->
+        <div class="tc-panel" id="panelManage" style="display:none">
+          <div class="t-inner">
+            <div class="t-block">
+              <div class="t-title" id="mngTokensTitle" style="font-size:.85rem;margin-bottom:8px">🔑 Saved Token List</div>
+              <div class="token-list" id="tokenList">
+                <div class="token-empty" id="tokenEmptyMsg">No tokens saved yet</div>
+              </div>
+            </div>
+            <div class="t-divider"></div>
+            <div class="t-block">
+              <div class="t-title" id="mngVpsTitle" style="font-size:.85rem;margin-bottom:8px">🖥️ Created VPS Instances</div>
+              <div class="vps-list" id="vpsList">
+                <div class="token-empty" id="vpsEmptyMsg">No VPS instances created yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL: DỰ ÁN (PROJECT SHOWCASE) -->
+        <div class="tc-panel" id="panelProjects" style="display:none">
+          <div class="t-inner">
+            <div class="proj-list">
+              <div class="proj-card">
+                <div class="proj-hdr">
+                  <div class="proj-badge neon-cyan">Featured</div>
+                  <div class="proj-stars">⭐ 48</div>
+                </div>
+                <div class="proj-name">OpenNOW Native Client</div>
+                <div class="proj-desc">Native high-performance Cloud Gaming client built with Qt 6 &amp; Rust. Sub-1ms latency, 120 FPS hardware decode.</div>
+                <div class="proj-tags"><span>Qt6</span><span>C++20</span><span>Rust</span><span>FFI</span></div>
+                <div class="proj-actions">
+                  <a href="https://github.com/duyzoz" target="_blank" class="proj-btn proj-gh">GitHub</a>
+                  <a href="https://github.com/duyzoz" target="_blank" class="proj-btn proj-live">Details</a>
+                </div>
+              </div>
+
+              <div class="proj-card">
+                <div class="proj-hdr">
+                  <div class="proj-badge neon-pink">Service</div>
+                  <div class="proj-stars">⭐ 128</div>
+                </div>
+                <div class="proj-name">Bypass Engine &amp; Proxy Cloud</div>
+                <div class="proj-desc">Automated URL shortener resolver via Cloudflare Edge API and tokenized authentication.</div>
+                <div class="proj-tags"><span>JavaScript</span><span>Workers</span><span>Edge API</span></div>
+                <div class="proj-actions">
+                  <a href="https://github.com/duyzoz" target="_blank" class="proj-btn proj-gh">GitHub</a>
+                  <button class="proj-btn proj-live" onclick="document.getElementById('tabBypass').click()">Try it</button>
+                </div>
+              </div>
+
+              <div class="proj-card">
+                <div class="proj-hdr">
+                  <div class="proj-badge neon-purple">UI/UX</div>
+                  <div class="proj-stars">⭐ 95</div>
+                </div>
+                <div class="proj-name">Cyberpunk Glassmorphism Profile</div>
+                <div class="proj-desc">Ultra high-performance personal profile with lossless CDN audio, seamless video cross-fade, and real FPS tracking.</div>
+                <div class="proj-tags"><span>HTML5</span><span>CSS3</span><span>Web Audio</span></div>
+                <div class="proj-actions">
+                  <a href="https://github.com/duyzoz" target="_blank" class="proj-btn proj-gh">Source</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL: TIỆN ÍCH DEV (CYBER TOOLKIT) -->
+        <div class="tc-panel" id="panelTools" style="display:none">
+          <div class="t-inner">
+            <!-- Ping Tester -->
+            <div class="t-block">
+              <div class="t-title" id="pingTitle" style="font-size:.82rem;margin-bottom:8px">⚡ Live Network Ping Monitor</div>
+              <div class="ping-grid">
+                <div class="ping-item">
+                  <span class="ping-host">Cloudflare CDN</span>
+                  <span class="ping-val" id="pingCf">-- ms</span>
+                </div>
+                <div class="ping-item">
+                  <span class="ping-host">Google DNS</span>
+                  <span class="ping-val" id="pingGg">-- ms</span>
+                </div>
+                <div class="ping-item">
+                  <span class="ping-host">jsDelivr CDN</span>
+                  <span class="ping-val" id="pingJsd">-- ms</span>
+                </div>
+              </div>
+              <button class="bp-btn" id="btnTestPing" style="margin-top:8px;padding:6px 0;font-size:.66rem">
+                <span>🔄 Measure Latency</span>
+              </button>
+            </div>
+
+            <div class="t-divider"></div>
+
+            <!-- Base64 Quick Converter -->
+            <div class="t-block">
+              <div class="t-title" id="b64Title" style="font-size:.82rem;margin-bottom:8px">🔐 Base64 Encode / Decode</div>
+              <input class="bp-input" id="b64Input" placeholder="Enter text to encode or decode..." style="margin-bottom:6px" />
+              <div class="b64-btn-row">
+                <button class="proj-btn proj-live" id="btnB64Enc" style="flex:1">Encode Base64</button>
+                <button class="proj-btn proj-gh" id="btnB64Dec" style="flex:1">Decode Base64</button>
+              </div>
+              <div class="b64-result" id="b64Result" style="display:none">
+                <span id="b64ResultText"></span>
+                <button id="btnCopyB64" class="tia-use" title="Copy">📋</button>
+              </div>
+            </div>
+
+            <div class="t-divider"></div>
+
+            <!-- Backup & Restore Data Safe -->
+            <div class="t-block">
+              <div class="t-title" id="backupTitle" style="font-size:.82rem;margin-bottom:6px">💾 Data Backup (Tokens &amp; VPS)</div>
+              <div class="backup-btn-row">
+                <button class="proj-btn proj-live" id="btnExportData" style="flex:1">📥 Export JSON</button>
+                <button class="proj-btn proj-gh" id="btnImportData" style="flex:1">📤 Import JSON</button>
+                <input type="file" id="importFileInput" accept=".json" style="display:none" />
+              </div>
+              <div id="backupMsg" class="backup-msg" style="display:none"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL: LƯU BÚT (GUESTBOOK - Wave 8 & Wave 11) -->
+        <div class="tc-panel" id="panelGuestbook" style="display:none">
+          <div class="t-inner gb-full-inner">
+            <!-- Cloudflare Edge Relay Header -->
+            <div class="gb-relay-bar">
+              <span class="gb-relay-title" id="gbTitle">💬 Global Chat &amp; Guestbook</span>
+              <div class="gb-relay-badge" id="gbRelayBadge" title="Cloudflare Anycast DNS Network">
+                <span class="gb-relay-dot"></span>
+                <span id="gbRelayText">Cloudflare Edge: SIN · 18ms</span>
+              </div>
+            </div>
+
+            <!-- Chat messages list (Spacious & Clean) -->
+            <div class="gb-chat-list" id="gbList"></div>
+
+            <!-- Bottom Messenger-style Bar -->
+            <div class="gb-bottom-bar">
+              <!-- Reply indicator directly docked above input -->
+              <div class="gb-reply-bar" id="gbReplyBar" style="display:none">
+                <span class="gb-reply-label" id="gbReplyLabel">↩️ Replying to <strong id="gbReplyTo"></strong></span>
+                <button class="gb-reply-cancel" id="gbReplyCancel">✕</button>
+              </div>
+
+              <!-- Identity indicator / Name input -->
+              <div class="gb-sender-bar">
+                <span class="gb-sender-aura" id="gbSenderAura">✨ Admin: Nguyễn Duy</span>
+                <input class="bp-input gb-name-input" id="gbNameInput" placeholder="Your name..." style="display:none" />
+              </div>
+
+              <!-- Emoji Popover (Messenger style) -->
+              <div class="gb-emoji-popover" id="gbEmojiPopover" style="display:none">
+                <div class="gb-emoji-grid" id="gbEmojiList">
+                  <span class="gb-em" data-em="✨">✨</span>
+                  <span class="gb-em" data-em="🔥">🔥</span>
+                  <span class="gb-em" data-em="🚀">🚀</span>
+                  <span class="gb-em" data-em="💖">💖</span>
+                  <span class="gb-em" data-em="☕">☕</span>
+                  <span class="gb-em" data-em="😂">😂</span>
+                  <span class="gb-em" data-em="👋">👋</span>
+                  <span class="gb-em" data-em="🎮">🎮</span>
+                  <span class="gb-em" data-em="💻">💻</span>
+                  <span class="gb-em" data-em="⚔️">⚔️</span>
+                  <span class="gb-em" data-em="🌊">🌊</span>
+                  <span class="gb-em" data-em="❤️">❤️</span>
+                  <span class="gb-em" data-em="😎">😎</span>
+                  <span class="gb-em" data-em="👍">👍</span>
+                  <span class="gb-em" data-em="🎉">🎉</span>
+                  <span class="gb-em" data-em="🌸">🌸</span>
+                </div>
+              </div>
+
+              <!-- Input row -->
+              <div class="gb-input-row">
+                <button class="gb-emoji-btn" id="gbEmojiTrigger" title="Select emoji">😊</button>
+                <textarea class="bp-input gb-msg-area" id="gbMsgInput" rows="1" placeholder="Type a message..."></textarea>
+                <button class="gb-send-btn" id="btnSubmitGb" title="Send">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL: CYBER AI CHATBOT (Wave 9) -->
+        <div class="tc-panel" id="panelAi" style="display:none">
+          <div class="t-inner ai-full-inner">
+            <div class="ai-chat-wrap">
+              <div class="ai-header-bar">
+                <span class="ai-bot-avatar">🤖</span>
+                <div class="ai-bot-info">
+                  <div class="ai-bot-name">Nguyễn Duy AI</div>
+                  <div class="ai-bot-status" id="aiBotStatus">Cyberpunk Digital Twin · Ready</div>
+                </div>
+                <button class="ai-key-btn" id="btnAiConfigKey" title="Configure AI API Key (Gemini / OpenAI / Groq)">
+                  <span class="ai-key-icon">🔑</span>
+                  <span class="ai-key-label" id="aiKeyLabel">API Key</span>
+                </button>
+              </div>
+
+              <!-- API Key Modal / Popover -->
+              <div class="ai-key-modal" id="aiKeyModal" style="display:none">
+                <div class="ai-key-modal-inner">
+                  <div class="ai-key-modal-title" id="aiKeyTitle">🔑 AI API Key Setup</div>
+                  <div class="ai-key-modal-desc" id="aiKeyDesc">
+                    Paste Google Gemini API Key or Groq / OpenAI Key for 100% live real AI response!
+                  </div>
+                  <input type="password" id="aiApiKeyInput" class="bp-input" placeholder="AIzaSy... or gsk_..." autocomplete="off" />
+                  <div class="ai-key-status" id="aiKeyStatusText">⚪ No Key Configured (Using Offline Knowledge Base)</div>
+                  <div class="ai-key-actions">
+                    <button class="proj-btn proj-live" id="btnSaveAiKey">Save Key</button>
+                    <button class="proj-btn" id="btnClearAiKey" style="background:rgba(239,68,68,0.2);color:#fca5a5">Clear</button>
+                    <button class="proj-btn" id="btnCloseAiKey" style="background:rgba(255,255,255,0.08)">Close</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Messages List (Flex height) -->
+              <div class="ai-messages" id="aiMessages">
+                <div class="ai-msg bot" id="aiWelcomeMsg">
+                  Hello! I am Nguyễn Duy's digital twin. What would you like to explore about my 3D renders on HP 840 G1, Wuthering Waves 24/7 Discord selfbot, or custom web tools?
+                </div>
+              </div>
+
+              <!-- Bottom container: chips + input docked cleanly at bottom -->
+              <div class="ai-bottom-bar">
+                <div class="ai-chips" id="aiChips">
+                  <button class="ai-chip" id="aiChipSkills" data-ask="What are your tech stack and core skills?">💻 Skills</button>
+                  <button class="ai-chip" id="aiChipHp" data-ask="How do you render heavy 3D on an HP 840 G1 without GPU?">💻 HP 840 G1</button>
+                  <button class="ai-chip" id="aiChipBot" data-ask="How does your 24/7 Wuthering Waves selfbot work?">🌊 WuWa Bot</button>
+                  <button class="ai-chip" id="aiChipContact" data-ask="How to contact or support Nguyễn Duy?">📬 Contact</button>
+                </div>
+                <div class="ai-input-row">
+                  <input class="bp-input" id="aiInput" placeholder="Ask AI anything about Duy..." />
+                  <button class="proj-btn proj-live" id="btnAiSend">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL: ECHO HUNTER MINI-GAME (Wave 12) -->
+        <div class="tc-panel" id="panelGame" style="display:none">
+          <div class="t-inner">
+            <div class="echo-game-wrap">
+              <div class="echo-game-header">
+                <div class="echo-game-title">⚔️ Echo Hunter: Havoc Dreadmane</div>
+                <div class="echo-game-stats">
+                  <span>Score: <strong id="echoScore">0</strong></span>
+                  <span>Best: <strong id="echoBest">0</strong></span>
+                </div>
+              </div>
+              <div class="echo-canvas-container">
+                <canvas id="echoGameCanvas" width="270" height="210"></canvas>
+                <div class="echo-game-overlay" id="echoGameOverlay">
+                  <div class="echo-overlay-msg" id="echoOverlayMsg">🌊 HUNT HAVOC ECHO</div>
+                  <div class="echo-overlay-sub" id="echoOverlaySub">Controls: ← → Move · Space or J to Slash!</div>
+                  <button class="proj-btn proj-live" id="btnStartGame" style="margin-top:8px">Start Game ⚔️</button>
+                </div>
+              </div>
+              <div class="echo-game-controls">
+                <button class="echo-ctrl-btn" id="btnEchoLeft">◀</button>
+                <button class="echo-ctrl-btn echo-slash-btn" id="btnEchoSlash">⚔️ SLASH</button>
+                <button class="echo-ctrl-btn" id="btnEchoRight">▶</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE CARD -->
+      <div class="profile-card" id="profileCard">
+        <div class="card-hdr profile-hdr" id="profileHdr">👤 Profile &amp; About</div>
+        <div class="p-inner">
+
+          <div class="avatar-wrap" id="avatarWrap">
+            <canvas class="avatar-orbit" id="avatarOrbit"></canvas>
+            <img src="assets/avatar.png" alt="Avatar" class="avatar-img" />
+            <canvas class="avatar-snow-canvas" id="avatarSnowC"></canvas>
+            <div class="avatar-status" id="discordStatusBadge">
+              <span class="status-dot" id="discordStatusDot"></span>
+              <span id="discordStatusText">Online</span>
+            </div>
+          </div>
+
+          <h1 class="p-name">Nguyễn Duy</h1>
+
+          <div class="typing-wrap">
+            <span class="typing-cur"></span>
+            <span id="typingText" class="typing-text"></span>
+          </div>
+
+          <div class="tags">
+            <span class="tag" id="tagCoding">💻 Coding</span>
+            <span class="tag" id="tagGaming">🎮 Gaming</span>
+            <span class="tag" id="tagCoffee">☕ Coffee</span>
+          </div>
+
+          <!-- DISCORD WUTHERING WAVES SELFBOT GAMING CARD -->
+          <div class="wuwa-game-card" id="wuwaGameCard">
+            <!-- Header banner: Union Level 80 & Jinhsi Banner Art -->
+            <div class="wuwa-banner">
+              <div class="wuwa-banner-left">
+                <div class="wuwa-banner-badges">
+                  <span class="wuwa-pill-badge">🌊 WUWA</span>
+                  <span class="wuwa-pill-badge hl">Asia</span>
+                </div>
+                <div class="wuwa-game-title">Wuthering Waves</div>
+                <div class="wuwa-union-level" id="wuwaUnionLevel">Union Level: <strong>80</strong></div>
+                <a href="https://github.com/duyzoz/treo-wuthering-waves" target="_blank" class="wuwa-stats-link" id="wuwaStatsLink">View All Stats ↗</a>
+              </div>
+              <div class="wuwa-banner-art">
+                <img src="https://files.catbox.moe/6tly5b.png" alt="WuWa Large Art" class="wuwa-char-img" onerror="this.style.display='none'" />
+              </div>
+            </div>
+
+            <!-- Active playing section ("Đang chơi") -->
+            <div class="wuwa-playing-box">
+              <div class="wuwa-playing-hdr">
+                <span class="wuwa-playing-label" id="wuwaPlayingLabel">Now Playing</span>
+                <span class="wuwa-playing-dots">•••</span>
+              </div>
+              <div class="wuwa-playing-content">
+                <div class="wuwa-art-wrap">
+                  <img src="https://i.pinimg.com/736x/19/37/44/1937447c2110ad986866d1495e6c4b30.jpg" alt="Wuthering Waves" class="wuwa-cover-art" onerror="this.src='assets/avatar.png'" />
+                  <img src="assets/avatar.png" alt="avatar" class="wuwa-mini-avt" />
+                </div>
+                <div class="wuwa-info">
+                  <div class="wuwa-name" id="discordGameName">Wuthering Waves</div>
+                  <div class="wuwa-detail" id="discordGameDetail">⚔️ Hunting: Havoc Dreadmane</div>
+                  <div class="wuwa-state" id="discordGameState">Asia · UL80 · Exploration</div>
+                  <div class="wuwa-elapsed" id="discordGameElapsed">
+                    <span class="wuwa-game-icon">🎮</span>
+                    <span id="wuwaLiveTimer">1028:59:58</span>
+                  </div>
+                </div>
+              </div>
+              <div class="wuwa-selfbot-footer">
+                <span class="wuwa-selfbot-dot"></span>
+                <span class="wuwa-selfbot-txt" id="wuwaSelfbotTxt">Online</span>
+                <span class="wuwa-uid-wrap">
+                  <span class="wuwa-uid-label">User ID:</span>
+                  <span class="wuwa-uid-val" id="wuwaUidVal">713243969</span>
+                  <button class="wuwa-uid-copy" id="wuwaUidCopy" title="Copy User ID">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  </button>
+                  <span class="wuwa-uid-toast" id="wuwaUidToast">✅ Copied!</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bio-box">
+            <div class="bio-line">
+              <span class="bio-p">&gt;</span>
+              <div class="bio-t"><span id="bioTypewriter"></span><span class="bio-cursor"></span></div>
+            </div>
+          </div>
+          <div class="p-divider"></div>
+
+          <div class="stack-title" id="techStackTitle">Tech Stack</div>
+          <div class="stack-icons">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" title="HTML5" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" title="CSS3" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" title="JavaScript" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" title="Python" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" title="Git" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" title="VS Code" />
+          </div>
+
+          <div class="socials">
+            <a href="https://www.tiktok.com/@devtiemnang210" target="_blank" class="soc-btn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+              TikTok
+            </a>
+            <a href="https://discord.gg/DceHsVSbW" target="_blank" class="soc-btn soc-discord">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+              Discord
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=100094384928226" target="_blank" class="soc-btn soc-fb">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.404 18.627 0 12 0S0 5.404 0 12.073c0 6.027 4.388 11.02 10.125 11.927v-8.437H7.078V12.07h3.047V9.43c0-3.007 1.793-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.514c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.493h-2.796v8.437C19.612 23.093 24 18.1 24 12.073z"/></svg>
+              Facebook
+            </a>
+          </div>
+
+          <div class="p-divider"></div>
+
+          <div class="donate-row">
+            <span class="donate-txt" id="donateTxt">Donet me 😊: <strong>1060830747</strong></span>
+            <button class="donate-btn" id="donateBtn">PLSDONET</button>
+          </div>
+
+          <div class="view-counter">
+            <svg class="view-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span id="viewCount">8,247</span>
+            <span class="view-float" id="viewFloat" style="display:none">+1</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MOBILE FAB — mũi tên xuống, nhấn mở Tool Card -->
+    <button class="mobile-fab" id="mobileFab" aria-label="Mở tool">
+      <div class="fab-ring"></div>
+      <div class="fab-ring fab-r2"></div>
+      <svg class="fab-icon" id="fabIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+      <span class="fab-lbl">Tool</span>
+    </button>
+  </div>
+
+  <!-- SUPPORTED LINKS PANEL -->
+  <div class="sl-backdrop" id="slBackdrop"></div>
+  <div class="sl-panel" id="slPanel">
+    <div class="sl-handle"></div>
+    <div class="sl-header">
+      <span class="sl-title" id="slTitle">✅ Supported Bypass Links</span>
+      <button class="sl-close" id="slClose">✕</button>
+    </div>
+    <div class="sl-body">
+      <div class="sl-grid">
+        <div class="sl-cat">
+          <div class="sl-cat-title">📢 Ad Links</div>
+          <div class="sl-items">
+            <span>✅ adfoc.us</span>
+            <span>✅ bstlar <em>(&amp; other domains)</em></span>
+            <span>✅ cuty.io <em>(&amp; other domains)</em></span>
+            <span>✅ linkvertise.com <em>(&amp; other domains)</em></span>
+            <span>✅ lootlinks.com <em>(&amp; other domains)</em></span>
+            <span>✅ mendationforc.info</span>
+            <span>✅ paster.so <em>(&amp; other domains)</em></span>
+            <span>✅ work.ink <em>(&amp; other domains)</em></span>
+            <span>✅ link4m.com <em>(&amp; VPS bypass)</em></span>
+          </div>
+        </div>
+        <div class="sl-cat">
+          <div class="sl-cat-title">👥 Socials</div>
+          <div class="sl-items">
+            <span>✅ boost.ink</span>
+            <span>✅ declaremods.com</span>
+            <span>✅ mboost.me <em>(&amp; other domains)</em></span>
+            <span>✅ rekonise.com</span>
+            <span>✅ sub2unlock.com / .io / .net</span>
+            <span>✅ sub4unlock.com / .pro</span>
+            <span>✅ subfinal.com</span>
+          </div>
+        </div>
+        <div class="sl-cat">
+          <div class="sl-cat-title">📋 Pastes</div>
+          <div class="sl-items">
+            <span>✅ justpaste.it</span>
+            <span>✅ pastebin.com</span>
+            <span>✅ rentry.org / .co</span>
+            <span>✅ pastelink.net</span>
+          </div>
+        </div>
+        <div class="sl-cat">
+          <div class="sl-cat-title">🔗 Shorteners</div>
+          <div class="sl-items">
+            <span>✅ bit.ly</span>
+            <span>✅ cutt.ly</span>
+            <span>✅ tinyurl.com</span>
+            <span>✅ t.ly</span>
+            <span>✅ shorturl.at</span>
+          </div>
+        </div>
+        <div class="sl-cat sl-cat-full">
+          <div class="sl-cat-title">🎮 Roblox</div>
+          <div class="sl-items sl-items-row">
+            <span>✅ mobile.codex.lol</span>
+            <span>✅ flux.li</span>
+            <span>✅ rbscripts.net</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CYBER TERMINAL CLI (Wave 6) -->
+  <div class="cyber-cli-modal" id="cyberCliModal" style="display:none">
+    <div class="cli-window">
+      <div class="cli-header">
+        <div class="term-dots">
+          <span class="tdot tdot-r" id="cliClose"></span>
+          <span class="tdot tdot-y"></span>
+          <span class="tdot tdot-g"></span>
+        </div>
+        <div class="cli-title">duyzoz@elitebook-840g1: ~/terminal-cli</div>
+        <button class="cli-x" id="cliCloseBtn">✕</button>
+      </div>
+      <div class="cli-body" id="cliOutput">
+        <div class="cli-line dim" id="cliWelcome1">Cyber Terminal CLI v2.0 — Nguyễn Duy Virtual OS</div>
+        <div class="cli-line cyan" id="cliWelcome2">Type 'help' for command list. Shortcut: ~ or Esc to close.</div>
+      </div>
+      <div class="cli-input-wrap">
+        <span class="cli-prompt">root@duyzoz:~#</span>
+        <input class="cli-input" id="cliInput" type="text" autocomplete="off" spellcheck="false" placeholder="Enter command (e.g. help, wuwa, music, theme, matrix, ping)..." />
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
