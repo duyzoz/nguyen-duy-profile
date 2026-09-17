@@ -2949,6 +2949,15 @@ Respond accurately with this ground truth knowledge:
     return null;
   }
 
+  function removeDiacritics(str){
+    return (str || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\u0111/g, 'd')
+      .replace(/\u0110/g, 'D')
+      .toLowerCase();
+  }
+
   /* ── 3. Offline Grounded Knowledge Base ── */
   function getOfflineAiResponse(rawQuery, lang = 'en'){
     const q = (rawQuery || '').trim().toLowerCase();
