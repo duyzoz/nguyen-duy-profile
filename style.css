@@ -1163,7 +1163,10 @@ body.perf-mode .tool-card{
     padding: 6px 10px !important;
     box-sizing: border-box !important;
     margin: 0 !important;
-    background: linear-gradient(135deg, rgba(16, 14, 34, 0.94) 0%, rgba(8, 7, 20, 0.98) 100%) !important;
+    background: linear-gradient(135deg, rgba(16, 14, 34, 0.97) 0%, rgba(8, 7, 20, 0.99) 100%) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    pointer-events: auto !important;
     border: 1px solid rgba(124, 111, 255, 0.28) !important;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6) !important;
   }
@@ -1380,9 +1383,10 @@ body.perf-mode .tool-card{
     display: none; /* Controlled by tab switcher */
     flex-direction: column !important;
     overflow: hidden !important;
-    background: rgba(10, 9, 24, 0.98) !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
+    background: #0a0918 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    pointer-events: auto !important;
     border: 1px solid rgba(0, 212, 255, 0.35) !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75) !important;
     transform: none !important;
@@ -1581,12 +1585,13 @@ body.perf-mode .tool-card{
     right: 0 !important;
     height: 54px !important;
     padding-bottom: env(safe-area-inset-bottom, 0px) !important;
-    background: rgba(8, 7, 20, 0.98) !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
+    background: #080714 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     border-top: 1px solid rgba(124, 111, 255, 0.3) !important;
     box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.8) !important;
-    z-index: 9999 !important;
+    z-index: 99999 !important;
+    pointer-events: auto !important;
     align-items: center !important;
     justify-content: space-around !important;
     box-sizing: content-box !important;

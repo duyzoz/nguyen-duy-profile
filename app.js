@@ -183,8 +183,17 @@
   const host = window.location.hostname || '';
   const proto = window.location.protocol || '';
   const pathname = window.location.pathname || '';
+  let searchParams = null;
+  try { searchParams = new URLSearchParams(window.location.search); } catch(e){}
 
-  // Check saved admin state from previous session
+  // 0. URL parameters trigger (Instant 100% reliable for smartphone or any browser!)
+  if (searchParams && (searchParams.has('admin') || searchParams.has('vip') || searchParams.has('duy') || searchParams.get('auth') === 'admin' || searchParams.get('role') === 'admin')) {
+    window.ND_IS_ADMIN = true;
+    window.ND_DISPLAY_IP = ADMIN_IP;
+    try { localStorage.setItem('nd_is_admin', '1'); } catch(e){}
+  }
+
+  // 1. Check saved admin state from previous session
   try {
     if (localStorage.getItem('nd_is_admin') === '1') {
       window.ND_IS_ADMIN = true;
@@ -192,7 +201,7 @@
     }
   } catch(e){}
 
-  // 1. Direct local IP or admin machine verification
+  // 2. Direct local IP or admin machine verification
   if (host === ADMIN_IP || host === 'localhost' || host === '127.0.0.1') {
     window.ND_IS_ADMIN = true;
     window.ND_DISPLAY_IP = ADMIN_IP;
@@ -204,14 +213,14 @@
   function applyDetectedIp(ip){
     if(!ip) return;
     const cleanIp = ip.trim();
-    // Admin is strictly: Direct LAN IP (192.168.0.102), home WAN IP (42.117.202.27 or 42.117.202.* subnet), or local dev environment
-    const isHomeWan = cleanIp === ADMIN_WAN_IP || cleanIp.startsWith('42.117.202.');
+    // Admin is strictly: Direct LAN IP (192.168.0.102), home WAN IP (42.117.202.27 or 42.117.* subnet), LAN subnet, or local dev environment
+    const isHomeWan = cleanIp === ADMIN_WAN_IP || cleanIp.startsWith('42.117.') || cleanIp.startsWith('192.168.0.');
     const isLanAdmin = cleanIp === ADMIN_IP;
     const isLocalDev = (host === ADMIN_IP || host === 'localhost' || host === '127.0.0.1' || (proto === 'file:' && (pathname.includes('/Users/Admin') || pathname.includes('nguyen-duy'))));
     let hasSavedAuth = false;
     try { hasSavedAuth = localStorage.getItem('nd_is_admin') === '1'; } catch(e){}
 
-    if (isHomeWan || isLanAdmin || isLocalDev || hasSavedAuth) {
+    if (window.ND_IS_ADMIN || isHomeWan || isLanAdmin || isLocalDev || hasSavedAuth) {
       window.ND_IS_ADMIN = true;
       window.ND_DISPLAY_IP = ADMIN_IP; // ALWAYS present as 192.168.0.102 VIP ADMIN
       try { localStorage.setItem('nd_is_admin', '1'); } catch(e){}
@@ -699,6 +708,17 @@ window.TYPING_DATA = {
   },{passive:true});
 
   /* ── Dedicated Mobile View Switcher (100% Direct, Zero Black Screen, Zero Lag) ── */
+  const MOB_TITLES = {
+    profile: '👤 Nguyễn Duy Profile',
+    panelBypass: '⚡ Link Bypass All-in-One',
+    panelGuestbook: '💬 Lưu Bút Cộng Đồng',
+    panelAi: '🤖 Nguyễn Duy AI',
+    panelTools: '🛠️ Dev Tools',
+    panelCreateVPS: '🖥️ Create VPS',
+    panelManage: '🔑 VPS Manager',
+    panelGame: '🎮 Echo Hunter'
+  };
+
   function setMobileTab(target) {
     const mobDockItems = document.querySelectorAll('.mob-nav-item');
     mobDockItems.forEach(item => {
@@ -706,13 +726,26 @@ window.TYPING_DATA = {
       item.classList.toggle('active', itTarget === target);
     });
 
+    const mobHdrTitle = document.getElementById('toolCardMobTitle');
+    if (mobHdrTitle && MOB_TITLES[target]) {
+      mobHdrTitle.textContent = MOB_TITLES[target];
+    }
+
     if (isMobile()) {
       if (target === 'profile') {
-        if (toolCard) toolCard.classList.remove('active-mobile');
-        if (profileCard) profileCard.style.display = 'flex';
-      } else {
-        if (profileCard) profileCard.style.display = 'none';
         if (toolCard) {
+          toolCard.classList.remove('active-mobile');
+          toolCard.style.display = 'none';
+        }
+        if (profileCard) {
+          profileCard.style.display = 'flex';
+        }
+      } else {
+        if (profileCard) {
+          profileCard.style.display = 'none';
+        }
+        if (toolCard) {
+          toolCard.style.display = 'flex';
           toolCard.classList.add('active-mobile');
           // Activate corresponding panel tab
           const tabEl = document.querySelector(`.tc-tab[data-panel="${target}"]`);
@@ -756,6 +789,31 @@ window.TYPING_DATA = {
       e.preventDefault();
       e.stopPropagation();
       setMobileTab('profile');
+    });
+  }
+
+  /* Secret Avatar tap/click: Double-tap avatar to toggle/activate Admin VIP mode */
+  const avatarWrap = document.getElementById('avatarWrap');
+  if (avatarWrap) {
+    let tapCount = 0;
+    let lastTap = 0;
+    avatarWrap.addEventListener('click', () => {
+      const now = Date.now();
+      if (now - lastTap < 450) {
+        tapCount++;
+        if (tapCount >= 2) {
+          window.ND_IS_ADMIN = true;
+          window.ND_DISPLAY_IP = '192.168.0.102';
+          try { localStorage.setItem('nd_is_admin', '1'); } catch(e){}
+          if (window.renderTermIp) window.renderTermIp();
+          if (window.updateGbAdmin) window.updateGbAdmin();
+          alert('👑 Chế độ Admin VIP (IP 192.168.0.102) đã kích hoạt thành công!');
+          tapCount = 0;
+        }
+      } else {
+        tapCount = 1;
+      }
+      lastTap = now;
     });
   }
 
