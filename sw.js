@@ -1,8 +1,8 @@
 /* ══════════════════════════════════════════════════════
-   Service Worker v20 — Nguyễn Duy Profile (Network First)
+   Service Worker v25 — Nguyễn Duy Profile (Network First)
    Purges stale caches immediately to guarantee live updates
 ══════════════════════════════════════════════════════ */
-const CACHE_NAME = 'nd-profile-v20';
+const CACHE_NAME = 'nd-profile-v25';
 
 self.addEventListener('install', e => {
   self.skipWaiting();

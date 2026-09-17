@@ -2732,22 +2732,39 @@ if('serviceWorker' in navigator){
   const LS_AI_KEY = 'nd_ai_key';
 
   /* ── 1. API Key Setup & UI State ── */
+  function cleanAiKey(key){
+    if(!key) return '';
+    return key.trim().replace(/^["']|["']$/g, '');
+  }
+
+  function detectAiProvider(rawKey){
+    const k = cleanAiKey(rawKey);
+    if(!k) return 'offline';
+    if(k.startsWith('gsk_')) return 'groq';
+    if(k.startsWith('sk-') && !k.startsWith('sk-ant-')) return 'openai';
+    // Any Google Gemini key: starts with 'AIza', 'AQ', or any key issued by Google AI Studio
+    return 'gemini';
+  }
+
   function syncKeyUI(){
-    const currentKey = (localStorage.getItem(LS_AI_KEY) || '').trim();
+    const currentKey = cleanAiKey(localStorage.getItem(LS_AI_KEY));
     const hasKey = currentKey.length > 8;
+    const provider = detectAiProvider(currentKey);
+    const providerName = provider === 'gemini' ? 'Google Gemini'
+                       : (provider === 'groq' ? 'Groq Llama-3.3'
+                       : (provider === 'openai' ? 'OpenAI GPT-4o' : 'Offline'));
+
     if(btnConfigKey){
       btnConfigKey.innerHTML = hasKey
         ? '<span class="ai-key-icon">🟢</span><span class="ai-key-label">Live AI</span>'
         : '<span class="ai-key-icon">🔑</span><span class="ai-key-label">API Key</span>';
       btnConfigKey.title = hasKey
-        ? 'Live AI Active (Click to edit Key)'
-        : 'Configure AI API Key (Gemini / OpenAI / Groq)';
+        ? `Live AI Active: ${providerName} (Click to edit Key)`
+        : 'Configure AI API Key (Google Gemini / OpenAI / Groq)';
     }
     if(keyStatusTxt){
       if(hasKey){
-        const isGemini = currentKey.startsWith('AIza');
-        const provider = isGemini ? 'Google Gemini' : (currentKey.startsWith('gsk_') ? 'Groq Llama-3.3' : 'OpenAI');
-        keyStatusTxt.innerHTML = `<span style="color:#34d399">🟢 Key Active: ${provider} (100% Live AI)</span>`;
+        keyStatusTxt.innerHTML = `<span style="color:#34d399">🟢 Key Active: <strong>${providerName}</strong> (100% Real Live AI)</span>`;
       } else {
         keyStatusTxt.innerHTML = `<span style="color:#94a3b8">⚪ No API Key (Using Offline Knowledge Base)</span>`;
       }
@@ -2773,15 +2790,25 @@ if('serviceWorker' in navigator){
 
   if(btnSaveKey && apiKeyInput){
     btnSaveKey.addEventListener('click', ()=>{
-      const val = apiKeyInput.value.trim();
+      const val = cleanAiKey(apiKeyInput.value);
       if(val){
         localStorage.setItem(LS_AI_KEY, val);
         syncKeyUI();
         if(keyModal) keyModal.style.display = 'none';
-        appendMessage('✨ <em>AI API Key saved! Live AI is now active and ready.</em>', false);
+        const provider = detectAiProvider(val);
+        const pName = provider === 'gemini' ? 'Google Gemini' : (provider === 'groq' ? 'Groq' : 'OpenAI');
+        appendMessage(`✨ <em>AI API Key saved! Live AI (${pName}) is now active and ready.</em>`, false);
       } else {
         localStorage.removeItem(LS_AI_KEY);
         syncKeyUI();
+      }
+    });
+  }
+
+  if(apiKeyInput){
+    apiKeyInput.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') {
+        if(btnSaveKey) btnSaveKey.click();
       }
     });
   }
@@ -2797,11 +2824,25 @@ if('serviceWorker' in navigator){
 
   syncKeyUI();
 
+  /* ── Helper: Format AI Markdown to safe HTML ── */
+  function formatAiMarkdown(str){
+    if(!str) return '';
+    return str
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/```([\s\S]*?)```/g, '<pre style="background:rgba(0,0,0,0.5);padding:6px;border-radius:4px;overflow-x:auto"><code>$1</code></pre>')
+      .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.1);padding:1px 4px;border-radius:3px;color:#38bdf8">$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+      .replace(/^\s*[-*]\s+(.*)$/gm, '• $1')
+      .replace(/\n/g, '<br>');
+  }
+
   /* ── 2. Live AI Query Engine ── */
   async function callLiveAI(userText, lang = 'en'){
-    const key = (localStorage.getItem(LS_AI_KEY) || '').trim();
+    const key = cleanAiKey(localStorage.getItem(LS_AI_KEY));
     if(!key) return null;
 
+    const provider = detectAiProvider(key);
     const langName = lang === 'vi' ? 'Vietnamese' : (lang === 'ja' ? 'Japanese' : 'English');
     const systemPrompt = `You are Nguyễn Duy AI, the cyberpunk digital twin and assistant of Nguyễn Duy (duyzoz).
 Respond accurately with this ground truth knowledge:
@@ -2812,21 +2853,53 @@ Respond accurately with this ground truth knowledge:
 - Language: ALWAYS answer in ${langName}.`;
 
     try {
-      if(key.startsWith('AIza')){
-        // Google Gemini API (gemini-1.5-flash / gemini-2.0-flash)
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
-        const resp = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: systemPrompt + '\n\nUser Question: ' + userText }] }]
-          })
-        });
-        const data = await resp.json();
-        if(data.candidates && data.candidates[0]?.content?.parts?.[0]?.text){
-          return data.candidates[0].content.parts[0].text.replace(/\n/g, '<br>');
+      if(provider === 'gemini'){
+        // Google Gemini API (Supports both legacy AIza... and new 2026 AQ... Authorization Keys)
+        const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-pro'];
+        let lastErr = null;
+
+        for (const model of models) {
+          try {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+            const resp = await fetch(endpoint, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-goog-api-key': key
+              },
+              body: JSON.stringify({
+                contents: [
+                  {
+                    role: 'user',
+                    parts: [{ text: systemPrompt + '\n\nUser Question: ' + userText }]
+                  }
+                ],
+                generationConfig: {
+                  maxOutputTokens: 800,
+                  temperature: 0.7
+                }
+              })
+            });
+
+            const data = await resp.json();
+            if(data.candidates && data.candidates[0]?.content?.parts?.[0]?.text){
+              return formatAiMarkdown(data.candidates[0].content.parts[0].text);
+            }
+            if(data.error){
+              lastErr = new Error(data.error.message || `Gemini ${model} Error (${data.error.code})`);
+              if(data.error.code === 404 || data.error.status === 'NOT_FOUND') {
+                continue;
+              }
+              throw lastErr;
+            }
+          } catch(fetchErr) {
+            lastErr = fetchErr;
+            if(!fetchErr.message?.includes('404')) {
+              throw fetchErr;
+            }
+          }
         }
-        if(data.error) throw new Error(data.error.message || 'Gemini API Error');
+        if(lastErr) throw lastErr;
       } else {
         // OpenAI / Groq Compatible API
         const endpoint = key.startsWith('gsk_')
@@ -2850,7 +2923,7 @@ Respond accurately with this ground truth knowledge:
         });
         const data = await resp.json();
         if(data.choices && data.choices[0]?.message?.content){
-          return data.choices[0].message.content.replace(/\n/g, '<br>');
+          return formatAiMarkdown(data.choices[0].message.content);
         }
         if(data.error) throw new Error(data.error.message || 'API Error');
       }
@@ -2858,15 +2931,6 @@ Respond accurately with this ground truth knowledge:
       return `<span style="color:#f87171">⚠️ Live API Error: ${err.message}</span><br>` + getOfflineAiResponse(userText, lang);
     }
     return null;
-  }
-
-  function removeDiacritics(str){
-    return (str || '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd')
-      .replace(/Đ/g, 'D')
-      .toLowerCase();
   }
 
   /* ── 3. Offline Grounded Knowledge Base ── */
