@@ -2797,7 +2797,7 @@ if('serviceWorker' in navigator){
         if(keyModal) keyModal.style.display = 'none';
         const provider = detectAiProvider(val);
         const pName = provider === 'gemini' ? 'Google Gemini' : (provider === 'groq' ? 'Groq' : 'OpenAI');
-        appendMessage(`✨ <em>AI API Key saved! Live AI [${pName} v25] is now active and ready.</em>`, false);
+        appendMessage(`✨ <em>AI API Key saved! Live AI [${pName} v35] is now active and ready.</em>`, false);
       } else {
         localStorage.removeItem(LS_AI_KEY);
         syncKeyUI();
@@ -2854,18 +2854,20 @@ Respond accurately with this ground truth knowledge:
 
     try {
       if(provider === 'gemini'){
-        // Google Gemini API (Supports both legacy AIza... and new 2026 AQ... Authorization Keys)
-        const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-pro'];
+        // Primary models for Gemini: 1.5-flash, 1.5-pro, 2.0-flash
+        const models = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash'];
         let lastErr = null;
 
         for (const model of models) {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 7000);
           try {
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
             const resp = await fetch(endpoint, {
               method: 'POST',
+              signal: controller.signal,
               headers: {
-                'Content-Type': 'application/json',
-                'x-goog-api-key': key
+                'Content-Type': 'application/json'
               },
               body: JSON.stringify({
                 contents: [
@@ -2880,6 +2882,7 @@ Respond accurately with this ground truth knowledge:
                 }
               })
             });
+            clearTimeout(timeoutId);
 
             const data = await resp.json();
             if(data.candidates && data.candidates[0]?.content?.parts?.[0]?.text){
@@ -2893,7 +2896,11 @@ Respond accurately with this ground truth knowledge:
               throw lastErr;
             }
           } catch(fetchErr) {
+            clearTimeout(timeoutId);
             lastErr = fetchErr;
+            if(fetchErr.name === 'AbortError') {
+              throw new Error('Timeout: Máy chủ Google AI phản hồi quá lâu (>7s)');
+            }
             if(!fetchErr.message?.includes('404')) {
               throw fetchErr;
             }
@@ -2902,33 +2909,42 @@ Respond accurately with this ground truth knowledge:
         if(lastErr) throw lastErr;
       } else {
         // OpenAI / Groq Compatible API
-        const endpoint = key.startsWith('gsk_')
-          ? 'https://api.groq.com/openai/v1/chat/completions'
-          : 'https://api.openai.com/v1/chat/completions';
-        const model = key.startsWith('gsk_') ? 'llama-3.3-70b-versatile' : 'gpt-4o-mini';
-        const resp = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${key}`
-          },
-          body: JSON.stringify({
-            model,
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userText }
-            ],
-            max_tokens: 600
-          })
-        });
-        const data = await resp.json();
-        if(data.choices && data.choices[0]?.message?.content){
-          return formatAiMarkdown(data.choices[0].message.content);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        try {
+          const endpoint = key.startsWith('gsk_')
+            ? 'https://api.groq.com/openai/v1/chat/completions'
+            : 'https://api.openai.com/v1/chat/completions';
+          const model = key.startsWith('gsk_') ? 'llama-3.3-70b-versatile' : 'gpt-4o-mini';
+          const resp = await fetch(endpoint, {
+            method: 'POST',
+            signal: controller.signal,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${key}`
+            },
+            body: JSON.stringify({
+              model,
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userText }
+              ],
+              max_tokens: 600
+            })
+          });
+          clearTimeout(timeoutId);
+          const data = await resp.json();
+          if(data.choices && data.choices[0]?.message?.content){
+            return formatAiMarkdown(data.choices[0].message.content);
+          }
+          if(data.error) throw new Error(data.error.message || 'API Error');
+        } catch(apiErr) {
+          clearTimeout(timeoutId);
+          throw apiErr;
         }
-        if(data.error) throw new Error(data.error.message || 'API Error');
       }
     } catch(err){
-      return `<span style="color:#f87171">⚠️ Live API Error: ${err.message}</span><br>` + getOfflineAiResponse(userText, lang);
+      return `<span style="color:#f87171">⚠️ Live API: ${err.message}</span><br>` + getOfflineAiResponse(userText, lang);
     }
     return null;
   }
@@ -3092,21 +3108,36 @@ Respond accurately with this ground truth knowledge:
       : (currentLang === 'ja' ? '<em>AIが思考中...</em>' : '<em>Nguyễn Duy AI is thinking...</em>');
     const typingDiv = appendMessage(typingTxt, false);
 
-    // Try Live AI first if key exists
+    let resolved = false;
+    const safetyTimer = setTimeout(()=>{
+      if(!resolved){
+        resolved = true;
+        typingDiv.innerHTML = '<span style="color:#f87171">⚠️ Live AI không phản hồi sau 8s (Có thể do mạng hoặc Google quá tải). Tự động dùng dữ liệu ngoại tuyến:</span><br>' + getOfflineAiResponse(text, currentLang);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+    }, 8500);
+
     try {
       const liveRes = await callLiveAI(text, currentLang);
-      if(liveRes){
-        typingDiv.innerHTML = liveRes;
+      if(!resolved){
+        resolved = true;
+        clearTimeout(safetyTimer);
+        if(liveRes){
+          typingDiv.innerHTML = liveRes;
+        } else {
+          typingDiv.innerHTML = getOfflineAiResponse(text, currentLang);
+        }
         messagesEl.scrollTop = messagesEl.scrollHeight;
         return;
       }
-    } catch(e){}
-
-    // Fallback to offline knowledge base
-    setTimeout(()=>{
-      typingDiv.innerHTML = getOfflineAiResponse(text, currentLang);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }, 280);
+    } catch(e){
+      if(!resolved){
+        resolved = true;
+        clearTimeout(safetyTimer);
+        typingDiv.innerHTML = `<span style="color:#f87171">⚠️ Lỗi kết nối: ${e.message || 'Không thể liên lạc Live AI'}</span><br>` + getOfflineAiResponse(text, currentLang);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+    }
   }
 
   if(sendBtn) sendBtn.addEventListener('click', ()=> handleSend());
