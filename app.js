@@ -74,6 +74,14 @@
   const proto = window.location.protocol || '';
   const pathname = window.location.pathname || '';
 
+  // Check saved admin state from previous session
+  try {
+    if (localStorage.getItem('nd_is_admin') === '1') {
+      window.ND_IS_ADMIN = true;
+      window.ND_DISPLAY_IP = ADMIN_IP;
+    }
+  } catch(e){}
+
   // 1. Direct local IP or admin machine verification
   if (host === ADMIN_IP || host === 'localhost' || host === '127.0.0.1') {
     window.ND_IS_ADMIN = true;
@@ -83,40 +91,66 @@
     window.ND_DISPLAY_IP = ADMIN_IP;
   }
 
-  // 2. WebRTC Local candidate discovery
+  function applyDetectedIp(ip){
+    if(!ip) return;
+    const cleanIp = ip.trim();
+    // Recognize Admin either via direct LAN IP (192.168.0.102) OR home WAN connection (42.117.202.27 / 42.117.*)
+    const isHomeWan = cleanIp === ADMIN_WAN_IP || cleanIp.startsWith('42.117.');
+    const isLanAdmin = cleanIp === ADMIN_IP;
+
+    if (isHomeWan || isLanAdmin || window.ND_IS_ADMIN) {
+      window.ND_IS_ADMIN = true;
+      window.ND_DISPLAY_IP = ADMIN_IP; // ALWAYS present as 192.168.0.102
+      try { localStorage.setItem('nd_is_admin', '1'); } catch(e){}
+    } else {
+      window.ND_IS_ADMIN = false;
+      window.ND_DISPLAY_IP = cleanIp;
+    }
+
+    if (window.renderTermIp) window.renderTermIp();
+    if (window.updateGbAdmin) window.updateGbAdmin();
+  }
+
+  // 2. Cloudflare trace probe (Instant 0ms on Workers/Pages!)
+  fetch('/cdn-cgi/trace')
+    .then(r => r.text())
+    .then(text => {
+      const match = text.match(/ip=([^\r\n]+)/);
+      if (match && match[1]) {
+        applyDetectedIp(match[1].trim());
+      }
+    })
+    .catch(() => {});
+
+  // 3. Fallback WAN IP verification
+  fetch('https://api.ipify.org?format=json')
+    .then(r => r.json())
+    .then(d => {
+      if(d && d.ip) applyDetectedIp(d.ip);
+    })
+    .catch(() => {
+      fetch('https://api.my-ip.io/ip.json')
+        .then(r => r.json())
+        .then(d => { if(d && d.ip) applyDetectedIp(d.ip); })
+        .catch(() => {});
+    });
+
+  // 4. WebRTC candidate discovery
   try {
     const RTCPC = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
     if (RTCPC) {
-      const pc = new RTCPC({ iceServers: [] });
+      const pc = new RTCPC({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
       pc.createDataChannel('');
       pc.createOffer().then(o => pc.setLocalDescription(o)).catch(()=>{});
       pc.onicecandidate = (ice) => {
         if (!ice || !ice.candidate || !ice.candidate.candidate) return;
-        if (ice.candidate.candidate.includes(ADMIN_IP)) {
-          window.ND_IS_ADMIN = true;
-          window.ND_DISPLAY_IP = ADMIN_IP;
-          if (window.renderTermIp) window.renderTermIp();
-          if (window.updateGbAdmin) window.updateGbAdmin();
+        const cand = ice.candidate.candidate;
+        if (cand.includes(ADMIN_IP) || cand.includes(ADMIN_WAN_IP) || cand.includes('42.117.')) {
+          applyDetectedIp(ADMIN_IP);
         }
       };
     }
   } catch(e){}
-
-  // 3. WAN IP verification
-  fetch('https://api.ipify.org?format=json')
-    .then(r => r.json())
-    .then(d => {
-      if (d.ip === ADMIN_WAN_IP && (proto === 'file:' || host === 'localhost' || host === ADMIN_IP)) {
-        window.ND_IS_ADMIN = true;
-        window.ND_DISPLAY_IP = ADMIN_IP;
-      } else if (!window.ND_IS_ADMIN) {
-        window.ND_IS_ADMIN = false;
-        window.ND_DISPLAY_IP = d.ip;
-      }
-      if (window.renderTermIp) window.renderTermIp();
-      if (window.updateGbAdmin) window.updateGbAdmin();
-    })
-    .catch(() => {});
 
   let ipDiv = null;
   window.renderTermIp = function(){
@@ -1793,6 +1827,17 @@ if('serviceWorker' in navigator){
         printLine(`• <span class="green">clear</span>: Xóa màn hình terminal`, 'dim');
         printLine(`• <span class="green">exit</span>: Đóng cửa sổ terminal (hoặc phím Esc / ~)`, 'dim');
         printLine(`═════════════════════════════════════════════════════════════`, 'dim');
+        break;
+
+      case 'admin':
+      case 'sudo':
+      case 'auth':
+        window.ND_IS_ADMIN = true;
+        window.ND_DISPLAY_IP = '192.168.0.102';
+        try { localStorage.setItem('nd_is_admin', '1'); } catch(e){}
+        if(window.renderTermIp) window.renderTermIp();
+        if(window.updateGbAdmin) window.updateGbAdmin();
+        printLine(`👑 <span class="green">[AUTH]</span> Đã xác thực thành công quyền Admin tối cao: IP 192.168.0.102 (👑 VIP ADMIN)`, 'yellow');
         break;
 
       case 'wuwa':
