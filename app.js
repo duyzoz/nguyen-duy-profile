@@ -16,6 +16,116 @@
     ' █░░╚══════════════════════╝░░░█ ',
     '  ████████████████████████████  ',
   ].join('\n');
+  /* ── OS DETECTION & CLASSIFICATION (Windows, Android, iOS, macOS, Linux, ChromeOS) ── */
+  function detectOS() {
+    const ua = navigator.userAgent || '';
+    const platform = navigator.platform || '';
+    const maxTouch = navigator.maxTouchPoints || 0;
+
+    let osKey = 'unknown';
+    let name = 'Unknown OS';
+    let icon = '💻';
+    let termTitle = 'system.exe — bash';
+    let isMobile = false;
+
+    // 1. Android
+    const androidMatch = ua.match(/Android\s*([0-9.]+)?/i);
+    if (androidMatch || /Android/i.test(platform)) {
+      osKey = 'android';
+      isMobile = true;
+      const ver = androidMatch && androidMatch[1] ? ` ${androidMatch[1]}` : '';
+      let brand = '';
+      if (/SM-[A-Z0-9]+|Samsung/i.test(ua)) brand = ' (Samsung)';
+      else if (/Pixel\s?[0-9a-zA-Z]*/i.test(ua)) {
+        const pm = ua.match(/Pixel\s?[0-9a-zA-Z]*/i);
+        brand = pm ? ` (${pm[0]})` : ' (Pixel)';
+      } else if (/Redmi|POCO|Xiaomi/i.test(ua)) brand = ' (Xiaomi)';
+      else if (/OPPO|CPH[0-9]+/i.test(ua)) brand = ' (OPPO)';
+      else if (/vivo|V[0-9]{4}[A-Z]*/i.test(ua)) brand = ' (Vivo)';
+
+      name = `Android${ver}${brand} · Linux ARM`;
+      icon = '🤖';
+      termTitle = 'system.sh — termux (Android Linux)';
+    }
+    // 2. iOS / iPadOS
+    else if (/iPhone/i.test(ua)) {
+      osKey = 'ios';
+      isMobile = true;
+      const iosMatch = ua.match(/OS\s*([0-9_]+)/i);
+      const ver = iosMatch ? ` ${iosMatch[1].replace(/_/g, '.')}` : '';
+      name = `Apple iPhone (iOS${ver}) · A-Bionic`;
+      icon = '🍎';
+      termTitle = 'system.sh — MobileTerminal (iOS/Darwin)';
+    }
+    else if (/iPad/i.test(ua) || (platform === 'MacIntel' && maxTouch > 1)) {
+      osKey = 'ipados';
+      isMobile = true;
+      const ipadMatch = ua.match(/OS\s*([0-9_]+)/i);
+      const ver = ipadMatch ? ` ${ipadMatch[1].replace(/_/g, '.')}` : '';
+      name = `Apple iPad (iPadOS${ver}) · Apple Silicon`;
+      icon = '🍎';
+      termTitle = 'system.sh — Terminal (iPadOS/Darwin)';
+    }
+    // 3. Windows
+    else if (/Win/i.test(ua) || /Win/i.test(platform)) {
+      osKey = 'windows';
+      isMobile = false;
+      let winVer = 'Windows';
+      if (/Windows NT 10\.0/i.test(ua)) winVer = 'Windows 10/11';
+      else if (/Windows NT 6\.3/i.test(ua)) winVer = 'Windows 8.1';
+      else if (/Windows NT 6\.1/i.test(ua)) winVer = 'Windows 7';
+
+      const arch = /ARM64/i.test(ua) ? 'ARM64' : (/x64|Win64|WOW64/i.test(ua) ? 'x64' : 'x86');
+      name = `${winVer} (NT kernel · ${arch})`;
+      icon = '🪟';
+      termTitle = `system.exe — PowerShell (${winVer})`;
+    }
+    // 4. macOS
+    else if (/Mac/i.test(ua) || /Mac/i.test(platform)) {
+      osKey = 'macos';
+      isMobile = false;
+      const macMatch = ua.match(/Mac OS X\s*([0-9_]+)/i);
+      const ver = macMatch ? ` ${macMatch[1].replace(/_/g, '.')}` : '';
+      name = `macOS${ver} (Darwin Unix · Apple Silicon/Intel)`;
+      icon = '🍏';
+      termTitle = 'system.sh — zsh (macOS Terminal)';
+    }
+    // 5. ChromeOS
+    else if (/CrOS/i.test(ua)) {
+      osKey = 'chromeos';
+      isMobile = false;
+      name = 'Google ChromeOS (Linux kernel)';
+      icon = '🌐';
+      termTitle = 'system.sh — crosh (ChromeOS)';
+    }
+    // 6. Linux
+    else if (/Linux/i.test(ua) || /Linux/i.test(platform)) {
+      osKey = 'linux';
+      isMobile = false;
+      let distro = 'GNU/Linux';
+      if (/Ubuntu/i.test(ua)) distro = 'Ubuntu Linux';
+      else if (/Debian/i.test(ua)) distro = 'Debian GNU/Linux';
+      else if (/Fedora/i.test(ua)) distro = 'Fedora Linux';
+      else if (/Arch/i.test(ua)) distro = 'Arch Linux';
+      const arch = /aarch64|arm64/i.test(ua) ? 'aarch64' : 'x86_64';
+      name = `${distro} (${arch})`;
+      icon = '🐧';
+      termTitle = 'system.sh — bash (Linux)';
+    }
+
+    if (!isMobile && (window.innerWidth <= 768 || (maxTouch > 1 && /Mobi|Android|Touch/i.test(ua)))) {
+      isMobile = true;
+    }
+
+    return { osKey, name, icon, termTitle, isMobile };
+  }
+
+  const detectedOS = detectOS();
+  window.ND_OS = detectedOS;
+
+  const termTitleBar = document.getElementById('termTitleBar');
+  if (termTitleBar) termTitleBar.textContent = detectedOS.termTitle;
+
   const startupLang = localStorage.getItem('nd_lang') || 'en';
   const STARTUP_DICT = {
     en: {
@@ -23,36 +133,36 @@
         {text:'> System Initializing...',cls:'dim',ms:0},
         {text:'> Network Connection... OK',cls:'green',ms:600},
         {text:'> IP: {IP}',cls:'cyan',ms:1100,isIp:true},
-        {text:'> OS: '+(function(){const u=navigator.userAgent;if(/Android/i.test(u))return'Android';if(/iPhone|iPad|iPod/i.test(u))return'iOS';if(/CrOS/i.test(u))return'Chrome OS';if(/Windows NT 10\.0/i.test(u))return'Windows 10/11';if(/Windows NT 6\.3/i.test(u))return'Windows 8.1';if(/Windows NT 6\.1/i.test(u))return'Windows 7';if(/Win/i.test(u))return'Windows';if(/Mac/i.test(u)&&!/Mobile/i.test(u))return'macOS';if(/Linux/i.test(u))return'Linux';return'Unknown OS';})(),cls:'cyan',ms:1500},
+        {text:`> OS: ${detectedOS.icon} ${detectedOS.name}`,cls:'cyan',ms:1500},
         {text:'> Loading User Profile... OK',cls:'green',ms:2000},
         {text:'> Bio: Loaded Successfully ✓',cls:'green',ms:2400},
         {text:'> All Systems Operational.',cls:'yellow',ms:2900},
       ],
-      cont: 'Press Enter / Click To Continue'
+      cont: detectedOS.isMobile ? 'Tap Screen To Continue' : 'Press Enter / Click To Continue'
     },
     vi: {
       lines: [
         {text:'> Khởi động hệ thống...',cls:'dim',ms:0},
         {text:'> Kết nối mạng... OK',cls:'green',ms:600},
         {text:'> IP: {IP}',cls:'cyan',ms:1100,isIp:true},
-        {text:'> Hệ điều hành: '+(function(){const u=navigator.userAgent;if(/Android/i.test(u))return'Android';if(/iPhone|iPad|iPod/i.test(u))return'iOS';if(/CrOS/i.test(u))return'Chrome OS';if(/Windows NT 10\.0/i.test(u))return'Windows 10/11';if(/Windows NT 6\.3/i.test(u))return'Windows 8.1';if(/Windows NT 6\.1/i.test(u))return'Windows 7';if(/Win/i.test(u))return'Windows';if(/Mac/i.test(u)&&!/Mobile/i.test(u))return'macOS';if(/Linux/i.test(u))return'Linux';return'Unknown OS';})(),cls:'cyan',ms:1500},
+        {text:`> Hệ điều hành: ${detectedOS.icon} ${detectedOS.name}`,cls:'cyan',ms:1500},
         {text:'> Tải hồ sơ người dùng... OK',cls:'green',ms:2000},
         {text:'> Bio: Đã tải xong ✓',cls:'green',ms:2400},
         {text:'> Tất cả hệ thống sẵn sàng.',cls:'yellow',ms:2900},
       ],
-      cont: 'Nhấn Enter hoặc Click để tiếp tục'
+      cont: detectedOS.isMobile ? 'Chạm vào màn hình để tiếp tục' : 'Nhấn Enter hoặc Click để tiếp tục'
     },
     ja: {
       lines: [
         {text:'> システム初期化中...',cls:'dim',ms:0},
         {text:'> ネットワーク接続... OK',cls:'green',ms:600},
         {text:'> IP: {IP}',cls:'cyan',ms:1100,isIp:true},
-        {text:'> OS: '+(function(){const u=navigator.userAgent;if(/Android/i.test(u))return'Android';if(/iPhone|iPad|iPod/i.test(u))return'iOS';if(/CrOS/i.test(u))return'Chrome OS';if(/Windows NT 10\.0/i.test(u))return'Windows 10/11';if(/Windows NT 6\.3/i.test(u))return'Windows 8.1';if(/Windows NT 6\.1/i.test(u))return'Windows 7';if(/Win/i.test(u))return'Windows';if(/Mac/i.test(u)&&!/Mobile/i.test(u))return'macOS';if(/Linux/i.test(u))return'Linux';return'Unknown OS';})(),cls:'cyan',ms:1500},
+        {text:`> OS: ${detectedOS.icon} ${detectedOS.name}`,cls:'cyan',ms:1500},
         {text:'> ユーザープロフィール読み込み... OK',cls:'green',ms:2000},
         {text:'> プロフィール: 読み込み完了 ✓',cls:'green',ms:2400},
         {text:'> 全システム正常稼働中。',cls:'yellow',ms:2900},
       ],
-      cont: 'Enterキーまたはクリックで続行'
+      cont: detectedOS.isMobile ? '画面をタップして続行' : 'Enterキーまたはクリックで続行'
     }
   };
   const activeConf = STARTUP_DICT[startupLang] || STARTUP_DICT.en;
@@ -499,22 +609,22 @@ window.TYPING_DATA = {
 })();
 
 /* ════════════════════════════════
-   TOOL CARD — Zero-Delay Peek + Mobile FAB
+   TOOL CARD — Zero-Delay Peek & Mobile Navigation Dock
 ════════════════════════════════ */
 (function(){
-  const toolCard  = document.getElementById('toolCard');
+  const toolCard    = document.getElementById('toolCard');
   const profileCard = document.getElementById('profileCard');
-  const fab       = document.getElementById('mobileFab');
-  const fabIcon   = document.getElementById('fabIcon');
-  const CARD_W    = 320;
-  const PEEK_W    = Math.ceil(CARD_W * 0.333);
-  const isMobile  = () => window.innerWidth < 768;
+  const mobClose    = document.getElementById('toolCardMobClose');
+  const mobHandle   = document.getElementById('toolCardMobHandle');
+  const CARD_W      = 320;
+  const PEEK_W      = Math.ceil(CARD_W * 0.333);
+  const isMobile    = () => window.innerWidth < 768;
 
   let isOpen = false, closeTimer = null, rafPending = false, lastMx = 0, lastMy = 0;
   let cachedPr = null, cachedTr = null;
 
   function updateCachedRects(){
-    if(!isMobile()){
+    if(!isMobile() && profileCard && toolCard){
       cachedPr = profileCard.getBoundingClientRect();
       cachedTr = toolCard.getBoundingClientRect();
     }
@@ -527,15 +637,17 @@ window.TYPING_DATA = {
     if(closeTimer){clearTimeout(closeTimer);closeTimer=null;}
     if(isOpen)return;
     isOpen=true;
-    toolCard.classList.remove('closing');
-    toolCard.style.transition='transform .26s cubic-bezier(.16,1,.3,1)';
-    toolCard.classList.add('open');
+    if(toolCard){
+      toolCard.classList.remove('closing');
+      toolCard.style.transition='transform .26s cubic-bezier(.16,1,.3,1)';
+      toolCard.classList.add('open');
+    }
     if(isMobile()){
       document.body.classList.add('tool-open');
-      fabIcon.innerHTML='<polyline points="18 15 12 9 6 15"/>';
     }
     setTimeout(updateCachedRects, 280);
   }
+
   function isFocusInTool(){
     return !!(toolCard && toolCard.contains(document.activeElement));
   }
@@ -544,13 +656,22 @@ window.TYPING_DATA = {
     if(!isOpen)return;
     if(isFocusInTool())return;
     isOpen=false;
-    toolCard.classList.add('closing');
-    toolCard.style.transition='transform .18s ease-in';
-    toolCard.classList.remove('open');
+    if(toolCard){
+      toolCard.classList.add('closing');
+      toolCard.style.transition='transform .18s ease-in';
+      toolCard.classList.remove('open');
+    }
     document.body.classList.remove('tool-open');
-    fabIcon.innerHTML='<polyline points="6 9 12 15 18 9"/>';
-    setTimeout(()=>{toolCard.classList.remove('closing');updateCachedRects();},220);
+    // Set mobile nav dock back to profile
+    document.querySelectorAll('.mob-nav-item').forEach(btn => {
+      btn.classList.toggle('active', btn.id === 'mobNavProfile');
+    });
+    setTimeout(()=>{
+      if(toolCard) toolCard.classList.remove('closing');
+      updateCachedRects();
+    },220);
   }
+
   function scheduleClose(delay){
     if(isFocusInTool())return;
     if(!isOpen||closeTimer)return;
@@ -561,6 +682,9 @@ window.TYPING_DATA = {
     },delay);
   }
   function cancelClose(){if(closeTimer){clearTimeout(closeTimer);closeTimer=null;}}
+
+  window.openToolCard = openCard;
+  window.closeToolCard = closeCard;
 
   /* ── Desktop: instant peek zone ── */
   function checkZones(){
@@ -583,35 +707,62 @@ window.TYPING_DATA = {
     if(rafPending)return;rafPending=true;requestAnimationFrame(checkZones);
   },{passive:true});
 
-  /* ── Mobile FAB ── */
-  function syncFab(){
-    if(fab) fab.style.display=isMobile()?'flex':'none';
-  }
-  syncFab();
-  window.addEventListener('resize',()=>{
-    syncFab();
-    if(!isMobile()&&isOpen)closeCard();
+  /* ── Mobile Navigation Dock Controller ── */
+  const mobDockItems = document.querySelectorAll('.mob-nav-item');
+  mobDockItems.forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const target = item.getAttribute('data-target');
+      mobDockItems.forEach(b => b.classList.remove('active'));
+      item.classList.add('active');
+
+      if (target === 'profile') {
+        closeCard();
+      } else {
+        openCard();
+        // Activate the corresponding panel tab
+        const tabEl = document.querySelector(`.tc-tab[data-panel="${target}"]`);
+        if (tabEl) tabEl.click();
+      }
+    });
   });
 
-  if(fab){
-    fab.addEventListener('click',e=>{
+  /* Mobile Sheet Close button */
+  if (mobClose) {
+    mobClose.addEventListener('click', e => {
+      e.preventDefault();
       e.stopPropagation();
-      isOpen ? closeCard() : openCard();
+      closeCard();
     });
   }
 
-  /* Close khi click ngoài (mobile) */
-  document.addEventListener('click',e=>{
-    if(!isMobile()||!isOpen)return;
-    if(!toolCard.contains(e.target)&&fab&&!fab.contains(e.target)) closeCard();
+  /* Close khi click ngoài backdrop (mobile) */
+  document.addEventListener('click', e => {
+    if (!isMobile() || !isOpen) return;
+    const mobDock = document.getElementById('mobileNavDock');
+    if (toolCard && !toolCard.contains(e.target) && (!mobDock || !mobDock.contains(e.target))) {
+      closeCard();
+    }
   });
 
-  /* Touch swipe để đóng (mobile) */
-  let touchStartX=0;
-  toolCard.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;},{passive:true});
-  toolCard.addEventListener('touchend',e=>{
-    if(e.changedTouches[0].clientX-touchStartX>60) closeCard();
-  },{passive:true});
+  /* Touch swipe down trên header để đóng sheet (mobile) */
+  let touchStartY = 0;
+  if (toolCard) {
+    toolCard.addEventListener('touchstart', e => {
+      touchStartY = e.touches[0].clientY;
+    }, {passive: true});
+    toolCard.addEventListener('touchend', e => {
+      const diffY = e.changedTouches[0].clientY - touchStartY;
+      if (diffY > 60 && touchStartY < 140) {
+        closeCard();
+      }
+    }, {passive: true});
+  }
+
+  window.addEventListener('resize', () => {
+    if (!isMobile() && isOpen) closeCard();
+  });
 })();
 
 /* ─── PARALLAX FLOAT (Event-Driven, 0% CPU Idle) ─── */
@@ -643,10 +794,34 @@ window.TYPING_DATA = {
   },{passive:true});
 })();
 
-/* ─── TAB SWITCHING ─── */
+/* ─── TAB SWITCHING & MOBILE TITLE SYNC ─── */
 (function(){
   const tabs = document.querySelectorAll('.tc-tab');
   const panels = document.querySelectorAll('.tc-panel');
+  const mobTitle = document.getElementById('toolCardMobTitle');
+
+  const TITLE_MAP = {
+    panelBypass: '⚡ Bypass Engine',
+    panelCreateVPS: '➕ Create VPS 6H',
+    panelManage: '🔑 Token Manager',
+    panelProjects: '🚀 Featured Projects',
+    panelTools: '🛠️ Dev Cyber Toolkit',
+    panelGuestbook: '💬 Cyber Guestbook',
+    panelAi: '🤖 Nguyễn Duy AI Twin',
+    panelGame: '🎮 Echo Hunter Mini-Game'
+  };
+
+  const MOB_NAV_MAP = {
+    panelBypass: 'mobNavBypass',
+    panelCreateVPS: 'mobNavTools',
+    panelManage: 'mobNavTools',
+    panelProjects: 'mobNavTools',
+    panelTools: 'mobNavTools',
+    panelGuestbook: 'mobNavChat',
+    panelAi: 'mobNavAi',
+    panelGame: 'mobNavGame'
+  };
+
   tabs.forEach(tab=>{
     tab.addEventListener('click',()=>{
       tabs.forEach(t=>t.classList.remove('active'));
@@ -655,6 +830,18 @@ window.TYPING_DATA = {
       panels.forEach(p=>{
         p.style.display = p.id===target ? 'block' : 'none';
       });
+
+      if(mobTitle && TITLE_MAP[target]) {
+        mobTitle.textContent = TITLE_MAP[target];
+      }
+
+      // Sync mobile bottom dock if tool card is open
+      const mobNavId = MOB_NAV_MAP[target];
+      if(mobNavId) {
+        document.querySelectorAll('.mob-nav-item').forEach(btn => {
+          btn.classList.toggle('active', btn.id === mobNavId);
+        });
+      }
     });
   });
 })();
@@ -3338,6 +3525,12 @@ Respond accurately with this ground truth knowledge:
       donateTxt: 'Support me 😊: <strong>1060830747</strong>',
       donateBtn: 'PLSDONET',
       mobileFabLabel: 'Tool',
+      mobLblProfile: 'Profile',
+      mobLblBypass: 'Bypass',
+      mobLblChat: 'Chat',
+      mobLblAi: 'AI Bot',
+      mobLblTools: 'Tools',
+      mobLblGame: 'Game',
       slTitle: '✅ Supported Bypass Links'
     },
 
@@ -3473,6 +3666,12 @@ Respond accurately with this ground truth knowledge:
       donateTxt: 'Donet me 😊: <strong>1060830747</strong>',
       donateBtn: 'PLSDONET',
       mobileFabLabel: 'Tool',
+      mobLblProfile: 'Hồ Sơ',
+      mobLblBypass: 'Bypass',
+      mobLblChat: 'Lưu Bút',
+      mobLblAi: 'AI Bot',
+      mobLblTools: 'Tiện Ích',
+      mobLblGame: 'Mini Game',
       slTitle: '✅ Link được hỗ trợ bypass'
     },
 
@@ -3608,6 +3807,12 @@ Respond accurately with this ground truth knowledge:
       donateTxt: '応援・ドネーション 😊: <strong>1060830747</strong>',
       donateBtn: 'PLSDONET',
       mobileFabLabel: 'ツール',
+      mobLblProfile: 'プロフィール',
+      mobLblBypass: 'バイパス',
+      mobLblChat: 'チャット',
+      mobLblAi: 'AIボット',
+      mobLblTools: 'ツール',
+      mobLblGame: 'ゲーム',
       slTitle: '✅ 対応バイパスリンク一覧'
     }
   };
@@ -3843,6 +4048,14 @@ Respond accurately with this ground truth knowledge:
     if(slHdr) slHdr.textContent = dict.slTitle;
     const fab = document.getElementById('mobileFab');
     if(fab) fab.setAttribute('aria-label', dict.mobileFabLabel);
+
+    // Mobile Navigation Dock Labels
+    safeSet('mobLblProfile', dict.mobLblProfile);
+    safeSet('mobLblBypass', dict.mobLblBypass);
+    safeSet('mobLblChat', dict.mobLblChat);
+    safeSet('mobLblAi', dict.mobLblAi);
+    safeSet('mobLblTools', dict.mobLblTools);
+    safeSet('mobLblGame', dict.mobLblGame);
   }
 
   // Initial detection: Default strictly to ENG for newbie visitors!

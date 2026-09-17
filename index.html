@@ -32,7 +32,7 @@
         <span class="tdot tdot-r"></span>
         <span class="tdot tdot-y"></span>
         <span class="tdot tdot-g"></span>
-        <span class="term-title-bar">system.exe — bash</span>
+        <span class="term-title-bar" id="termTitleBar">system.exe — bash</span>
       </div>
       <div class="term-body">
         <pre class="ascii-art" id="asciiArt"></pre>
@@ -166,6 +166,13 @@
 
       <!-- TOOL CARD -->
       <div class="tool-card" id="toolCard">
+        <!-- MOBILE SHEET HEADER & DRAG HANDLE -->
+        <div class="tool-card-mob-hdr" id="toolCardMobHdr">
+          <div class="tool-card-mob-handle" id="toolCardMobHandle"></div>
+          <div class="tool-card-mob-title" id="toolCardMobTitle">⚡ Cyber Tools</div>
+          <button class="tool-card-mob-close" id="toolCardMobClose" aria-label="Close">✕</button>
+        </div>
+
         <div class="card-hdr tool-hdr" id="toolHdr">⚡ Tools &amp; Utilities</div>
 
         <!-- TABS (Icon-only taskbar) -->
@@ -709,15 +716,33 @@
 
     </div>
 
-    <!-- MOBILE FAB — mũi tên xuống, nhấn mở Tool Card -->
-    <button class="mobile-fab" id="mobileFab" aria-label="Mở tool">
-      <div class="fab-ring"></div>
-      <div class="fab-ring fab-r2"></div>
-      <svg class="fab-icon" id="fabIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <polyline points="6 9 12 15 18 9"/>
-      </svg>
-      <span class="fab-lbl">Tool</span>
-    </button>
+    <!-- MOBILE CYBER NAVIGATION DOCK (Thumb-friendly 6-item bar) -->
+    <nav class="mobile-nav-dock" id="mobileNavDock" aria-label="Mobile Navigation">
+      <button class="mob-nav-item active" id="mobNavProfile" data-target="profile" aria-label="Profile">
+        <span class="mob-nav-icon">👤</span>
+        <span class="mob-nav-label" id="mobLblProfile">Profile</span>
+      </button>
+      <button class="mob-nav-item" id="mobNavBypass" data-target="panelBypass" aria-label="Bypass">
+        <span class="mob-nav-icon">⚡</span>
+        <span class="mob-nav-label" id="mobLblBypass">Bypass</span>
+      </button>
+      <button class="mob-nav-item" id="mobNavChat" data-target="panelGuestbook" aria-label="Chat">
+        <span class="mob-nav-icon">💬</span>
+        <span class="mob-nav-label" id="mobLblChat">Chat</span>
+      </button>
+      <button class="mob-nav-item" id="mobNavAi" data-target="panelAi" aria-label="AI Bot">
+        <span class="mob-nav-icon">🤖</span>
+        <span class="mob-nav-label" id="mobLblAi">AI Bot</span>
+      </button>
+      <button class="mob-nav-item" id="mobNavTools" data-target="panelTools" aria-label="Tools">
+        <span class="mob-nav-icon">🛠️</span>
+        <span class="mob-nav-label" id="mobLblTools">Tools</span>
+      </button>
+      <button class="mob-nav-item" id="mobNavGame" data-target="panelGame" aria-label="Game">
+        <span class="mob-nav-icon">🎮</span>
+        <span class="mob-nav-label" id="mobLblGame">Game</span>
+      </button>
+    </nav>
   </div>
 
   <!-- SUPPORTED LINKS PANEL -->

@@ -656,23 +656,9 @@ body.perf-mode .tool-card{
   transition:transform .12s cubic-bezier(0,0,.2,1) !important;
 }
 
-/* ══ MOBILE ══ */
+/* ══ MOBILE BASE HELPERS ══ */
 @media(max-width:767px){
-  :root{--cw:min(90vw,340px);}
-  body{overflow:hidden;}
-  .stage{align-items:flex-start;padding:105px 0 20px !important;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
-  .scene{width:var(--cw);}
-  .tool-card{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;height:auto!important;max-height:70vh!important;border-radius:var(--r) var(--r) 0 0!important;transform:translateY(100%)!important;transition:transform .35s cubic-bezier(.25,.46,.45,.94)!important;z-index:30!important;overflow-y:auto;}
-  .tool-card.open{transform:translateY(0)!important;}
-  .tool-card::after{display:none;}
-  .profile-card{width:var(--cw);max-height:none;overflow:visible;}
-  .p-inner{max-height:none;padding:10px 16px 80px;}
-  .mobile-tap{display:flex;}
-  body.tool-open::before{content:'';position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:25;}
-  .music-player{top:12px;left:12px;right:12px;width:auto;max-width:none;padding:10px 12px;}
-  .hud-top-left{top:auto;bottom:18px;left:16px;gap:6px;}
-  .fps-hud-box{padding:5px 9px;font-size:.7rem;}
-  .perf-toggle-btn{padding:6px 11px;font-size:.64rem;}
+  :root{--cw:100%;}
   .sl-grid{grid-template-columns:1fr;}
   .sl-cat-full{grid-column:1;}
 }
@@ -988,107 +974,355 @@ body.perf-mode .tool-card{
 /* Ẩn hết mobile-tap cũ nếu còn */
 .mobile-tap { display: none !important; }
 
-.mobile-fab {
+/* ══════════════════════════════════════════════════
+   MOBILE CYBER NAVIGATION DOCK & SMARTPHONE UI
+   Fluid, Native App UX, 60fps Butter Smooth
+   ══════════════════════════════════════════════════ */
+.mobile-nav-dock,
+.tool-card-mob-hdr {
   display: none;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 8000;
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  border: none;
-  background: linear-gradient(135deg,#7c6fff,#ff6b9d);
-  color: #fff;
-  cursor: pointer;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  box-shadow: 0 4px 20px rgba(124,111,255,.5);
-  transition: transform .2s, box-shadow .2s;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-.mobile-fab:active { transform: scale(.92); box-shadow: 0 2px 10px rgba(124,111,255,.3); }
-@media (max-width: 767px) { .mobile-fab { display: flex; } }
-
-.fab-ring {
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,.25);
-  animation: fabPulse 2s ease-in-out infinite;
-  pointer-events: none;
-}
-.fab-r2 { animation-delay: 1s; inset: -6px; opacity: .4; }
-@keyframes fabPulse {
-  0%,100% { transform: scale(1); opacity: .6; }
-  50%      { transform: scale(1.1); opacity: .2; }
-}
-.fab-icon { width: 22px; height: 22px; transition: transform .25s; }
-.fab-lbl {
-  font-size: .6rem;
-  font-weight: 700;
-  letter-spacing: .04em;
-  line-height: 1;
-  margin-top: -2px;
 }
 
-/* ══ MOBILE: Tool card slide up from bottom ══ */
 @media (max-width: 767px) {
+  :root {
+    --cw: 100%;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  body.tool-open {
+    overflow: hidden;
+  }
+
+  /* Stage & Scene: Fluid width for modern phones, thumb-scroll friendly */
+  .stage {
+    align-items: flex-start;
+    padding: 56px 0 76px !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+
+  .scene {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+
+  .profile-card {
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    overflow: visible;
+    border-radius: 18px;
+    box-sizing: border-box;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65), 0 0 18px rgba(124, 111, 255, 0.12);
+  }
+
+  .p-inner {
+    max-height: none;
+    padding: 12px 14px 28px;
+  }
+
+  /* Top HUD: Compact Cyber Status Bar */
+  .hud-top-left {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    right: auto;
+    bottom: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    z-index: 8400;
+  }
+
+  .fps-hud-box {
+    padding: 4px 8px;
+    font-size: 0.66rem;
+    gap: 5px;
+    border-radius: 10px;
+  }
+
+  .lang-switch-wrap {
+    padding: 3px 6px;
+    gap: 4px;
+    border-radius: 10px;
+  }
+
+  .lang-btn {
+    padding: 3px 6px;
+    font-size: 0.62rem;
+  }
+
+  .perf-toggle-btn {
+    padding: 4px 8px;
+    font-size: 0.62rem;
+    border-radius: 10px;
+  }
+
+  .cli-toggle-btn {
+    display: none !important;
+  }
+
+  /* Floating Music Player: Compact Cyber Pill */
+  .music-player {
+    position: fixed;
+    top: 8px;
+    right: 8px;
+    left: auto;
+    bottom: auto;
+    width: auto;
+    max-width: 160px;
+    padding: 6px 10px;
+    border-radius: 14px;
+    gap: 6px;
+    z-index: 8400;
+  }
+
+  .music-player .mp-art-wrap {
+    width: 32px;
+    height: 32px;
+  }
+
+  .music-player .mp-marquee-wrap {
+    font-size: 0.66rem;
+    max-width: 75px;
+  }
+
+  .music-player .mp-timeline-wrap,
+  .music-player .mp-vol-wrap,
+  .music-player .mp-bottom-row,
+  .music-player .mp-hotkey-tip {
+    display: none !important;
+  }
+
+  .music-player .mp-controls {
+    gap: 4px;
+  }
+
+  .music-player .mp-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .music-player .mp-btn.mp-repeat-btn,
+  .music-player .mp-btn#mpMute {
+    display: none !important;
+  }
+
+  /* Mobile Cyber Navigation Dock */
+  .mobile-nav-dock {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(10, 9, 24, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(124, 111, 255, 0.32);
+    box-shadow: 0 -4px 26px rgba(0, 0, 0, 0.75), 0 0 16px rgba(124, 111, 255, 0.15);
+    z-index: 8500;
+    align-items: center;
+    justify-content: space-around;
+    box-sizing: content-box;
+  }
+
+  .mob-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.55);
+    cursor: pointer;
+    padding: 6px 0;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    position: relative;
+  }
+
+  .mob-nav-icon {
+    font-size: 1.12rem;
+    line-height: 1;
+    transition: transform 0.2s ease;
+  }
+
+  .mob-nav-label {
+    font-size: 0.58rem;
+    font-family: var(--font-mono, monospace);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+  }
+
+  .mob-nav-item:active .mob-nav-icon {
+    transform: scale(0.88);
+  }
+
+  .mob-nav-item.active {
+    color: #00f0ff;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+  }
+
+  .mob-nav-item.active .mob-nav-icon {
+    transform: translateY(-2px) scale(1.1);
+  }
+
+  .mob-nav-item.active .mob-nav-label {
+    color: #00f0ff;
+    font-weight: 700;
+  }
+
+  .mob-nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    background: linear-gradient(90deg, #00f0ff, #7c6fff);
+    box-shadow: 0 0 8px #00f0ff;
+    border-radius: 2px;
+  }
+
+  /* Tool Card Mobile Sheet Drawer */
   .tool-card {
     position: fixed !important;
     left: 0 !important;
     right: 0 !important;
-    bottom: 0 !important;
-    top: auto !important;
+    bottom: 60px !important;
+    top: 48px !important;
     width: 100% !important;
-    max-height: 75vh !important;
+    max-height: calc(100vh - 108px) !important;
     border-radius: 20px 20px 0 0 !important;
-    transform: translateY(100%) !important;
-    transition: transform .35s cubic-bezier(.25,.46,.45,.94) !important;
-    z-index: 7000 !important;
+    transform: translateY(105%) !important;
+    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    z-index: 8000 !important;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    /* Drag handle area */
-    padding-top: 6px;
+    overflow: hidden !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 212, 255, 0.16) !important;
+    background: rgba(10, 9, 24, 0.97) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid rgba(0, 212, 255, 0.32) !important;
+    border-bottom: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-  .tool-card::before {
-    content: '';
-    display: block;
-    width: 40px;
-    height: 4px;
-    background: rgba(255,255,255,.2);
-    border-radius: 2px;
-    margin: 0 auto 6px;
-    flex-shrink: 0;
-  }
+
   .tool-card.open {
     transform: translateY(0) !important;
-    box-shadow: 0 -8px 40px rgba(0,0,0,.6) !important;
   }
-  /* Khi tool đóng, stage không bị ẩnh hưởng */
-  .stage {
-    padding-bottom: 80px; /* chỗ cho FAB */
+
+  .tool-card::before {
+    display: none !important;
   }
-  /* Khi tool open, overlay mờ nhẹ phía sau */
+
+  .tool-card-mob-hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    flex-shrink: 0;
+    background: rgba(15, 14, 32, 0.92);
+  }
+
+  .tool-card-mob-handle {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.28);
+    border-radius: 3px;
+    cursor: grab;
+  }
+
+  .tool-card-mob-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    font-family: var(--font-mono, monospace);
+    color: #00f0ff;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tool-card-mob-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+    touch-action: manipulation;
+  }
+
+  .tool-card-mob-close:active {
+    transform: scale(0.9);
+    background: rgba(255, 77, 77, 0.3);
+    border-color: #ff4d4d;
+  }
+
+  .tool-card .card-hdr.tool-hdr {
+    display: none !important;
+  }
+
+  .tool-card .tc-panel {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 24px;
+  }
+
+  /* Backdrop blur when mobile tool sheet is open */
   body.tool-open::after {
     content: '';
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.35);
-    z-index: 6900;
-    pointer-events: none;
+    background: rgba(0, 0, 0, 0.52);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 7900;
+    pointer-events: auto;
   }
 }
 
-/* ══ Desktop: đảm bảo tool card peek vẫn đúng ══ */
+/* ══ Desktop: Preserves original desktop layout ══ */
 @media (min-width: 768px) {
-  .mobile-fab { display: none !important; }
+  .mobile-nav-dock { display: none !important; }
+  .tool-card-mob-hdr { display: none !important; }
   .tool-card {
-    /* giữ lại style desktop cũ */
     max-height: calc(100vh - 90px) !important;
     overflow-y: auto !important;
   }
