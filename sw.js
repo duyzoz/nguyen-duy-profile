@@ -1,44 +1,16 @@
-/* ══════════════════════════════════════════════════════
-   Service Worker v25 — Nguyễn Duy Profile (Network First)
-   Purges stale caches immediately to guarantee live updates
-══════════════════════════════════════════════════════ */
-const CACHE_NAME = 'nd-profile-v25';
-
-self.addEventListener('install', e => {
+/* Service Worker Cache Purger */
+self.addEventListener('install', function(e) {
   self.skipWaiting();
 });
 
-self.addEventListener('activate', e => {
+self.addEventListener('activate', function(e) {
   e.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener('fetch', e => {
-  // Always fetch fresh network first; never stale cache for code/data
-  if (e.request.method !== 'GET') return;
-  const url = e.request.url;
-  if (url.includes('api.lanyard.rest') || url.includes('.mp3') || url.includes('api.ipify.org') || url.includes('/cdn-cgi/')) {
-    return;
-  }
-
-  e.respondWith(
-    fetch(e.request)
-      .then(res => {
-        if (res && res.status === 200) {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
-        }
-        return res;
-      })
-      .catch(() => caches.match(e.request))
+    caches.keys().then(function(keys) {
+      return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+    }).then(function() {
+      return self.registration.unregister();
+    }).then(function() {
+      return self.clients.claim();
+    })
   );
 });

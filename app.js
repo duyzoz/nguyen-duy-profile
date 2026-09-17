@@ -2000,7 +2000,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
 ══════════════════════════════════════════ */
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    navigator.serviceWorker.getRegistrations().then(function(regs){ for(var i=0;i<regs.length;i++) regs[i].unregister(); });
   });
 }
 
@@ -2797,7 +2797,7 @@ if('serviceWorker' in navigator){
         if(keyModal) keyModal.style.display = 'none';
         const provider = detectAiProvider(val);
         const pName = provider === 'gemini' ? 'Google Gemini' : (provider === 'groq' ? 'Groq' : 'OpenAI');
-        appendMessage(`✨ <em>AI API Key saved! Live AI (${pName}) is now active and ready.</em>`, false);
+        appendMessage(`✨ <em>AI API Key saved! Live AI [${pName} v25] is now active and ready.</em>`, false);
       } else {
         localStorage.removeItem(LS_AI_KEY);
         syncKeyUI();
