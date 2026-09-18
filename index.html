@@ -26,7 +26,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" href="assets/avatar.png" />
   <link rel="apple-touch-icon" href="assets/avatar.png" />
-  <link rel="stylesheet" href="style.css?v=20260917_v40" />
+  <link rel="stylesheet" href="style.css?v=20260917_v42" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -292,34 +292,110 @@
           </div>
         </div>
 
-        <!-- PANEL: TẠO VPS -->
+        <!-- PANEL: TẠO VPS (TAILSCALE RDP CLOUD) -->
         <div class="tc-panel" id="panelCreateVPS" style="display:none">
           <div class="t-inner">
             <div class="t-block">
-              <div class="t-title" id="vpsTitle">🖥️ Create New VPS</div>
-              <div class="t-sub" id="vpsSub">Deploy 6-hour free cloud VPS via GitHub Actions</div>
-              <div class="vps-scope-note" id="vpsScopeNote">ℹ️ Token requires scopes: <code>repo</code> + <code>workflow</code></div>
-              <div class="vps-form">
-                <label class="vps-label" id="vpsTokenLabel">GitHub Token</label>
-                <input id="vpsToken" class="bp-input" type="password" placeholder="— Auto-filled from Bypass tab —" readonly />
-                <button class="bp-btn" id="vpsCreateBtn" style="margin-top:12px">
-                  <span class="bp-txt">🚀 Deploy VPS Now</span>
-                  <span class="bp-spin" style="display:none"><i></i><i></i><i></i></span>
-                </button>
+              <div class="t-title-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                <span class="t-title" id="vpsTitle">🖥️ Tailscale Cloud VPS</span>
+                <span class="ts-badge-pill">🔒 Mesh VPN</span>
               </div>
-              <!-- Hiển thị sau khi tạo xong -->
-              <div class="vps-ready-box" id="vpsReadyBox" style="display:none">
-                <a class="vps-access-btn" id="vpsAccessBtn" href="#" target="_blank" rel="noopener">🖥️ Connect Now</a>
-                <div class="vps-pass-notice">⚠️ DEFAULT PASSWORD: <strong>Admin@123</strong></div>
-                <div class="vps-countdown-wrap">
-                  <span class="vcd-label" id="vcdLabel">⏳ Expires in</span>
-                  <span class="vcd-timer" id="vpsCountdown">6:00:00</span>
+              <div class="t-sub" id="vpsSub">Khởi tạo Windows RDP an toàn kết nối qua mạng nội bộ ảo Tailscale</div>
+
+              <!-- HƯỚNG DẪN 4 BƯỚC SỬ DỤNG TAILSCALE -->
+              <div class="ts-steps-card">
+                <div class="ts-step-item">
+                  <div class="ts-step-num">1</div>
+                  <div class="ts-step-body">
+                    <span><strong>Tải Tailscale:</strong> Cài đặt trên PC hoặc điện thoại</span>
+                    <a href="https://tailscale.com/download" target="_blank" rel="noopener" class="ts-link-btn">📥 Tải App</a>
+                  </div>
+                </div>
+                <div class="ts-step-item">
+                  <div class="ts-step-num">2</div>
+                  <div class="ts-step-body">
+                    <span><strong>Tạo Auth Key:</strong> Chọn <em>Reusable</em> &amp; Generate Key</span>
+                    <a href="https://login.tailscale.com/admin/settings/keys" target="_blank" rel="noopener" class="ts-link-btn">🔑 Lấy Key</a>
+                  </div>
+                </div>
+                <div class="ts-step-item">
+                  <div class="ts-step-num">3</div>
+                  <div class="ts-step-body">
+                    <span><strong>Nhập Khóa &amp; Token:</strong> Điền Auth Key &amp; GitHub Token</span>
+                  </div>
+                </div>
+                <div class="ts-step-item">
+                  <div class="ts-step-num">4</div>
+                  <div class="ts-step-body">
+                    <span><strong>Remote Desktop:</strong> Kết nối qua IP Tailscale &amp; Mật khẩu</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FORM CẤU HÌNH -->
+              <div class="vps-form">
+                <label class="vps-label" id="vpsTokenLabel">GitHub Token (Quyền <code>repo</code> + <code>workflow</code>)</label>
+                <input id="vpsToken" class="bp-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+
+                <label class="vps-label" style="margin-top:8px">Tailscale Auth Key (Reusable)</label>
+                <div class="key-row" style="display:flex;gap:6px">
+                  <input id="vpsTailscaleKey" class="bp-input" type="password" placeholder="tskey-auth-kxxxxxxxxxxxxxx" autocomplete="off" />
+                  <button class="key-save-btn" id="saveTsKeyBtn" title="Lưu Auth Key">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px">
+                      <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                      <polyline points="17 21 17 13 7 13 7 21"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="vps-btn-group" style="margin-top:12px;display:flex;gap:8px">
+                  <button class="bp-btn" id="vpsCreateBtn" style="flex:1">
+                    <span class="bp-txt">🚀 Khởi Tạo VPS</span>
+                    <span class="bp-spin" style="display:none"><i></i><i></i><i></i></span>
+                  </button>
+                  <button class="bp-btn bp-btn-alt" id="copyWorkflowBtn" type="button" style="width:auto;padding:0 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.18);border-radius:10px;cursor:pointer;color:#a5b4fc;font-size:.78rem;font-weight:600" title="Sao chép file YAML Workflow">
+                    📋 Copy Workflow
+                  </button>
+                </div>
+              </div>
+
+              <!-- THÔNG TIN KẾT NỐI SAU KHI SẴN SÀNG -->
+              <div class="vps-ready-box" id="vpsReadyBox" style="display:none;flex-direction:column;gap:10px;margin-top:12px">
+                <div class="vps-ready-header" style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="color:#34d399;font-weight:700;font-size:.82rem">🎉 MÁY CHỦ SẴN SÀNG!</span>
+                  <div class="vps-countdown-wrap">
+                    <span class="vcd-label">⏳ Còn:</span>
+                    <span class="vcd-timer" id="vpsCountdown">5:40:00</span>
+                  </div>
+                </div>
+
+                <div class="vps-cred-card">
+                  <div class="vps-cred-row">
+                    <span class="cred-label">🌐 IP Tailscale:</span>
+                    <code class="cred-val" id="vpsIpVal">Đang lấy...</code>
+                    <button class="cred-copy-btn" data-copy="vpsIpVal" type="button">Copy</button>
+                  </div>
+                  <div class="vps-cred-row">
+                    <span class="cred-label">👤 Tài khoản:</span>
+                    <code class="cred-val" id="vpsUserVal">AISTV-PREMIUM</code>
+                    <button class="cred-copy-btn" data-copy="vpsUserVal" type="button">Copy</button>
+                  </div>
+                  <div class="vps-cred-row">
+                    <span class="cred-label">🔐 Mật khẩu:</span>
+                    <code class="cred-val" id="vpsPassVal">Đang tạo...</code>
+                    <button class="cred-copy-btn" data-copy="vpsPassVal" type="button">Copy</button>
+                  </div>
+                </div>
+
+                <div class="vps-guide-tip">
+                  💡 <strong>Cách kết nối:</strong> Mở <em>Remote Desktop</em> (Windows: <code>mstsc</code> hoặc app di động) &rarr; Nhập <strong>IP Tailscale</strong> &rarr; Nhập <strong>User</strong> &amp; <strong>Mật khẩu</strong>!
                 </div>
               </div>
             </div>
+
             <div class="t-divider"></div>
             <div class="vps-status-box" id="vpsStatusBox" style="display:none">
-              <div class="vps-status-title" id="vpsStatusTitle">⚡ Status</div>
+              <div class="vps-status-title" id="vpsStatusTitle">⚡ Trạng Thái</div>
               <div class="vps-status-msg" id="vpsStatusMsg"></div>
             </div>
           </div>
@@ -530,7 +606,7 @@
               <!-- API Key Modal / Popover -->
               <div class="ai-key-modal" id="aiKeyModal" style="display:none">
                 <div class="ai-key-modal-inner">
-                  <div class="ai-key-modal-title" id="aiKeyTitle">🔑 Cài Đặt AI API Key (Google Gemini v40)</div>
+                  <div class="ai-key-modal-title" id="aiKeyTitle">🔑 Cài Đặt AI API Key (Google Gemini v42)</div>
                   <div class="ai-key-modal-desc" id="aiKeyDesc">
                     Dán API Key Google Gemini (từ Google AI Studio - Free Tier, bắt đầu bằng AIza... hoặc AQ...) hoặc Groq / OpenAI để trò chuyện với AI thật 100%!
                   </div>
@@ -852,6 +928,6 @@
     </div>
   </div>
 
-  <script src="app_nd.js?v=20260917_v40"></script>
+  <script src="app_nd.js?v=20260917_v42"></script>
 </body>
 </html>
