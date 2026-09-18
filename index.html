@@ -108,10 +108,10 @@
     </button>
   </div>
 
-    <!-- MUSIC PLAYER — PEAK CYBER VINYL DECK (Wave 46) -->
+      <!-- MUSIC PLAYER — PEAK CYBER VINYL DECK -->
   <div class="music-player" id="musicPlayer">
-    <!-- Spinning Vinyl Disc & Holographic Album Art -->
-    <div class="mp-vinyl-wrap" id="mpVinylWrap" title="Nhấp để mở rộng đĩa nhạc Cyber">
+    <!-- Spinning Vinyl Disc (On mobile: this is the ONLY thing visible in top right!) -->
+    <div class="mp-vinyl-wrap" id="mpVinylWrap" title="Đĩa nhạc Cyber (Chạm để mở bảng điều khiển)">
       <div class="mp-vinyl-disc" id="mpVinylDisc">
         <div class="mp-vinyl-grooves"></div>
         <div class="mp-vinyl-label">
@@ -122,26 +122,7 @@
       <div class="mp-art-glow" id="mpSpin"></div>
     </div>
 
-    <!-- Mobile Dynamic Island Capsule Bar (Visible on mobile header) -->
-    <div class="mp-mob-island-bar" id="mpMobIslandBar">
-      <div class="mp-mob-island-info">
-        <span class="mp-mob-note">🎵</span>
-        <div class="mp-mob-marquee-wrap">
-          <span class="mp-mob-title" id="mpMobTitle">2IN1 - Người Đã Yêu Ai</span>
-        </div>
-        <div class="mp-eq mp-mob-eq" id="mpMobEq">
-          <span class="mp-eq-bar"></span>
-          <span class="mp-eq-bar"></span>
-          <span class="mp-eq-bar"></span>
-        </div>
-      </div>
-      <button class="mp-btn mp-play mp-mob-island-play cyber-sound-btn" id="mpMobPlayBtn" type="button" aria-label="Phát nhạc">
-        <svg id="mpMobPlayIcon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      </button>
-      <button class="mp-btn mp-mob-expand cyber-sound-btn" id="mpMobExpandBtn" type="button" aria-label="Mở rộng">▲</button>
-    </div>
-
-    <!-- Main Cyber Player Deck -->
+    <!-- Main Player Deck (Desktop: always visible; Mobile: opens as a sleek rounded popup card on vinyl click) -->
     <div class="mp-info" id="mpDeckInfo">
       <div class="mp-header-row">
         <div class="mp-badge-tag"><span class="mp-badge-dot"></span>CYBER VINYL DECK</div>
@@ -449,12 +430,7 @@
               <div class="vps-status-msg" id="vpsStatusMsg"></div>
             </div>
 
-            <!-- WAVE 44: MOBILE IN-APP LIVE LOG DRAWER TOGGLE -->
-            <button type="button" id="mobLogDrawerBtn" class="mob-log-drawer-btn cyber-sound-btn" style="display:none">
-              <span class="mld-icon">📜</span>
-              <span>Xem Dòng Chảy Startup.log Trực Tiếp</span>
-              <span class="mld-arrow">▲</span>
-            </button>
+            
           </div>
         </div>
 
@@ -930,9 +906,9 @@
         <span class="mob-nav-icon">👤</span>
         <span class="mob-nav-label" id="mobLblProfile">Hồ Sơ</span>
       </button>
-      <button class="mob-nav-item cyber-sound-btn" id="mobNavBypass" data-target="panelBypass" aria-label="Bypass">
-        <span class="mob-nav-icon">⚡</span>
-        <span class="mob-nav-label" id="mobLblBypass">Bypass</span>
+      <button class="mob-nav-item cyber-sound-btn" id="mobNavStartut" data-target="panelBypass" aria-label="Startut">
+        <span class="mob-nav-icon">📜</span>
+        <span class="mob-nav-label" id="mobLblStartut">Startut</span>
       </button>
       <button class="mob-nav-item cyber-sound-btn" id="mobNavVps" data-target="panelCreateVPS" aria-label="Tạo VPS">
         <span class="mob-nav-icon">🖥️</span>
@@ -952,60 +928,31 @@
       </button>
     </nav>
 
-    <!-- WAVE 42: MOBILE QUICK ACTION FAB & MENU -->
+    <!-- MOBILE THEME PALETTE FAB & MENU -->
     <div class="mob-fab-container" id="mobFabContainer">
       <div class="mob-fab-menu" id="mobFabMenu">
-        <button class="mob-fab-item cyber-sound-btn" id="fabCopyCombo" type="button" title="Sao chép toàn bộ IP & Mật khẩu">
-          <span class="mfi-icon">📋</span>
-          <span class="mfi-txt">Chép IP &amp; Pass</span>
+        <div class="mfm-header">🎨 BẢNG MÀU CYBER</div>
+        <button class="mob-fab-item cyber-sound-btn" id="themeCyan" data-theme="default" type="button">
+          <span class="mfi-icon">💎</span>
+          <span class="mfi-txt">Cyan Neon (Gốc)</span>
         </button>
-        <button class="mob-fab-item cyber-sound-btn" id="fabPing" type="button" title="Kiểm tra độ trễ mạng Tailscale">
-          <span class="mfi-icon">⚡</span>
-          <span class="mfi-txt">Ping Tailscale</span>
+        <button class="mob-fab-item cyber-sound-btn" id="themeMatrix" data-theme="matrix" type="button">
+          <span class="mfi-icon">🟢</span>
+          <span class="mfi-txt">Matrix Hacker</span>
         </button>
-        <button class="mob-fab-item cyber-sound-btn" id="fabTheme" type="button" title="Đổi màu sắc Cyber">
-          <span class="mfi-icon">🎨</span>
-          <span class="mfi-txt">Đổi Theme</span>
+        <button class="mob-fab-item cyber-sound-btn" id="themeAmber" data-theme="amber" type="button">
+          <span class="mfi-icon">🟡</span>
+          <span class="mfi-txt">Cyber Amber 2077</span>
         </button>
-        <button class="mob-fab-item cyber-sound-btn" id="fabSaver" type="button" title="Bật/Tắt Tiết kiệm pin & 4G">
-          <span class="mfi-icon">🔋</span>
-          <span class="mfi-txt" id="fabSaverTxt">Tiết Kiệm Pin</span>
+        <button class="mob-fab-item cyber-sound-btn" id="themeSynthwave" data-theme="synthwave" type="button">
+          <span class="mfi-icon">🟣</span>
+          <span class="mfi-txt">Synthwave Neon</span>
         </button>
       </div>
-      <button class="mob-fab-btn cyber-sound-btn" id="mobFabBtn" type="button" aria-label="Menu Thao Tác Nhanh" title="Thao tác nhanh">
-        <span class="mfb-icon" id="mobFabIcon">⚡</span>
+      <button class="mob-fab-btn cyber-sound-btn" id="mobFabBtn" type="button" aria-label="Bảng Màu Cyber" title="Đổi giao diện">
+        <span class="mfb-icon" id="mobFabIcon">🎨</span>
       </button>
     </div>
-
-    <!-- WAVE 43: PWA MOBILE INSTALL BANNER -->
-    <div class="pwa-install-banner" id="pwaInstallBanner" style="display:none">
-      <div class="pwa-banner-content">
-        <span class="pwa-banner-icon">📱</span>
-        <div class="pwa-banner-text">
-          <span class="pwa-banner-title">Cài Đặt Web Profile</span>
-          <span class="pwa-banner-sub">Thêm vào màn hình chính để mở nhanh như App</span>
-        </div>
-      </div>
-      <div class="pwa-banner-actions">
-        <button class="pwa-install-btn cyber-sound-btn" id="pwaInstallBtn" type="button">Cài Đặt</button>
-        <button class="pwa-dismiss-btn cyber-sound-btn" id="pwaDismissBtn" type="button" aria-label="Đóng">✕</button>
-      </div>
-    </div>
-
-    <!-- WAVE 44: MOBILE LIVE LOG DRAWER OVERLAY -->
-    <div class="mob-log-drawer" id="mobLogDrawer" style="display:none">
-      <div class="mob-log-hdr">
-        <div class="mlh-title">
-          <span class="mlh-dot"></span>
-          <span>startup.log (Live Monitor)</span>
-        </div>
-        <button type="button" class="mob-log-close cyber-sound-btn" id="mobLogClose">✕</button>
-      </div>
-      <div class="mob-log-body" id="mobLogBody">
-        <div class="mob-log-line info">[SYSTEM] Đang lắng nghe luồng khởi tạo VPS...</div>
-      </div>
-    </div>
-  </div>
 
   <!-- SUPPORTED LINKS PANEL -->
   <div class="sl-backdrop" id="slBackdrop"></div>

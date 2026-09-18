@@ -880,7 +880,7 @@ window.TYPING_DATA = {
   };
 
   const MOB_NAV_MAP = {
-    panelBypass: 'mobNavBypass',
+    panelBypass: 'mobNavStartut',
     panelCreateVPS: 'mobNavVps',
     panelManage: 'mobNavManage',
     panelProjects: 'mobNavProfile',
@@ -5937,4 +5937,81 @@ Respond accurately with this ground truth knowledge:
       closeModal();
     }
   });
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE VINYL CLICK-TO-OPEN POPUP DECK CONTROLLER
+   ═══════════════════════════════════════════════════════════ */
+(function() {
+  const isMobile = () => window.innerWidth < 768;
+  const playerCard = document.getElementById('musicPlayer');
+  const modalClose = document.getElementById('mpModalClose');
+
+  if (playerCard) {
+    playerCard.addEventListener('click', (e) => {
+      if (!isMobile()) return;
+      // If user clicked close button
+      if (e.target.closest('#mpModalClose')) {
+        playerCard.classList.remove('mp-open');
+        return;
+      }
+      // If user clicked controls inside the deck, don't close
+      if (e.target.closest('#mpPlay, #mpSeek, #mpVol, #mpPrev, #mpNext, #mpRepeat, #mpMute')) {
+        return;
+      }
+      // If closed, click on vinyl disc opens the deck
+      if (!playerCard.classList.contains('mp-open')) {
+        playerCard.classList.add('mp-open');
+        if (typeof navigator !== 'undefined' && navigator.vibrate) try { navigator.vibrate(10); } catch(err){}
+      }
+    });
+  }
+
+  if (modalClose) {
+    modalClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (playerCard) playerCard.classList.remove('mp-open');
+    });
+  }
+
+  // Click outside closes the open deck on mobile
+  document.addEventListener('click', (e) => {
+    if (!isMobile() || !playerCard || !playerCard.classList.contains('mp-open')) return;
+    if (!playerCard.contains(e.target)) {
+      playerCard.classList.remove('mp-open');
+    }
+  });
+
+  // 3.3 THEME PALETTE SWITCHER
+  const fabContainer = document.getElementById('mobFabContainer');
+  const fabBtn = document.getElementById('mobFabBtn');
+  if (fabBtn && fabContainer) {
+    fabBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fabContainer.classList.toggle('active');
+    });
+
+    document.querySelectorAll('#mobFabMenu .mob-fab-item').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const theme = btn.getAttribute('data-theme');
+        if (theme === 'default') {
+          document.documentElement.removeAttribute('data-theme');
+        } else {
+          document.documentElement.setAttribute('data-theme', theme);
+        }
+        try { localStorage.setItem('nd_theme', theme); } catch(err){}
+        fabContainer.classList.remove('active');
+        if (typeof navigator !== 'undefined' && navigator.vibrate) try { navigator.vibrate(12); } catch(err){}
+        if (window.CyberAudio && window.CyberAudio.click) window.CyberAudio.click();
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!isMobile()) return;
+      if (fabContainer && !fabContainer.contains(e.target)) {
+        fabContainer.classList.remove('active');
+      }
+    });
+  }
 })();

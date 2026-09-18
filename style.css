@@ -5385,3 +5385,455 @@ body.mob-sheet-open {
     height: 6px !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   FULL THEME ENGINE: COMPREHENSIVE VISUAL TRANSFORMATION
+   ═══════════════════════════════════════════════════════════ */
+html[data-theme="matrix"] {
+  --a1: #00ff66 !important;
+  --a2: #059669 !important;
+  --a3: #34d399 !important;
+  --a4: #6ee7b7 !important;
+}
+html[data-theme="matrix"] .profile-card,
+html[data-theme="matrix"] .tool-card,
+html[data-theme="matrix"] .music-player {
+  border-color: rgba(0, 255, 102, 0.4) !important;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 255, 102, 0.25) !important;
+}
+html[data-theme="matrix"] .mob-nav-item.active,
+html[data-theme="matrix"] .mob-nav-item.active .mob-nav-label {
+  color: #00ff66 !important;
+  text-shadow: 0 0 12px rgba(0, 255, 102, 0.7) !important;
+}
+html[data-theme="matrix"] .mob-nav-item.active::before {
+  background: #00ff66 !important;
+  box-shadow: 0 0 10px #00ff66 !important;
+}
+html[data-theme="matrix"] .mp-vinyl-label {
+  border-color: #00ff66 !important;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.6) !important;
+}
+
+html[data-theme="amber"] {
+  --a1: #f59e0b !important;
+  --a2: #d97706 !important;
+  --a3: #fbbf24 !important;
+  --a4: #fef08a !important;
+}
+html[data-theme="amber"] .profile-card,
+html[data-theme="amber"] .tool-card,
+html[data-theme="amber"] .music-player {
+  border-color: rgba(245, 158, 11, 0.45) !important;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.8), 0 0 24px rgba(245, 158, 11, 0.25) !important;
+}
+html[data-theme="amber"] .mob-nav-item.active,
+html[data-theme="amber"] .mob-nav-item.active .mob-nav-label {
+  color: #fbbf24 !important;
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.7) !important;
+}
+html[data-theme="amber"] .mob-nav-item.active::before {
+  background: #fbbf24 !important;
+  box-shadow: 0 0 10px #fbbf24 !important;
+}
+html[data-theme="amber"] .mp-vinyl-label {
+  border-color: #fbbf24 !important;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.6) !important;
+}
+
+html[data-theme="synthwave"] {
+  --a1: #ec4899 !important;
+  --a2: #8b5cf6 !important;
+  --a3: #f43f5e !important;
+  --a4: #a855f7 !important;
+}
+html[data-theme="synthwave"] .profile-card,
+html[data-theme="synthwave"] .tool-card,
+html[data-theme="synthwave"] .music-player {
+  border-color: rgba(236, 72, 153, 0.45) !important;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.8), 0 0 24px rgba(236, 72, 153, 0.25) !important;
+}
+html[data-theme="synthwave"] .mob-nav-item.active,
+html[data-theme="synthwave"] .mob-nav-item.active .mob-nav-label {
+  color: #ec4899 !important;
+  text-shadow: 0 0 12px rgba(236, 72, 153, 0.7) !important;
+}
+html[data-theme="synthwave"] .mob-nav-item.active::before {
+  background: #ec4899 !important;
+  box-shadow: 0 0 10px #ec4899 !important;
+}
+html[data-theme="synthwave"] .mp-vinyl-label {
+  border-color: #ec4899 !important;
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.6) !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE SMARTPHONE REFACTOR (PERFECT PROFILE FIT, PEAK VINYL)
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* 1. HIDE TOP MINI TABS COMPLETELY ON MOBILE (User only uses bottom 6-item dock!) */
+  .tc-tabs {
+    display: none !important;
+  }
+
+  /* 2. TOP HUD: Sleek left alignment, no overlap */
+  .hud-top-left {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    height: 40px !important;
+    padding: 0 8px !important;
+    background: transparent !important;
+    border: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    z-index: 9000 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 5px !important;
+  }
+  .fps-hud-box {
+    background: rgba(10, 9, 24, 0.9) !important;
+    padding: 3px 8px !important;
+    border-radius: 999px !important;
+    font-size: 0.64rem !important;
+  }
+  .lang-switch-wrap {
+    background: rgba(10, 9, 24, 0.9) !important;
+    border-radius: 999px !important;
+    padding: 2px 6px !important;
+  }
+  .perf-toggle-btn {
+    background: rgba(10, 9, 24, 0.9) !important;
+    border-radius: 999px !important;
+    padding: 3px 6px !important;
+  }
+
+  /* 3. MUSIC PLAYER: ONLY A SMALL SPINNING VINYL DISC IN TOP-RIGHT! */
+  .music-player {
+    position: fixed !important;
+    top: 3px !important;
+    right: 8px !important;
+    left: auto !important;
+    bottom: auto !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    z-index: 9500 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+  }
+  .music-player .mp-vinyl-wrap {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  .music-player .mp-vinyl-disc {
+    width: 36px !important;
+    height: 36px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 240, 255, 0.4) !important;
+  }
+  .music-player .mp-vinyl-label {
+    width: 17px !important;
+    height: 17px !important;
+  }
+  .music-player .mp-vinyl-spindle {
+    width: 4px !important;
+    height: 4px !important;
+  }
+
+  /* When NOT open, hide the deck contents completely on mobile */
+  .music-player:not(.mp-open) .mp-info {
+    display: none !important;
+  }
+
+  /* 4. WHEN VINYL CLICKED: POP OUT GORGEOUS ROUNDED RECTANGLE DECK */
+  .music-player.mp-open {
+    position: fixed !important;
+    top: 44px !important;
+    right: 8px !important;
+    width: min(320px, calc(100vw - 16px)) !important;
+    height: auto !important;
+    border-radius: 18px !important;
+    padding: 12px 14px !important;
+    background: rgba(12, 10, 26, 0.98) !important;
+    border: 1px solid rgba(0, 240, 255, 0.45) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 240, 255, 0.25) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    z-index: 999999 !important;
+    animation: mpDeckPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  @keyframes mpDeckPop {
+    from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .music-player.mp-open .mp-vinyl-wrap {
+    display: none !important;
+  }
+  .music-player.mp-open .mp-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .music-player.mp-open .mp-modal-close {
+    display: flex !important;
+    width: 22px !important;
+    height: 22px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    color: #fff !important;
+    font-size: 0.75rem !important;
+    cursor: pointer !important;
+  }
+  .music-player.mp-open .mp-marquee-wrap {
+    font-size: 0.75rem !important;
+    max-width: 100% !important;
+  }
+  .music-player.mp-open .mp-timeline-wrap,
+  .music-player.mp-open .mp-vol-wrap,
+  .music-player.mp-open .mp-bottom-row,
+  .music-player.mp-open .mp-btn.mp-skip,
+  .music-player.mp-open .mp-btn.mp-repeat-btn,
+  .music-player.mp-open .mp-btn#mpMute {
+    display: flex !important;
+  }
+  .music-player.mp-open .mp-controls {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+  .music-player.mp-open .mp-btn.mp-play {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  /* 5. PERFECT PROFILE FIT FOR ALL IPHONES (IP7 PLUS TO 16 PRO MAX) */
+  .stage {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 40px !important;
+    bottom: calc(54px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 4px 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    z-index: 50 !important;
+  }
+  .scene {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 420px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+  }
+  .profile-card {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    padding: 6px 10px !important;
+    border-radius: 16px !important;
+    background: rgba(10, 8, 22, 0.94) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid rgba(124, 111, 255, 0.3) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  .p-inner {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    overflow: hidden !important;
+  }
+  .avatar-wrap {
+    width: 50px !important;
+    height: 50px !important;
+    margin: 0 auto 1px !important;
+  }
+  .p-name {
+    font-size: 1.02rem !important;
+    line-height: 1.1 !important;
+    margin-bottom: 0 !important;
+  }
+  .typing-wrap {
+    font-size: 0.58rem !important;
+    height: 12px !important;
+    margin-bottom: 2px !important;
+  }
+  .tags {
+    gap: 3px !important;
+    margin-bottom: 2px !important;
+  }
+  .tag {
+    font-size: 0.52rem !important;
+    padding: 1px 4px !important;
+  }
+
+  /* WuWa Card: Compressed & Clean */
+  .wuwa-game-card {
+    margin-bottom: 2px !important;
+    border-radius: 8px !important;
+    background: rgba(10, 20, 16, 0.85) !important;
+  }
+  .wuwa-banner {
+    padding: 2px 6px !important;
+  }
+  .wuwa-banner-badges {
+    margin-bottom: 1px !important;
+  }
+  .wuwa-game-title {
+    font-size: 0.62rem !important;
+  }
+  .wuwa-playing-box {
+    padding: 2px 6px !important;
+  }
+  .wuwa-art-wrap {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  .wuwa-name {
+    font-size: 0.58rem !important;
+  }
+  .wuwa-detail {
+    font-size: 0.52rem !important;
+  }
+  .wuwa-elapsed {
+    font-size: 0.48rem !important;
+  }
+  .wuwa-selfbot-footer {
+    display: none !important; /* Save vital vertical space */
+  }
+
+  /* BIO BOX: Fully visible, NO text clipping, fits IP7 Plus seamlessly */
+  .bio-box {
+    padding: 4px 8px !important;
+    margin-bottom: 2px !important;
+    min-height: auto !important;
+    max-height: none !important;
+    border-radius: 8px !important;
+    background: rgba(0, 0, 0, 0.45) !important;
+    border: 1px solid rgba(124, 111, 255, 0.22) !important;
+    box-sizing: border-box !important;
+  }
+  .bio-t {
+    font-size: 0.56rem !important;
+    line-height: 1.28 !important;
+    word-break: break-word !important;
+  }
+
+  .stack-icons {
+    gap: 4px !important;
+    margin-bottom: 2px !important;
+  }
+  .stack-icons img {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .socials {
+    gap: 4px !important;
+    margin-bottom: 2px !important;
+  }
+  .soc-btn {
+    padding: 2px 5px !important;
+    font-size: 0.52rem !important;
+  }
+
+  .donate-row {
+    margin-bottom: 0 !important;
+  }
+  .donate-txt {
+    font-size: 0.52rem !important;
+  }
+  .donate-btn {
+    font-size: 0.52rem !important;
+    padding: 1px 5px !important;
+  }
+  .view-counter {
+    margin-bottom: 0 !important;
+  }
+  #viewCount {
+    font-size: 0.52rem !important;
+  }
+
+  /* 6. FAB PALETTE MENU DESIGN */
+  .mob-fab-container {
+    bottom: 64px !important;
+    right: 12px !important;
+  }
+  .mob-fab-btn {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.9), rgba(0, 240, 255, 0.9)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 4px 18px rgba(0, 240, 255, 0.5) !important;
+    color: #fff !important;
+    font-size: 1.25rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .mob-fab-menu {
+    min-width: 175px !important;
+    padding: 8px !important;
+    border-radius: 14px !important;
+    background: rgba(10, 8, 24, 0.98) !important;
+    border: 1px solid rgba(0, 240, 255, 0.4) !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.9) !important;
+    gap: 6px !important;
+  }
+  .mfm-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #00f0ff;
+    padding: 2px 4px 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+  }
+  .mob-fab-item {
+    padding: 6px 8px !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #e2e8f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    cursor: pointer !important;
+  }
+  .mob-fab-item:active {
+    background: rgba(0, 240, 255, 0.2) !important;
+    border-color: #00f0ff !important;
+  }
+}
