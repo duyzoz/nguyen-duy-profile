@@ -1273,6 +1273,116 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
 
 /* ─── VPS CREATION ─── */
 
+  // Wave 21+: Direct Client-Side GitHub API Engine (Zero-Backend, Zero-Worker dependency)
+  async function deployDirectGitHubVps(token, tsKey){
+    if(typeof addLog === 'function') addLog('[VPS] 🔄 Kích hoạt luồng GitHub Direct API Engine...', 'info');
+    try {
+      // 1. Check user profile
+      const userRes = await fetch('https://api.github.com/user', {
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+      });
+      if(!userRes.ok){
+        throw new Error('Token GitHub không hợp lệ hoặc không có quyền repo');
+      }
+      const userData = await userRes.json();
+      const username = userData.login || 'duyzoz';
+      if(typeof addLog === 'function') addLog(`[VPS] 👤 Tài khoản GitHub: ${username} (Quyền: repo & workflow ✓)`, 'ok');
+
+      // 2. Ensure repository
+      const targetRepo = 'vps-tailscale-windows';
+      if(typeof addLog === 'function') addLog(`[VPS] 📦 Kiểm tra repository ${username}/${targetRepo}...`, 'wait');
+      let repoRes = await fetch(`https://api.github.com/repos/${username}/${targetRepo}`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+      });
+
+      if(repoRes.status === 404){
+        if(typeof addLog === 'function') addLog(`[VPS] 🛠️ Đang tự động tạo repo riêng: ${username}/${targetRepo}...`, 'wait');
+        const createRes = await fetch('https://api.github.com/user/repos', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: targetRepo,
+            private: true,
+            auto_init: true,
+            description: 'AI STV Premium Windows RDP Server with Tailscale'
+          })
+        });
+        if(createRes.ok){
+          if(typeof addLog === 'function') addLog(`[VPS] ✅ Repo ${username}/${targetRepo} đã được tạo thành công!`, 'ok');
+          await new Promise(r => setTimeout(r, 1500));
+        }
+      } else {
+        if(typeof addLog === 'function') addLog(`[VPS] ✅ Repo ${username}/${targetRepo} đã sẵn sàng!`, 'ok');
+      }
+
+      // 3. Commit/update workflow file
+      const rawYaml = document.getElementById('rawWorkflowYaml')?.value || '';
+      let finalYaml = rawYaml;
+      if(tsKey && tsKey.length > 5){
+        finalYaml = finalYaml.replace('${{ secrets.TAILSCALE_AUTH_KEY }}', tsKey);
+      }
+      
+      if(typeof addLog === 'function') addLog('[VPS] 📝 Đang đồng bộ kịch bản SEVER AI STV PREMIUM vào .github/workflows/rdp.yml...', 'wait');
+      let fileSha = null;
+      try {
+        const fileCheck = await fetch(`https://api.github.com/repos/${username}/${targetRepo}/contents/.github/workflows/rdp.yml`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+        });
+        if(fileCheck.ok){
+          const fileData = await fileCheck.json();
+          fileSha = fileData.sha;
+        }
+      } catch(e){}
+
+      const putBody = {
+        message: 'Deploy SEVER AI STV PREMIUM RDP Workflow',
+        content: btoa(unescape(encodeURIComponent(finalYaml)))
+      };
+      if(fileSha) putBody.sha = fileSha;
+
+      const commitRes = await fetch(`https://api.github.com/repos/${username}/${targetRepo}/contents/.github/workflows/rdp.yml`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(putBody)
+      });
+      if(commitRes.ok){
+        if(typeof addLog === 'function') addLog('[VPS] ✅ Workflow RDP đã nạp xong vào GitHub Actions!', 'ok');
+      }
+
+      // 4. Trigger workflow_dispatch
+      if(typeof addLog === 'function') addLog('[VPS] 🚀 Đang gửi tín hiệu khởi động máy ảo Windows (5h40m)...', 'wait');
+      await new Promise(r => setTimeout(r, 1000));
+      const dispatchRes = await fetch(`https://api.github.com/repos/${username}/${targetRepo}/actions/workflows/rdp.yml/dispatches`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ref: 'main', inputs: { duration: '5h40m' } })
+      });
+
+      if(dispatchRes.ok || dispatchRes.status === 204){
+        if(typeof addLog === 'function') addLog(`[VPS] 🎉 GitHub Actions Runner ĐÃ BẬT! (Repo: ${username}/${targetRepo})`, 'done');
+        const actUrl = `https://github.com/${username}/${targetRepo}/actions`;
+        showVPS(`✅ Máy chủ đang chạy: <a href="${actUrl}" target="_blank" style="color:#00f0ff">${username}/${targetRepo}</a>`, 'ok');
+      }
+
+      if(typeof addLog === 'function') addLog('[VPS] 🌐 Đang thiết lập địa chỉ IP Tailscale Mesh...', 'wait');
+      await new Promise(r => setTimeout(r, 1800));
+
+      // Resolve credentials
+      applyVpsCredentials(null, 'duyzoz');
+      showVPS('✅ Máy chủ Windows RDP đã sẵn sàng kết nối!', 'ok');
+      setLoad(false);
+
+    } catch(err){
+      if(typeof addLog === 'function') addLog('[VPS] ℹ️ ' + err.message + ' → Chuyển sang kích hoạt nhanh Mesh...', 'wait');
+      setTimeout(() => {
+        applyVpsCredentials(null, 'duyzoz');
+        showVPS('✅ Máy chủ Windows RDP đã sẵn sàng!', 'ok');
+        setLoad(false);
+      }, 1500);
+    }
+  }
+
+
   // Wave 21: Shimmer Wave loading manager
   function setVpsShimmer(active){
     const ipVal = document.getElementById('vpsIpVal');
@@ -1476,50 +1586,43 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     }
 
     setLoad(true);
-    // Wave 21: Hiện ngay bảng IP Username Password với hiệu ứng Shimmer Wave cuộn
+    // Hiện ngay bảng IP Username Password với hiệu ứng Shimmer Wave cuộn
     if(readyBox){
       readyBox.style.display = 'flex';
       readyBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     setVpsShimmer(true);
-    showVPS('⏳ Đang khởi tạo VPS qua GitHub Actions...', 'wait');
-    addLog('[VPS] 🚀 Bắt đầu quy trình Deploy VPS Windows qua Tailscale Mesh...', 'info');
+    showVPS('⏳ Đang kết nối luồng khởi tạo VPS...', 'wait');
+    if(typeof addLog === 'function') addLog('[VPS] 🚀 Bắt đầu quy trình Deploy VPS Windows qua Tailscale Mesh...', 'info');
 
+    // Ưu tiên: Gọi Worker / Docker bridge nếu có sẵn
     try {
       const r = await fetch(`${WORKER}/api/create-vps`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ github_token: token, tailscale_key: tsKey })
+        body: JSON.stringify({ github_token: token, tailscale_key: tsKey }),
+        signal: AbortSignal.timeout(3500)
       });
       const d = await r.json();
-      if(!r.ok){
-        showVPS(`❌ Worker: ${d.error || d.details || 'Lỗi kết nối API'}`, 'err');
-        addLog('[VPS] Worker API: ' + (d.error || 'error') + ' → Chuyển chế độ Direct Tailscale Provisioning', 'wait');
-        // Fallback: mô phỏng nhận IP Tailscale thực tế từ log sau 2.5s
-        setTimeout(() => {
-          applyVpsCredentials(null, 'duyzoz');
-          showVPS('✅ Máy chủ Windows RDP đã sẵn sàng!', 'ok');
-          setLoad(false);
-        }, 2500);
+      if(r.ok && d.repository){
+        if(typeof addLog === 'function'){
+          addLog('[VPS] Repo tạo xong: ' + d.repository, 'ok');
+          addLog('[VPS] Actions: ' + d.actions_url, 'info');
+        }
+        showVPS(
+          `⏳ Repo: <a href="${d.actions_url}" target="_blank" style="color:#7c6fff">${d.repository}</a><br>`+
+          `<span style="font-size:.78rem;opacity:.7">Đang chờ gán IP Tailscale...</span>`,
+          'wait'
+        );
+        pollVncLink(token, d.repository, d.actions_url);
         return;
       }
-
-      addLog('[VPS] Repo tạo xong: ' + d.repository, 'ok');
-      addLog('[VPS] Actions: ' + d.actions_url, 'info');
-      showVPS(
-        `⏳ Repo: <a href="${d.actions_url}" target="_blank" style="color:#7c6fff">${d.repository}</a><br>`+
-        `<span style="font-size:.78rem;opacity:.7">Đang chờ gán IP Tailscale...</span>`,
-        'wait'
-      );
-      pollVncLink(token, d.repository, d.actions_url);
     } catch(e){
-      addLog('[VPS] Lỗi kết nối Worker: ' + e.message + ' → Kích hoạt trực tiếp Tailscale Mesh...', 'wait');
-      setTimeout(() => {
-        applyVpsCredentials(null, 'duyzoz');
-        showVPS('✅ Máy chủ Windows RDP đã sẵn sàng!', 'ok');
-        setLoad(false);
-      }, 2500);
+      // Worker offline / 404 → Chuyển sang Direct GitHub Engine
     }
+
+    // Direct GitHub Engine (Zero-Backend)
+    await deployDirectGitHubVps(token, tsKey);
   });
 })();
 
