@@ -581,11 +581,6 @@ window.TYPING_DATA = {
   if(!card)return;
   let rafId=null, targetX=0, targetY=0, curX=0, curY=0, rect=null, isHover=false;
   function updateTilt(){
-    if(document.body.classList.contains('perf-mode')){
-      card.style.transform='';
-      rafId=null;
-      return;
-    }
     curX += (targetX - curX) * 0.35;
     curY += (targetY - curY) * 0.35;
     const rotY = (curX * 16).toFixed(2);
@@ -845,7 +840,7 @@ window.TYPING_DATA = {
   function lerp(a,b,t){return a+(b-a)*t;}
   function loop(){
     rafId=null;
-    if(isMobile() || document.body.classList.contains('perf-mode')) return;
+    if(isMobile()) return;
     cx=lerp(cx,targetNx*10,.08);cy=lerp(cy,targetNy*10,.08);
     tcx=lerp(tcx,targetNx*-3,.07);tcy=lerp(tcy,targetNy*-3,.07);
     scene.style.transform=`translate(${cx.toFixed(2)}px,${cy.toFixed(2)}px)`;
@@ -855,7 +850,7 @@ window.TYPING_DATA = {
     }
   }
   document.addEventListener('mousemove',e=>{
-    if(isMobile() || document.body.classList.contains('perf-mode')) return;
+    if(isMobile()) return;
     targetNx=(e.clientX/window.innerWidth-.5)*2;
     targetNy=(e.clientY/window.innerHeight-.5)*2;
     if(!rafId) rafId=requestAnimationFrame(loop);
@@ -1947,9 +1942,8 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       btn.classList.add('active');
       if(btnText) btnText.textContent = '🎬 Bật lại Video';
       btn.title = "Đang xem ảnh nền Background.png (Mượt tuyệt đối). Bấm để bật lại Video.";
-      if(card) card.style.transform = '';
-      if(scene) scene.style.transform = '';
-      if(toolCard) toolCard.style.setProperty('--py', '0px');
+      // Keep 3D card tilt & parallax active when video is paused
+      /* Video paused for performance without freezing card motion */
       /* Chờ hiệu ứng mờ 0.6s hoàn tất mới pause video để chuyển cảnh mượt mà */
       setTimeout(()=>{
         if(document.body.classList.contains('perf-mode') && video) video.pause();

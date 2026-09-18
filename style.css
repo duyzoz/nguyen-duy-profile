@@ -648,10 +648,7 @@ body.perf-mode #avatarOrbit,
 body.perf-mode #avatarSnowC{
   display:none !important;
 }
-body.perf-mode .profile-card,
-body.perf-mode .scene{
-  transform:none !important;
-}
+/* perf-mode preserves smooth card transforms */
 body.perf-mode .tool-card{
   transition:transform .12s cubic-bezier(0,0,.2,1) !important;
 }
@@ -4145,14 +4142,12 @@ body.lang-en, body.lang-en button, body.lang-en input, body.lang-en textarea {
   border-radius: 6px !important;
 }
 
-/* 120 FPS Turbo Mode Hardware Acceleration */
+/* 120 FPS Turbo Mode Hardware Acceleration (Safe, Preserves All 3D Card Transforms) */
 body.turbo-120-active {
   image-rendering: auto;
 }
-body.turbo-120-active .scene,
 body.turbo-120-active .tool-card,
 body.turbo-120-active .profile-card {
-  transform: translateZ(0);
   backface-visibility: hidden;
-  perspective: 1000px;
+  -webkit-backface-visibility: hidden;
 }
