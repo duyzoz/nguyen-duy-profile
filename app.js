@@ -1211,32 +1211,74 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     return{str:`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`,urgent:remain<300000,expired:remain===0};
   }
   let vpsListCdInterval=null;
-  function renderVpsList(){
+    function renderVpsList(){
     const listEl=document.getElementById('vpsList');
     if(!listEl)return;
     const list=getVpsListMgmt();
     if(list.length===0){
-      const emptyMsg = (window.getI18nMsg ? window.getI18nMsg('vpsEmpty') : '') || 'No VPS instances created yet';
+      const emptyMsg = (window.getI18nMsg ? window.getI18nMsg('vpsEmpty') : '') || 'Chưa có VPS nào được tạo';
       listEl.innerHTML=`<div class="token-empty" id="vpsEmptyMsg">${emptyMsg}</div>`;
       return;
     }
     listEl.innerHTML=list.map(v=>{
       const cd=fmtCountdown(v.created);
+      const ipMatch = (v.link || '').match(/server=([^&]+)/) || (v.name || '').match(/100\.\d+\.\d+\.\d+/);
+      const ip = ipMatch ? ipMatch[1] : '100.86.124.90';
       return `<div class="vps-item" data-id="${v.id}">
-        <div class="vps-item-info">
-          <div class="vps-item-name">${v.name}</div>
-          <div class="vps-item-date">📅 ${v.date}</div>
+        <div class="vps-item-top">
+          <div class="vps-item-title-wrap">
+            <span class="vps-item-name">${v.name}</span>
+            <span class="vps-item-ip-badge">${ip}</span>
+          </div>
           <div class="vps-item-cd ${cd.urgent?'urgent':''}" data-created="${v.created}">${cd.expired?'⛔ Hết hạn':cd.str}</div>
         </div>
-        <div class="vps-item-actions">
-          <a href="${v.link}" target="_blank" rel="noopener" class="vps-item-open">🖥️</a>
-          <button class="vps-item-del" data-id="${v.id}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
-          </button>
+        <div class="vps-item-actions-row">
+          <button class="vps-item-act-btn vps-copy-ip cyber-sound-btn" data-ip="${ip}" title="Sao chép IP">📋 Copy IP</button>
+          <button class="vps-item-act-btn vps-copy-mstsc cyber-sound-btn" data-ip="${ip}" title="Sao chép lệnh mstsc /v:">💻 mstsc</button>
+          <button class="vps-item-act-btn vps-dl-rdp cyber-sound-btn" data-ip="${ip}" title="Tải file .rdp">📥 .rdp</button>
+          <button class="vps-item-act-btn vps-del cyber-sound-btn" data-id="${v.id}" title="Xóa máy này" style="color:#f87171;margin-left:auto">🗑️ Xóa</button>
         </div>
       </div>`;
-    }).join('');
-    listEl.querySelectorAll('.vps-item-del').forEach(b=>{
+    }).join('') + `<button class="vps-clear-all-btn cyber-sound-btn" id="vpsClearAllBtn">🗑️ Xóa Tất Cả Danh Sách VPS</button>`;
+
+    // Action handlers for each item
+    listEl.querySelectorAll('.vps-copy-ip').forEach(b => {
+      b.addEventListener('click', () => {
+        const ip = b.dataset.ip;
+        navigator.clipboard.writeText(ip);
+        b.textContent = '✓ Đã chép!';
+        setTimeout(() => b.textContent = '📋 Copy IP', 1500);
+        if(typeof addLog === 'function') addLog(`[STARTUT] 📋 Đã sao chép IP: ${ip}`, 'info');
+      });
+    });
+
+    listEl.querySelectorAll('.vps-copy-mstsc').forEach(b => {
+      b.addEventListener('click', () => {
+        const ip = b.dataset.ip;
+        navigator.clipboard.writeText(`mstsc /v:${ip}`);
+        b.textContent = '✓ Đã chép!';
+        setTimeout(() => b.textContent = '💻 mstsc', 1500);
+        if(typeof addLog === 'function') addLog(`[STARTUT] 📋 Đã sao chép: mstsc /v:${ip}`, 'ok');
+      });
+    });
+
+    listEl.querySelectorAll('.vps-dl-rdp').forEach(b => {
+      b.addEventListener('click', () => {
+        const ip = b.dataset.ip;
+        const rdp = `full address:s:${ip}:3389\r\nusername:s:duyzoz\r\nprompt for credentials:i:1\r\nadministrative session:i:1`;
+        const blob = new Blob([rdp], { type: 'application/rdp;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `VPS_${ip.replace(/\./g, '_')}.rdp`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    });
+
+    listEl.querySelectorAll('.vps-del').forEach(b=>{
       b.addEventListener('click',()=>{
         const id=b.getAttribute('data-id');
         const nl=getVpsListMgmt().filter(v=>v.id!==id);
@@ -1244,6 +1286,18 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
         renderVpsList();
       });
     });
+
+    const clearAllBtn = document.getElementById('vpsClearAllBtn');
+    if(clearAllBtn){
+      clearAllBtn.addEventListener('click', () => {
+        if(confirm('Bạn có chắc muốn xóa tất cả danh sách VPS đã tạo?')){
+          localStorage.removeItem(LS_VPS_MGMT);
+          renderVpsList();
+          if(typeof addLog === 'function') addLog('[STARTUT] 🗑️ Đã xóa toàn bộ danh sách VPS đã lưu.', 'info');
+        }
+      });
+    }
+
     /* Live countdown tick */
     if(vpsListCdInterval)clearInterval(vpsListCdInterval);
     vpsListCdInterval=setInterval(()=>{
@@ -5263,6 +5317,96 @@ Respond accurately with this ground truth knowledge:
       if(typeof CyberAudio !== 'undefined') CyberAudio.success();
       if(typeof addLog === 'function'){
         addLog(`[STARTUT] 🌐 Kết nối Tailscale Node: OK · Độ trễ: ${ms} ms`, 'done');
+      }
+    });
+  }
+
+
+  // Wave 31: Cyber HUD Keyboard Shortcuts (Desktop Power User)
+  document.addEventListener('keydown', (e) => {
+    // Never trigger shortcuts when typing in inputs or textareas
+    if(e.target.matches('input, textarea, select, [contenteditable="true"]')) return;
+    if(e.ctrlKey || e.altKey || e.metaKey) return;
+
+    const key = e.key.toLowerCase();
+    // 1-8: Switch tabs
+    const tabIndex = parseInt(key);
+    if(tabIndex >= 1 && tabIndex <= 8){
+      const allTabs = document.querySelectorAll('.tc-tab');
+      if(allTabs[tabIndex - 1]){
+        allTabs[tabIndex - 1].click();
+        if(typeof addLog === 'function') addLog(`[HOTKEY] ⚡ Phím tắt '${key}': Chuyển tab tiện ích`, 'info');
+      }
+      return;
+    }
+
+    if(key === 'm'){
+      // Toggle music
+      const playBtn = document.getElementById('mpPlay');
+      if(playBtn) playBtn.click();
+    } else if(key === 'v'){
+      // Toggle video background (fix lag)
+      const fixLagBtn = document.getElementById('perfToggle');
+      if(fixLagBtn) fixLagBtn.click();
+    } else if(key === 's'){
+      // Toggle SFX sound
+      if(typeof CyberAudio !== 'undefined' && typeof CyberAudio.toggleMute === 'function'){
+        CyberAudio.toggleMute();
+      }
+    } else if(key === 'c'){
+      // Open Cyber Terminal CLI
+      const cliBtn = document.getElementById('cliToggleBtn');
+      if(cliBtn) cliBtn.click();
+    }
+  });
+
+  // Wave 33: Network Online/Offline Monitor & Auto-Reconnect
+  window.addEventListener('online', () => {
+    if(typeof addLog === 'function'){
+      addLog('[MẠNG] 🌐 Internet đã kết nối lại bình thường ✓', 'ok');
+    }
+    if(typeof refreshGfnStatus === 'function') refreshGfnStatus(false);
+  });
+  window.addEventListener('offline', () => {
+    if(typeof addLog === 'function'){
+      addLog('[MẠNG] ⚠️ Thiết bị mất kết nối Internet. Đang chờ kết nối lại...', 'err');
+    }
+  });
+
+  // Wave 34: Cyber Theme Matrix Quick Swapper
+  const THEMES = ['cyan', 'matrix', 'amber', 'synthwave'];
+  const THEME_NAMES = {
+    cyan: 'Cyber Cyan (Mặc định)',
+    matrix: 'Matrix Hacker Green',
+    amber: 'Cyberpunk 2077 Amber',
+    synthwave: 'Synthwave Retro Pink'
+  };
+
+  function applyTheme(themeKey){
+    if(themeKey === 'cyan'){
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', themeKey);
+    }
+    localStorage.setItem('cyber_theme', themeKey);
+  }
+
+  // Load saved theme
+  const savedTheme = localStorage.getItem('cyber_theme') || 'cyan';
+  if(savedTheme !== 'cyan') applyTheme(savedTheme);
+
+  const themeBtn = document.getElementById('themeToggleBtn');
+  if(themeBtn){
+    themeBtn.addEventListener('click', () => {
+      const cur = localStorage.getItem('cyber_theme') || 'cyan';
+      const nextIdx = (THEMES.indexOf(cur) + 1) % THEMES.length;
+      const nextTheme = THEMES[nextIdx];
+      applyTheme(nextTheme);
+      const text = document.getElementById('themeText');
+      if(text) text.textContent = nextTheme.toUpperCase();
+      if(typeof CyberAudio !== 'undefined') CyberAudio.click();
+      if(typeof addLog === 'function'){
+        addLog(`[THEME] 🎨 Đã chuyển sang giao diện: ${THEME_NAMES[nextTheme]}`, 'ok');
       }
     });
   }
