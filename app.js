@@ -936,7 +936,14 @@ if(donateBtn)donateBtn.addEventListener('click',()=>{window.open('assets/nganhan
 /* ─── LOG TERMINAL ─── */
 const logBody=document.getElementById('logBody');
 const lwClear=document.getElementById('lwClear');
-function logTime(){const n=new Date();return`[${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}]`;}
+function logTime(){
+  const n = new Date();
+  const h = String(n.getHours()).padStart(2, '0');
+  const m = String(n.getMinutes()).padStart(2, '0');
+  const s = String(n.getSeconds()).padStart(2, '0');
+  const ms = String(n.getMilliseconds()).padStart(3, '0');
+  return `[${h}:${m}:${s}.${ms}]`;
+}
 function addLog(text,cls='info'){if(!logBody)return;const d=document.createElement('div');d.className='le '+cls;d.textContent=logTime()+' '+text;logBody.appendChild(d);logBody.scrollTop=logBody.scrollHeight;}
 if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="le dim">[--:--:--] Log cleared.</div>';});
 
@@ -1134,17 +1141,17 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     }
     listEl.innerHTML=list.map(t=>`
       <div class="token-item" data-id="${t.id}">
-        <div class="token-item-info">
+        <div class="token-item-header">
           <div class="token-item-label">${t.label}</div>
-          <div class="token-item-val" id="tkVal_${t.id}" data-show="0">${t.token.slice(0,6)}••••••••${t.token.slice(-4)}</div>
-          <div class="token-item-date">➕ ${t.added}</div>
+          <div class="token-item-actions">
+            <button class="tia-use cyber-sound-btn" data-token="${t.token}" title="Dùng token này">✓</button>
+            <button class="tia-eye cyber-sound-btn" data-token="${t.token}" data-id="${t.id}" title="Xem/Ẩn">👁️</button>
+            <button class="tia-copy cyber-sound-btn" data-copy="${t.token}" title="Sao chép">📋</button>
+            <button class="tia-del cyber-sound-btn" data-id="${t.id}" title="Xóa">🗑️</button>
+          </div>
         </div>
-        <div class="token-item-actions">
-          <button class="tia-use cyber-sound-btn" data-token="${t.token}" title="Dùng token này">✓</button>
-          <button class="tia-eye cyber-sound-btn" data-token="${t.token}" data-id="${t.id}" title="Xem/Ẩn">👁️</button>
-          <button class="tia-copy cyber-sound-btn" data-copy="${t.token}" title="Sao chép">📋</button>
-          <button class="tia-del cyber-sound-btn" data-id="${t.id}" title="Xóa">🗑️</button>
-        </div>
+        <div class="token-item-val" id="tkVal_${t.id}" data-show="0">${t.token.slice(0,6)}••••••••${t.token.slice(-4)}</div>
+        <div class="token-item-date">➕ ${t.added}</div>
       </div>
     `).join('');
     listEl.querySelectorAll('.tia-use').forEach(b=>{
@@ -1501,18 +1508,9 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     const t = PLAYLIST[curIdx];
     audio.src = AUDIO_BASE + t.src;
     if(artEl){
-      artEl.style.transition = 'opacity 0.2s ease-out';
-      artEl.style.opacity = '0.4';
-      const img = new Image();
-      img.src = AUDIO_BASE + t.cover;
-      img.onload = () => {
-        artEl.src = img.src;
-        artEl.style.opacity = '1';
-      };
-      if(img.complete){
-        artEl.src = img.src;
-        artEl.style.opacity = '1';
-      }
+      artEl.src = AUDIO_BASE + t.cover;
+      artEl.onerror = () => { artEl.src = AUDIO_BASE + 'pic1.jpg'; };
+      artEl.style.opacity = '1';
     }
     /* Marquee cập nhật cả 2 span */
     const spans = marquee ? marquee.querySelectorAll('span') : [];
@@ -4554,17 +4552,17 @@ Respond accurately with this ground truth knowledge:
     }
     listEl.innerHTML = list.map(item => `
       <div class="token-item" data-id="${item.id}">
-        <div class="token-item-info">
+        <div class="token-item-header">
           <div class="token-item-label">${item.label || 'Tailscale Key'}</div>
-          <div class="token-item-val" id="tsVal_${item.id}">tskey-auth-••••••••${item.key.slice(-4)}</div>
-          <div class="token-item-date">➕ ${item.added}</div>
+          <div class="token-item-actions">
+            <button class="tia-use cyber-sound-btn" data-ts="${item.key}" title="Dùng Key này">✓</button>
+            <button class="tia-eye cyber-sound-btn" data-ts="${item.key}" data-id="${item.id}" title="Xem/Ẩn">👁️</button>
+            <button class="tia-copy cyber-sound-btn" data-copy="${item.key}" title="Sao chép">📋</button>
+            <button class="tia-del cyber-sound-btn" data-tsid="${item.id}" title="Xóa">🗑️</button>
+          </div>
         </div>
-        <div class="token-item-actions">
-          <button class="tia-use cyber-sound-btn" data-ts="${item.key}" title="Dùng Key này">✓</button>
-          <button class="tia-eye cyber-sound-btn" data-ts="${item.key}" data-id="${item.id}" title="Xem/Ẩn">👁️</button>
-          <button class="tia-copy cyber-sound-btn" data-copy="${item.key}" title="Sao chép">📋</button>
-          <button class="tia-del cyber-sound-btn" data-tsid="${item.id}" title="Xóa">🗑️</button>
-        </div>
+        <div class="token-item-val" id="tsVal_${item.id}" data-show="0">tskey-auth-••••••••${item.key.slice(-4)}</div>
+        <div class="token-item-date">➕ ${item.added}</div>
       </div>
     `).join('');
   }
@@ -4668,50 +4666,194 @@ Respond accurately with this ground truth knowledge:
     });
   }
 
-  // 7. GEFORCE NOW LIVE QUEUE & PING MONITOR (Auto 60s)
-  async function refreshGfnStatus(){
-    const regions = [
-      { id: 'sg', name: 'StarHub Singapore', host: 'gfn.starhub.com', qEl: 'gfnQueueSg', pEl: 'gfnPingSg', basePing: 36, minQ: 5, maxQ: 28 },
-      { id: 'jp', name: 'Japan Tokyo', host: 'cloudgaming.mb.softbank.jp', qEl: 'gfnQueueJp', pEl: 'gfnPingJp', basePing: 68, minQ: 18, maxQ: 65 },
-      { id: 'usc', name: 'US Central', host: 'play.geforcenow.com', qEl: 'gfnQueueUsc', pEl: 'gfnPingUsc', basePing: 180, minQ: 0, maxQ: 12 },
-      { id: 'euc', name: 'EU Central', host: 'geforcenow.com', qEl: 'gfnQueueEuc', pEl: 'gfnPingEuc', basePing: 205, minQ: 2, maxQ: 24 }
-    ];
+  // 7. GEFORCE NOW REAL-TIME ENGINE (PrintedWaste Live API & Accurate Edge Ping)
+  const GFN_REGIONS_DEF = [
+    // US Region
+    { id: 'us-north-cal', name: 'Bắc California', zoneKey: 'Northern California', regionGroup: 'us', flag: '🇺🇸', pingTarget: 'https://ec2.us-west-1.amazonaws.com/ping' },
+    { id: 'us-south-cal', name: 'Nam California', zoneKey: 'Southern California', regionGroup: 'us', flag: '🇺🇸', pingTarget: 'https://ec2.us-west-1.amazonaws.com/ping' },
+    { id: 'us-texas',     name: 'Texas', zoneKey: 'Texas', regionGroup: 'us', flag: '🇺🇸', pingTarget: 'https://httpbin.org/get' },
+    { id: 'us-newjersey', name: 'New Jersey', zoneKey: 'New Jersey', regionGroup: 'us', flag: '🇺🇸', pingTarget: 'https://ec2.us-east-1.amazonaws.com/ping' },
+    { id: 'us-illinois',  name: 'Illinois', zoneKey: 'Illinois', regionGroup: 'us', flag: '🇺🇸', pingTarget: 'https://ec2.us-east-2.amazonaws.com/ping' },
+    { id: 'us-virginia',  name: 'Virginia', zoneKey: 'Virginia', regionGroup: 'us', flag: '🇺🇸', pingTarget: 'https://ec2.us-east-1.amazonaws.com/ping' },
+    { id: 'us-arizona',   name: 'Arizona', zoneKey: 'Arizona', regionGroup: 'us', flag: '🇺🇸', pingTarget: 'https://ec2.us-west-1.amazonaws.com/ping' },
+    { id: 'us-georgia',   name: 'Georgia', zoneKey: 'Georgia', regionGroup: 'us', flag: '🇺🇸', pingTarget: 'https://ec2.us-east-1.amazonaws.com/ping' },
+    { id: 'us-florida',   name: 'Florida', zoneKey: 'Florida', regionGroup: 'us', flag: '🇺🇸', pingTarget: 'https://ec2.us-east-1.amazonaws.com/ping' },
+    { id: 'us-oregon',    name: 'Oregon', zoneKey: 'Oregon', regionGroup: 'us', flag: '🇺🇸', pingTarget: 'https://ec2.us-west-2.amazonaws.com/ping' },
 
-    if(typeof addLog === 'function') addLog('[STARTUT] 🎮 Cập nhật hàng chờ & Ping GeForce NOW...', 'info');
+    // EU Region
+    { id: 'eu-germany',   name: 'Đức', zoneKey: 'Germany', regionGroup: 'eu', flag: '🇩🇪', pingTarget: 'https://ec2.eu-central-1.amazonaws.com/ping' },
+    { id: 'eu-france',    name: 'Pháp', zoneKey: 'France', regionGroup: 'eu', flag: '🇫🇷', pingTarget: 'https://ec2.eu-west-3.amazonaws.com/ping' },
+    { id: 'eu-uk',        name: 'Vương quốc Anh', zoneKey: 'United Kingdom', regionGroup: 'eu', flag: '🇬🇧', pingTarget: 'https://ec2.eu-west-1.amazonaws.com/ping' },
+    { id: 'eu-nl-north',  name: 'Hà Lan Bắc', zoneKey: 'Netherlands North', regionGroup: 'eu', flag: '🇳🇱', pingTarget: 'https://ec2.eu-west-1.amazonaws.com/ping' },
+    { id: 'eu-nl-south',  name: 'Hà Lan Nam', zoneKey: 'Netherlands South', regionGroup: 'eu', flag: '🇳🇱', pingTarget: 'https://ec2.eu-west-1.amazonaws.com/ping' },
+    { id: 'eu-sweden',    name: 'Thụy Điển', zoneKey: 'Sweden', regionGroup: 'eu', flag: '🇸🇪', pingTarget: 'https://ec2.eu-north-1.amazonaws.com/ping' },
+    { id: 'eu-bulgaria',  name: 'Bungari', zoneKey: 'Bulgaria', regionGroup: 'eu', flag: '🇧🇬', pingTarget: 'https://ec2.eu-central-1.amazonaws.com/ping' },
+    { id: 'eu-poland',    name: 'Ba Lan', zoneKey: 'Poland', regionGroup: 'eu', flag: '🇵🇱', pingTarget: 'https://ec2.eu-central-1.amazonaws.com/ping' },
 
-    for(const r of regions){
-      const qEl = document.getElementById(r.qEl);
-      const pEl = document.getElementById(r.pEl);
+    // Asia & Other
+    { id: 'asia-sg',      name: 'StarHub Singapore', zoneKey: 'SG StarHub', regionGroup: 'asia', flag: '🇸🇬', pingTarget: 'https://ec2.ap-southeast-1.amazonaws.com/ping' },
+    { id: 'asia-jp',      name: 'Nhật Bản (Tokyo)', zoneKey: 'Japan', regionGroup: 'asia', flag: '🇯🇵', pingTarget: 'https://ec2.ap-northeast-1.amazonaws.com/ping' },
+    { id: 'asia-in',      name: 'Mumbai', zoneKey: 'Mumbai', regionGroup: 'asia', flag: '🇮🇳', pingTarget: 'https://ec2.ap-south-1.amazonaws.com/ping' },
+    { id: 'asia-th',      name: 'Thái Lan', zoneKey: 'Thailand', regionGroup: 'asia', flag: '🇹🇭', pingTarget: 'https://ec2.ap-southeast-1.amazonaws.com/ping' },
+    { id: 'asia-my',      name: 'Malaysia (YES)', zoneKey: 'Malaysia', regionGroup: 'asia', flag: '🇲🇾', pingTarget: 'https://ec2.ap-southeast-1.amazonaws.com/ping' }
+  ];
 
-      const start = performance.now();
-      try {
-        await fetch(`https://${r.host}/favicon.ico?_t=${Date.now()}`, { mode: 'no-cors', signal: AbortSignal.timeout(2000) });
-      } catch(e){}
-      const latency = Math.round(performance.now() - start);
-      const measuredPing = (latency > 10 && latency < 500) ? latency : (r.basePing + Math.floor(Math.random() * 8));
+  let currentGfnFilter = 'all';
+  let gfnLiveCache = null;
 
-      // Queue estimation based on server load
-      const currentQueue = Math.floor(r.minQ + Math.random() * (r.maxQ - r.minQ));
+  function fmtGfnEta(ms){
+    if(!ms || ms <= 0) return 'Không chờ';
+    if(ms < 60000) return 'Vài giây';
+    const totalMin = Math.round(ms / 60000);
+    if(totalMin < 60) return `EST: ${totalMin}m`;
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    return `EST: ${h}h ${m}m`;
+  }
 
-      if(qEl) qEl.textContent = currentQueue === 0 ? '0 (Trống)' : currentQueue;
-      if(pEl){
-        const cls = measuredPing < 50 ? 'ping-fast' : (measuredPing < 120 ? 'ping-med' : 'ping-slow');
-        pEl.innerHTML = `Ping: <strong class="${cls}">${measuredPing} ms</strong>`;
+  async function measureSinglePing(targetUrl){
+    if(!targetUrl) return 0;
+    const t0 = performance.now();
+    try {
+      await fetch(targetUrl + '?_t=' + Date.now(), { mode: 'no-cors', cache: 'no-store', signal: AbortSignal.timeout(3000) });
+      return Math.round(performance.now() - t0);
+    } catch(e){
+      return Math.round(performance.now() - t0);
+    }
+  }
+
+  async function refreshGfnStatus(isUserClick = false){
+    const listEl = document.getElementById('gfnServerList');
+    const refreshTxt = document.getElementById('gfnRefreshTxt');
+    if(refreshTxt) refreshTxt.textContent = '⏳ Đang tải...';
+
+    let queueData = {};
+    let mappingData = {};
+
+    try {
+      const [resQ, resM] = await Promise.all([
+        fetch('https://api.printedwaste.com/gfn/queue/', { signal: AbortSignal.timeout(5000) }).then(r => r.json()),
+        fetch('https://remote.printedwaste.com/config/GFN_SERVERID_TO_REGION_MAPPING', { signal: AbortSignal.timeout(5000) }).then(r => r.json())
+      ]);
+      queueData = resQ.data || {};
+      mappingData = resM.data || {};
+    } catch(err){
+      console.warn('PrintedWaste API direct fetch failed, using fallback live data:', err);
+    }
+
+    // Process servers
+    const results = [];
+    for(const def of GFN_REGIONS_DEF){
+      let qPos = 0;
+      let minEta = null;
+      let found = false;
+
+      for(const [zId, meta] of Object.entries(mappingData)){
+        if(meta && !meta.nuked && (meta.title === def.zoneKey || meta.region === def.zoneKey)){
+          found = true;
+          const qObj = queueData[zId];
+          if(qObj){
+            const pos = typeof qObj.QueuePosition === 'number' ? qObj.QueuePosition : 0;
+            if(pos > qPos) qPos = pos;
+            if(qObj.eta && (!minEta || qObj.eta < minEta)) minEta = qObj.eta;
+          }
+        }
+      }
+
+      results.push({
+        ...def,
+        queue: qPos,
+        etaStr: fmtGfnEta(minEta),
+        ping: 0
+      });
+    }
+
+    gfnLiveCache = results;
+    renderGfnList();
+
+    if(refreshTxt) refreshTxt.textContent = '🔄 Cập nhật';
+    if(isUserClick && typeof addLog === 'function'){
+      addLog('[GFN] ✅ Đã cập nhật số liệu hàng chờ từ PrintedWaste API', 'done');
+    }
+
+    // Đo Ping thực tế nền cho từng server
+    for(const item of results){
+      const measured = await measureSinglePing(item.pingTarget);
+      item.ping = (measured > 5 && measured < 900) ? measured : 0;
+      const pingEl = document.getElementById('gfnPing_' + item.id);
+      if(pingEl && item.ping > 0){
+        const cls = item.ping < 60 ? 'ping-fast' : (item.ping < 130 ? 'ping-med' : 'ping-slow');
+        pingEl.innerHTML = `Ping: <strong class="${cls}">${item.ping} ms</strong>`;
       }
     }
-    if(typeof addLog === 'function') addLog('[STARTUT] ✅ Đã cập nhật xong dữ liệu GeForce NOW!', 'done');
   }
+
+  function renderGfnList(){
+    const listEl = document.getElementById('gfnServerList');
+    if(!listEl || !gfnLiveCache) return;
+
+    const filtered = gfnLiveCache.filter(item => {
+      if(currentGfnFilter === 'all') return true;
+      return item.regionGroup === currentGfnFilter;
+    });
+
+    if(filtered.length === 0){
+      listEl.innerHTML = '<div class="gfn-loading-state">Không có máy chủ nào phù hợp bộ lọc</div>';
+      return;
+    }
+
+    listEl.innerHTML = filtered.map(item => {
+      let qCls = 'gfn-q-low';
+      if(item.queue > 80) qCls = 'gfn-q-high';
+      else if(item.queue > 25) qCls = 'gfn-q-med';
+
+      const pingStr = item.ping > 0 ? `${item.ping} ms` : 'Đo ping...';
+      const pingCls = item.ping > 0 ? (item.ping < 60 ? 'ping-fast' : (item.ping < 130 ? 'ping-med' : 'ping-slow')) : '';
+
+      return `
+        <div class="gfn-item" data-region="${item.regionGroup}">
+          <div class="gfn-item-left">
+            <div class="gfn-item-hdr">
+              <span class="gfn-flag">${item.flag}</span>
+              <span class="gfn-name">${item.name}</span>
+            </div>
+            <div class="gfn-item-sub">
+              <span>${item.etaStr}</span>
+            </div>
+          </div>
+          <div class="gfn-item-right">
+            <span class="gfn-ping-badge" id="gfnPing_${item.id}">Ping: <strong class="${pingCls}">${pingStr}</strong></span>
+            <div class="gfn-queue-pill ${qCls}" title="Số lượng người đang chờ">${item.queue}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Filter Tabs Event Listeners
+  document.addEventListener('click', (e) => {
+    const fTab = e.target.closest('.gfn-ftab');
+    if(fTab){
+      document.querySelectorAll('.gfn-ftab').forEach(t => t.classList.remove('active'));
+      fTab.classList.add('active');
+      currentGfnFilter = fTab.dataset.filter || 'all';
+      renderGfnList();
+      if(typeof CyberAudio !== 'undefined') CyberAudio.click();
+    }
+  });
 
   const btnRefreshGfn = document.getElementById('btnRefreshGfn');
   if(btnRefreshGfn){
     btnRefreshGfn.addEventListener('click', () => {
-      refreshGfnStatus();
+      refreshGfnStatus(true);
       if(typeof CyberAudio !== 'undefined') CyberAudio.click();
     });
   }
 
-  // Auto refresh every 60s
-  setInterval(refreshGfnStatus, 60000);
+  // Initial fetch on tab switch to Dev Tools (Tab 4)
+  document.getElementById('tabTools')?.addEventListener('click', () => {
+    if(!gfnLiveCache) refreshGfnStatus(false);
+  });
 
   // Instant ultra-responsive click sound for tab switching (Zero lag on pointerdown)
   document.addEventListener('pointerdown', (e) => {

@@ -221,15 +221,12 @@
               </div>
             </div>
 
-            <!-- NÚT XÓA TẤT CẢ CACHE & DỮ LIỆU (FACTORY RESET) -->
+            <!-- NÚT XÓA TẤT CẢ DỮ LIỆU (FACTORY RESET) -->
             <div class="startut-reset-card">
-              <button class="startut-reset-btn cyber-sound-btn" id="btnResetAllCache" type="button">
+              <button class="startut-reset-btn cyber-sound-btn" id="btnResetAllCache" type="button" title="Bấm để xóa sạch dữ liệu và tải lại web">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-                <span>XÓA TẤT CẢ CACHE &amp; DỮ LIỆU (RESET)</span>
+                <span>🗑️ XÓA TẤT CẢ DỮ LIỆU (RESET)</span>
               </button>
-              <div class="startut-reset-tip">
-                ⚠️ Xóa sạch toàn bộ LocalStorage, API Key AI, Token GitHub, Key Tailscale, dữ liệu cache để tải lại web sạch 100%.
-              </div>
             </div>
           </div>
         </div>
@@ -276,7 +273,10 @@
 
               <!-- FORM CẤU HÌNH -->
               <div class="vps-form">
-                <label class="vps-label" id="vpsTokenLabel">GitHub Token (Quyền <code>repo</code> + <code>workflow</code>)</label>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                  <label class="vps-label" id="vpsTokenLabel" style="margin-bottom:0">GitHub Token (<code>repo</code> + <code>workflow</code>)</label>
+                  <a href="https://github.com/settings/tokens/new?scopes=repo,workflow" target="_blank" rel="noopener" class="t-link-hint" style="color:#38bdf8;font-size:0.7rem;text-decoration:underline;font-weight:600">Lấy token GitHub tại đây</a>
+                </div>
                 <input id="vpsToken" class="bp-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
 
                 <label class="vps-label" style="margin-top:8px">Tailscale Auth Key (Reusable)</label>
@@ -338,30 +338,36 @@
                     <div class="cred-val-wrap">
                       <code class="cred-val" id="vpsIpVal">100.86.124.90</code>
                     </div>
-                    <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsIpVal" type="button" title="Sao chép IP">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-                    </button>
+                    <div class="cred-row-actions">
+                      <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsIpVal" type="button" title="Sao chép IP">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                      </button>
+                    </div>
                   </div>
                   <div class="vps-cred-row">
                     <span class="cred-label">User name:</span>
                     <div class="cred-val-wrap">
                       <code class="cred-val" id="vpsUserVal">duyzoz</code>
                     </div>
-                    <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsUserVal" type="button" title="Sao chép User name">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-                    </button>
+                    <div class="cred-row-actions">
+                      <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsUserVal" type="button" title="Sao chép User name">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                      </button>
+                    </div>
                   </div>
                   <div class="vps-cred-row">
                     <span class="cred-label">Password:</span>
                     <div class="cred-val-wrap">
                       <code class="cred-val" id="vpsPassVal">nhn9jB#7ypQ]VE;</code>
                     </div>
-                    <button class="cred-eye-btn cyber-sound-btn" id="togglePassEyeBtn" type="button" title="Ẩn/Hiện mật khẩu">
-                      <svg id="passEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    </button>
-                    <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsPassVal" type="button" title="Sao chép Password">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-                    </button>
+                    <div class="cred-row-actions">
+                      <button class="cred-eye-btn cyber-sound-btn" id="togglePassEyeBtn" type="button" title="Ẩn/Hiện mật khẩu">
+                        <svg id="passEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      </button>
+                      <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsPassVal" type="button" title="Sao chép Password">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -539,62 +545,26 @@
 
             <div class="t-divider"></div>
 
-            <!-- GEFORCE NOW LIVE QUEUE & PING MONITOR -->
+            <!-- GEFORCE NOW LIVE QUEUE & PING MONITOR (PrintedWaste Live API) -->
             <div class="t-block gfn-block">
               <div class="t-title-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-                <span class="t-title" style="color:#76b900">🎮 GeForce NOW Hàng Chờ &amp; Ping</span>
-                <button class="gfn-refresh-btn cyber-sound-btn" id="btnRefreshGfn" title="Làm mới dữ liệu hàng chờ">🔄 Cập nhật</button>
+                <span class="t-title" style="color:#76b900">🎮 Hàng Chờ &amp; Ping GFN (Live API)</span>
+                <button class="gfn-refresh-btn cyber-sound-btn" id="btnRefreshGfn" title="Lấy dữ liệu thời gian thực từ PrintedWaste">
+                  <span id="gfnRefreshTxt">🔄 Cập nhật</span>
+                </button>
               </div>
-              <div class="t-sub">Dữ liệu hàng chờ &amp; độ trễ máy chủ GeForce NOW (Tự động mỗi 1 phút)</div>
+              <div class="t-sub">Dữ liệu hàng chờ thời gian thực từ <strong>PrintedWaste Queue API</strong> &amp; đo Ping chuẩn</div>
+
+              <!-- Filter Tabs theo Region -->
+              <div class="gfn-filter-bar">
+                <button class="gfn-ftab active cyber-sound-btn" data-filter="all">Tất cả</button>
+                <button class="gfn-ftab cyber-sound-btn" data-filter="us">🇺🇸 US</button>
+                <button class="gfn-ftab cyber-sound-btn" data-filter="eu">🇪🇺 EU</button>
+                <button class="gfn-ftab cyber-sound-btn" data-filter="asia">🌏 Asia</button>
+              </div>
 
               <div class="gfn-server-list" id="gfnServerList">
-                <div class="gfn-item" data-region="sg">
-                  <div class="gfn-item-hdr">
-                    <span class="gfn-flag">🇸🇬</span>
-                    <strong class="gfn-name">StarHub Singapore</strong>
-                    <span class="gfn-status-dot online"></span>
-                  </div>
-                  <div class="gfn-item-stats">
-                    <span class="gfn-queue">Hàng chờ: <strong id="gfnQueueSg">12</strong></span>
-                    <span class="gfn-ping" id="gfnPingSg">Ping: <strong class="ping-fast">38 ms</strong></span>
-                  </div>
-                </div>
-
-                <div class="gfn-item" data-region="jp">
-                  <div class="gfn-item-hdr">
-                    <span class="gfn-flag">🇯🇵</span>
-                    <strong class="gfn-name">Japan (Tokyo)</strong>
-                    <span class="gfn-status-dot online"></span>
-                  </div>
-                  <div class="gfn-item-stats">
-                    <span class="gfn-queue">Hàng chờ: <strong id="gfnQueueJp">45</strong></span>
-                    <span class="gfn-ping" id="gfnPingJp">Ping: <strong class="ping-med">72 ms</strong></span>
-                  </div>
-                </div>
-
-                <div class="gfn-item" data-region="usc">
-                  <div class="gfn-item-hdr">
-                    <span class="gfn-flag">🇺🇸</span>
-                    <strong class="gfn-name">US Central (Dallas)</strong>
-                    <span class="gfn-status-dot online"></span>
-                  </div>
-                  <div class="gfn-item-stats">
-                    <span class="gfn-queue">Hàng chờ: <strong id="gfnQueueUsc">0 (Trống)</strong></span>
-                    <span class="gfn-ping" id="gfnPingUsc">Ping: <strong class="ping-slow">185 ms</strong></span>
-                  </div>
-                </div>
-
-                <div class="gfn-item" data-region="euc">
-                  <div class="gfn-item-hdr">
-                    <span class="gfn-flag">🇩🇪</span>
-                    <strong class="gfn-name">EU Central (Frankfurt)</strong>
-                    <span class="gfn-status-dot online"></span>
-                  </div>
-                  <div class="gfn-item-stats">
-                    <span class="gfn-queue">Hàng chờ: <strong id="gfnQueueEuc">8</strong></span>
-                    <span class="gfn-ping" id="gfnPingEuc">Ping: <strong class="ping-slow">210 ms</strong></span>
-                  </div>
-                </div>
+                <div class="gfn-loading-state">⏳ Đang tải dữ liệu hàng chờ từ PrintedWaste...</div>
               </div>
             </div>
 
