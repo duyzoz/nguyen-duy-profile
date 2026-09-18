@@ -4355,5 +4355,90 @@ Respond accurately with this ground truth knowledge:
   });
 })();
 
+  /* ════════════════════════════════════════════════════════════
+     WAVE 14, 15, 16: ULTRA CYBERPUNK SOUND & 120 FPS TURBO ENGINE
+     ════════════════════════════════════════════════════════════ */
+  // Wave 16: 0kb Native Web Audio API Sound Synthesizer
+  const CyberAudio = {
+    ctx: null,
+    init(){
+      if(!this.ctx && (window.AudioContext || window.webkitAudioContext)){
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if(this.ctx && this.ctx.state === 'suspended'){
+        this.ctx.resume().catch(()=>{});
+      }
+    },
+    beep(freq = 880, type = 'sine', dur = 0.08, gainVal = 0.05){
+      try {
+        this.init();
+        if(!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + dur);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + dur);
+      } catch(e){}
+    },
+    click(){ this.beep(1200, 'square', 0.03, 0.03); },
+    success(){
+      this.beep(587.33, 'triangle', 0.06, 0.04);
+      setTimeout(() => this.beep(880, 'sine', 0.12, 0.05), 60);
+    }
+  };
 
+  // Attach cyber sounds to buttons
+  document.addEventListener('click', (e) => {
+    if(e.target.closest('.cyber-sound-btn, .cred-copy-btn, .ts-launch-btn, .bp-btn, .tc-tab')){
+      CyberAudio.click();
+    }
+  });
+
+  // Wave 14: Demo Preview Button for VPS Credentials Card
+  const demoBtn = document.getElementById('vpsDemoBtn');
+  if(demoBtn){
+    demoBtn.addEventListener('click', () => {
+      const readyBox = document.getElementById('vpsReadyBox');
+      const ipVal = document.getElementById('vpsIpVal');
+      const userVal = document.getElementById('vpsUserVal');
+      const passVal = document.getElementById('vpsPassVal');
+      const rdpLink = document.getElementById('vpsRdpLink');
+
+      if(readyBox){
+        readyBox.style.display = 'flex';
+        // Generate a fun random secure password
+        const randomPass = 'DuyZoz@' + Math.floor(100000 + Math.random() * 900000);
+        const sampleIp = '100.' + Math.floor(64 + Math.random()*60) + '.' + Math.floor(10 + Math.random()*200) + '.' + Math.floor(10 + Math.random()*200);
+        
+        if(ipVal) ipVal.textContent = sampleIp;
+        if(userVal) userVal.textContent = 'AISTV-PREMIUM';
+        if(passVal) passVal.textContent = randomPass;
+        if(rdpLink) rdpLink.href = 'ms-rd:connect?server=' + sampleIp;
+
+        CyberAudio.success();
+        readyBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+  }
+
+  // Wave 15: Ultra Adaptive 120 FPS / Hardware Acceleration Enforcer
+  (function initFpsTurbo(){
+    const hud = document.getElementById('fpsHudBox');
+    if(hud){
+      hud.style.cursor = 'pointer';
+      hud.title = 'Bấm để kích hoạt Turbo 120 FPS Mode!';
+      hud.addEventListener('click', () => {
+        document.body.classList.toggle('turbo-120-active');
+        const isTurbo = document.body.classList.contains('turbo-120-active');
+        const tag = document.getElementById('fpsTag');
+        if(tag) tag.textContent = isTurbo ? '120Hz Ultra' : 'Smooth';
+        CyberAudio.success();
+      });
+    }
+  })();
 

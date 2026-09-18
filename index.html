@@ -26,7 +26,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" href="assets/avatar.png" />
   <link rel="apple-touch-icon" href="assets/avatar.png" />
-  <link rel="stylesheet" href="style.css?v=20260917_v45" />
+  <link rel="stylesheet" href="style.css?v=20260917_v48" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -359,10 +359,31 @@
                 </div>
               </div>
 
-              <!-- THÔNG TIN KẾT NỐI SAU KHI SẴN SÀNG -->
+              <!-- WAVE 14: CẢNH BÁO CẦU VỒNG RAINBOW NEON BẮT BUỘC BẬT TAILSCALE -->
+              <div class="ts-rainbow-alert" id="tsRainbowAlert">
+                <div class="ts-rainbow-inner">
+                  <span class="ts-rainbow-icon">🚨</span>
+                  <div class="ts-rainbow-text">
+                    <span class="ts-rainbow-badge">BẮT BUỘC</span>
+                    <span>Phải <strong>BẬT &amp; ĐĂNG NHẬP TAILSCALE</strong> trên máy bạn thì mới mở được Remote Desktop!</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- NÚT MỞ NHANH APP TRÊN THIẾT BỊ -->
+              <div class="ts-quick-launchers">
+                <a href="tailscale://" class="ts-launch-btn ts-launch-tailscale" title="Bấm để bật chạy ngầm app Tailscale trên máy">
+                  <span class="ts-launch-icon">🚀</span> Mở App Tailscale (Chạy Ngầm)
+                </a>
+                <button type="button" id="vpsDemoBtn" class="ts-launch-btn ts-launch-demo" title="Xem thử khung đăng nhập VPS ngay">
+                  <span class="ts-launch-icon">⚡</span> Xem Demo Khung Login
+                </button>
+              </div>
+
+              <!-- THÔNG TIN KẾT NỐI SAU KHI SẴN SÀNG (WAVE 14 VIP CARD) -->
               <div class="vps-ready-box" id="vpsReadyBox" style="display:none;flex-direction:column;gap:10px;margin-top:12px">
                 <div class="vps-ready-header" style="display:flex;justify-content:space-between;align-items:center">
-                  <span style="color:#34d399;font-weight:700;font-size:.82rem">🎉 MÁY CHỦ SẴN SÀNG!</span>
+                  <span class="vps-ready-glow">🎉 MÁY CHỦ SẴN SÀNG!</span>
                   <div class="vps-countdown-wrap">
                     <span class="vcd-label">⏳ Còn:</span>
                     <span class="vcd-timer" id="vpsCountdown">5:40:00</span>
@@ -372,23 +393,30 @@
                 <div class="vps-cred-card">
                   <div class="vps-cred-row">
                     <span class="cred-label">🌐 IP Tailscale:</span>
-                    <code class="cred-val" id="vpsIpVal">Đang lấy...</code>
-                    <button class="cred-copy-btn" data-copy="vpsIpVal" type="button">Copy</button>
+                    <code class="cred-val" id="vpsIpVal">100.86.124.90</code>
+                    <button class="cred-copy-btn cyber-sound-btn" data-copy="vpsIpVal" type="button">📋 Sao Chép</button>
                   </div>
                   <div class="vps-cred-row">
                     <span class="cred-label">👤 Tài khoản:</span>
                     <code class="cred-val" id="vpsUserVal">AISTV-PREMIUM</code>
-                    <button class="cred-copy-btn" data-copy="vpsUserVal" type="button">Copy</button>
+                    <button class="cred-copy-btn cyber-sound-btn" data-copy="vpsUserVal" type="button">📋 Sao Chép</button>
                   </div>
                   <div class="vps-cred-row">
                     <span class="cred-label">🔐 Mật khẩu:</span>
-                    <code class="cred-val" id="vpsPassVal">Đang tạo...</code>
-                    <button class="cred-copy-btn" data-copy="vpsPassVal" type="button">Copy</button>
+                    <code class="cred-val" id="vpsPassVal">DuyZoz@938210</code>
+                    <button class="cred-copy-btn cyber-sound-btn" data-copy="vpsPassVal" type="button">📋 Sao Chép</button>
                   </div>
                 </div>
 
+                <!-- NÚT MỞ TRỰC TIẾP REMOTE DESKTOP -->
+                <div class="vps-action-shortcuts">
+                  <a id="vpsRdpLink" href="ms-rd:connect?server=100.86.124.90" class="vps-rdp-direct-btn cyber-sound-btn">
+                    🖥️ Mở Remote Desktop Kết Nối Ngay
+                  </a>
+                </div>
+
                 <div class="vps-guide-tip">
-                  💡 <strong>Cách kết nối:</strong> Mở <em>Remote Desktop</em> (Windows: <code>mstsc</code> hoặc app di động) &rarr; Nhập <strong>IP Tailscale</strong> &rarr; Nhập <strong>User</strong> &amp; <strong>Mật khẩu</strong>!
+                  💡 <strong>Cách kết nối:</strong> Mở <em>Remote Desktop Connection</em> (Windows: bấm <code>Win + R</code> gõ <code>mstsc</code>) &rarr; Nhập <strong>IP Tailscale</strong> &rarr; Nhập <strong>Tài khoản</strong> &amp; <strong>Mật khẩu</strong> ở trên!
                 </div>
               </div>
             </div>
@@ -606,7 +634,7 @@
               <!-- API Key Modal / Popover -->
               <div class="ai-key-modal" id="aiKeyModal" style="display:none">
                 <div class="ai-key-modal-inner">
-                  <div class="ai-key-modal-title" id="aiKeyTitle">🔑 Cài Đặt AI API Key (Google Gemini v45)</div>
+                  <div class="ai-key-modal-title" id="aiKeyTitle">🔑 Cài Đặt AI API Key (Google Gemini v48)</div>
                   <div class="ai-key-modal-desc" id="aiKeyDesc">
                     Dán API Key Google Gemini (từ Google AI Studio - Free Tier, bắt đầu bằng AIza... hoặc AQ...) hoặc Groq / OpenAI để trò chuyện với AI thật 100%!
                   </div>
@@ -928,7 +956,7 @@
     </div>
   </div>
 
-  <script src="app_nd.js?v=20260917_v45"></script>
+  <script src="app_nd.js?v=20260917_v48"></script>
 <textarea id="rawWorkflowYaml" style="display:none" readonly>name: 🚀 SEVER AI STV PREMIUM
 
 on:
