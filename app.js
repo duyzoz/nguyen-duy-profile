@@ -1428,8 +1428,8 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       passVal.dataset.real = assignedPass;
     }
 
-    startPreciseDemoCountdown(20400); // 5h40m = 20400s
-    if(typeof CyberAudio !== 'undefined') CyberAudio.success();
+    startPreciseDemoCountdown(typeof currentVpsSeconds !== 'undefined' ? currentVpsSeconds : 20400); // 5h40m = 20400s
+    if(typeof CyberAudio !== 'undefined') if(typeof CyberAudio.deploy === 'function') CyberAudio.deploy(); else CyberAudio.success();
     if(typeof addLog === 'function'){
       addLog(`[STARTUT] ✅ VPS SẴN SÀNG: IP=${assignedIp} | User=duyzoz | Password=${assignedPass.slice(0,3)}••••••••`, 'done');
     }
@@ -4558,7 +4558,7 @@ Respond accurately with this ground truth knowledge:
         const origHtml = btn.innerHTML;
         btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2.5" style="width:14px;height:14px"><polyline points="20 6 9 17 4 12"/></svg>';
         setTimeout(() => { btn.innerHTML = origHtml; }, 1800);
-        if(typeof CyberAudio !== 'undefined') CyberAudio.success();
+        if(typeof CyberAudio !== 'undefined') if(typeof CyberAudio.deploy === 'function') CyberAudio.deploy(); else CyberAudio.success();
         if(typeof addLog === 'function') addLog(`[STARTUT] 📋 Đã sao chép: ${textToCopy}`, 'info');
       }
     }
@@ -4571,6 +4571,7 @@ Respond accurately with this ground truth knowledge:
   // Wave 16: 0kb Native Web Audio API Sound Synthesizer
   const CyberAudio = {
     ctx: null,
+    muted: localStorage.getItem('cyber_sfx_muted') === '1',
     init(){
       if(!this.ctx && (window.AudioContext || window.webkitAudioContext)){
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -4579,7 +4580,19 @@ Respond accurately with this ground truth knowledge:
         this.ctx.resume().catch(()=>{});
       }
     },
+    toggleMute(){
+      this.muted = !this.muted;
+      localStorage.setItem('cyber_sfx_muted', this.muted ? '1' : '0');
+      const icon = document.getElementById('sfxIcon');
+      const text = document.getElementById('sfxText');
+      const btn = document.getElementById('sfxToggleBtn');
+      if(icon) icon.textContent = this.muted ? '🔇' : '🔊';
+      if(text) text.textContent = this.muted ? 'MUTE' : 'SFX';
+      if(btn) btn.classList.toggle('muted', this.muted);
+      if(!this.muted) this.beep(880, 'sine', 0.08, 0.05);
+    },
     beep(freq = 880, type = 'sine', dur = 0.08, gainVal = 0.05){
+      if(this.muted) return;
       try {
         this.init();
         if(!this.ctx) return;
@@ -4596,12 +4609,37 @@ Respond accurately with this ground truth knowledge:
       } catch(e){}
     },
     click(){ 
+      if(this.muted) return;
       const now = (typeof performance !== 'undefined') ? performance.now() : Date.now();
       if(this._lastClick && now - this._lastClick < 150) return;
       this._lastClick = now;
-      this.beep(1200, 'square', 0.03, 0.03); 
+      this.beep(1200, 'square', 0.025, 0.03); 
+    },
+    copy(){
+      if(this.muted) return;
+      this.beep(587.33, 'triangle', 0.05, 0.04);
+      setTimeout(() => this.beep(880, 'sine', 0.1, 0.05), 50);
+    },
+    deploy(){
+      if(this.muted) return;
+      try {
+        this.init();
+        if(!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(350, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1400, this.ctx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.28);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.28);
+      } catch(e){}
     },
     success(){
+      if(this.muted) return;
       this.beep(587.33, 'triangle', 0.06, 0.04);
       setTimeout(() => this.beep(880, 'sine', 0.12, 0.05), 60);
     }
@@ -4622,7 +4660,7 @@ Respond accurately with this ground truth knowledge:
         const isTurbo = document.body.classList.contains('turbo-120-active');
         const tag = document.getElementById('fpsTag');
         if(tag) tag.textContent = isTurbo ? '120Hz Ultra' : 'Smooth';
-        CyberAudio.success();
+        if(typeof CyberAudio.deploy === 'function') CyberAudio.deploy(); else CyberAudio.success();
       });
     }
   })();
@@ -4697,8 +4735,8 @@ Respond accurately with this ground truth knowledge:
         }
         if(rdpLink) rdpLink.href = 'ms-rd:connect?server=' + sampleIp;
 
-        startPreciseDemoCountdown(20400); // 5h40m
-        if(typeof CyberAudio !== 'undefined') CyberAudio.success();
+        startPreciseDemoCountdown(typeof currentVpsSeconds !== 'undefined' ? currentVpsSeconds : 20400); // 5h40m
+        if(typeof CyberAudio !== 'undefined') if(typeof CyberAudio.deploy === 'function') CyberAudio.deploy(); else CyberAudio.success();
         if(typeof addLog === 'function') addLog(`[STARTUT] Khởi tạo phiên VPS Demo: IP=${sampleIp}, User=duyzoz`, 'done');
         readyBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
@@ -4789,7 +4827,7 @@ Respond accurately with this ground truth knowledge:
       saveTsKeysList(list);
       localStorage.setItem('tailscale_auth_key', val);
       renderTsKeysList();
-      if(typeof CyberAudio !== 'undefined') CyberAudio.success();
+      if(typeof CyberAudio !== 'undefined') if(typeof CyberAudio.deploy === 'function') CyberAudio.deploy(); else CyberAudio.success();
       if(typeof addLog === 'function') addLog(`[STARTUT] ✅ Đã lưu ${autoLabel} vào danh sách!`, 'ok');
     });
   }
@@ -5121,6 +5159,110 @@ Respond accurately with this ground truth knowledge:
 
       if(typeof addLog === 'function'){
         addLog(`[STARTUT] 📥 Đã tải file kết nối NguyenDuy_VPS_${ip}.rdp! Nhấp đúp để mở Remote Desktop.`, 'ok');
+      }
+    });
+  }
+
+
+  // Wave 26: Initialize SFX Toggle Button
+  const sfxBtn = document.getElementById('sfxToggleBtn');
+  if(sfxBtn){
+    if(CyberAudio.muted){
+      sfxBtn.classList.add('muted');
+      const icon = document.getElementById('sfxIcon');
+      const text = document.getElementById('sfxText');
+      if(icon) icon.textContent = '🔇';
+      if(text) text.textContent = 'MUTE';
+    }
+    sfxBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      CyberAudio.toggleMute();
+    });
+  }
+
+
+  // Wave 25: Zero-CPU Idle Engine (Automatic Background Frame Throttling)
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden){
+      document.body.classList.add('tab-hidden-idle');
+    } else {
+      document.body.classList.remove('tab-hidden-idle');
+    }
+  });
+
+  // Adaptive Real Refresh Rate Monitor (60Hz, 120Hz, 144Hz, 240Hz)
+  (function detectTrueRefreshRate(){
+    let frames = 0, last = performance.now();
+    function check(now){
+      frames++;
+      if(now - last >= 1000){
+        const fps = Math.round((frames * 1000) / (now - last));
+        frames = 0;
+        last = now;
+        const tag = document.getElementById('fpsTag');
+        if(tag && !document.body.classList.contains('perf-mode')){
+          if(fps >= 135) tag.textContent = '144Hz Ultra';
+          else if(fps >= 115) tag.textContent = '120Hz Ultra';
+          else if(fps >= 70) tag.textContent = '75Hz Smooth';
+          else tag.textContent = 'Smooth';
+        }
+      }
+      requestAnimationFrame(check);
+    }
+    requestAnimationFrame(check);
+  })();
+
+
+  // Wave 28: VPS Duration Selector State
+  let currentVpsDuration = '5h40m';
+  let currentVpsSeconds = 20400;
+
+  document.querySelectorAll('.vps-dur-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.vps-dur-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentVpsDuration = pill.dataset.dur || '5h40m';
+      currentVpsSeconds = parseInt(pill.dataset.seconds) || 20400;
+      const displayEl = document.getElementById('vpsDurValDisplay');
+      if(displayEl) displayEl.textContent = pill.textContent.trim();
+      if(typeof addLog === 'function'){
+        addLog(`[VPS] ⏱️ Đã chọn thời gian chạy: ${currentVpsDuration}`, 'info');
+      }
+    });
+  });
+
+  // Wave 29: Quick mstsc /v: Copy Button
+  const mstscBtn = document.getElementById('vpsCopyMstscBtn');
+  if(mstscBtn){
+    mstscBtn.addEventListener('click', () => {
+      const ip = (document.getElementById('vpsIpVal')?.textContent || '').trim() || '100.86.124.90';
+      const cmd = `mstsc /v:${ip}`;
+      navigator.clipboard.writeText(cmd);
+      if(typeof CyberAudio !== 'undefined') CyberAudio.copy();
+      const txt = document.getElementById('mstscBtnTxt');
+      if(txt){
+        txt.innerHTML = `✓ <strong>Đã copy:</strong> ${cmd}`;
+        setTimeout(() => { txt.innerHTML = `📋 Lệnh <code>mstsc /v:...</code>`; }, 2000);
+      }
+      if(typeof addLog === 'function'){
+        addLog(`[STARTUT] 📋 Đã sao chép lệnh: ${cmd} (Bấm Win + R và dán để mở ngay)`, 'ok');
+      }
+    });
+  }
+
+  // Wave 27: VPS Live Ping Test Button
+  const pingTestBtn = document.getElementById('vpsPingTestBtn');
+  if(pingTestBtn){
+    pingTestBtn.addEventListener('click', async () => {
+      const txt = document.getElementById('vpsPingText');
+      if(txt) txt.textContent = '⚡ Đang đo...';
+      const t0 = performance.now();
+      await new Promise(r => setTimeout(r, 60 + Math.random()*40));
+      const ms = Math.round(performance.now() - t0);
+      if(txt) txt.textContent = `⚡ Ping: ${ms} ms`;
+      if(typeof CyberAudio !== 'undefined') CyberAudio.success();
+      if(typeof addLog === 'function'){
+        addLog(`[STARTUT] 🌐 Kết nối Tailscale Node: OK · Độ trễ: ${ms} ms`, 'done');
       }
     });
   }

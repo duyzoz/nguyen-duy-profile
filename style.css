@@ -4203,3 +4203,113 @@ body.turbo-120-active .profile-card {
   color: #ffffff !important;
   transform: translateY(-1px) !important;
 }
+
+
+/* ══ WAVES 25-29: SFX TOGGLE, DURATION PILLS, SPECS BADGE & QUICK COMMAND ══ */
+.sfx-toggle-btn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  height: 28px !important;
+  padding: 0 8px !important;
+  border-radius: 6px !important;
+  background: rgba(10, 15, 30, 0.8) !important;
+  border: 1px solid rgba(0, 240, 255, 0.3) !important;
+  color: #00f0ff !important;
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all .2s ease !important;
+}
+.sfx-toggle-btn:hover {
+  background: rgba(0, 240, 255, 0.15) !important;
+  border-color: #00f0ff !important;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3) !important;
+}
+.sfx-toggle-btn.muted {
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #f87171 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* VPS Duration Pills (Wave 28) */
+.vps-duration-pills {
+  display: flex !important;
+  gap: 6px !important;
+  width: 100% !important;
+  margin-top: 4px !important;
+}
+.vps-dur-pill {
+  flex: 1 !important;
+  padding: 6px 4px !important;
+  border-radius: 6px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #94a3b8 !important;
+  font-size: 0.68rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all .15s ease !important;
+  text-align: center !important;
+}
+.vps-dur-pill:hover {
+  background: rgba(0, 240, 255, 0.08) !important;
+  border-color: rgba(0, 240, 255, 0.35) !important;
+  color: #00f0ff !important;
+}
+.vps-dur-pill.active {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(124, 58, 237, 0.35)) !important;
+  border: 1px solid #00f0ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.35) !important;
+}
+
+/* Hardware Specs Badge */
+.vps-specs-badge {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px 6px !important;
+  margin-top: 8px !important;
+  padding: 6px 8px !important;
+  background: rgba(10, 15, 30, 0.65) !important;
+  border: 1px dashed rgba(0, 240, 255, 0.2) !important;
+  border-radius: 6px !important;
+}
+.vsb-item {
+  font-size: 0.64rem !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  color: #7dd3fc !important;
+  padding: 1px 4px !important;
+  border-radius: 4px !important;
+  background: rgba(0, 240, 255, 0.06) !important;
+}
+
+/* Quick Actions (mstsc copy & ping test) */
+.vps-action-btn {
+  padding: 7px 10px !important;
+  background: rgba(15, 23, 42, 0.8) !important;
+  border: 1px solid rgba(0, 240, 255, 0.25) !important;
+  border-radius: 6px !important;
+  color: #38bdf8 !important;
+  font-size: 0.7rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  transition: all .15s ease !important;
+}
+.vps-action-btn:hover {
+  background: rgba(0, 240, 255, 0.15) !important;
+  border-color: #00f0ff !important;
+  color: #fff !important;
+}
+.vps-ping-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: pulseDot 1.4s infinite ease-in-out;
+}

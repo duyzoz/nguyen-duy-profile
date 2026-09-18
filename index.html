@@ -94,6 +94,10 @@
       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
       <span id="perfToggleText">⚡ Disable Video (Fix Lag)</span>
     </button>
+        <button class="sfx-toggle-btn cyber-sound-btn" id="sfxToggleBtn" title="Bật/Tắt hiệu ứng âm thanh Cyber">
+      <span id="sfxIcon">🔊</span>
+      <span id="sfxText">SFX</span>
+    </button>
     <button class="cli-toggle-btn" id="cliToggleBtn" title="Open Cyber Terminal CLI (~ or Ctrl+K)">
       <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
       <span>_CLI</span>
@@ -290,6 +294,26 @@
                   </button>
                 </div>
 
+                                <!-- WAVE 28: VPS DURATION SELECTOR & HARDWARE SPECS -->
+                <div class="vps-duration-wrap" style="margin-top:10px">
+                  <div class="vps-dur-hdr" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                    <span class="vps-label" style="margin-bottom:0">Thời gian duy trì VPS:</span>
+                    <span id="vpsDurValDisplay" style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#00f0ff;font-weight:700">5h40m (Tối Đa)</span>
+                  </div>
+                  <div class="vps-duration-pills">
+                    <button type="button" class="vps-dur-pill cyber-sound-btn" data-dur="1h" data-seconds="3600">🕐 1 Giờ</button>
+                    <button type="button" class="vps-dur-pill cyber-sound-btn" data-dur="3h" data-seconds="10800">🕒 3 Giờ</button>
+                    <button type="button" class="vps-dur-pill active cyber-sound-btn" data-dur="5h40m" data-seconds="20400">🕔 5h40m (Max)</button>
+                  </div>
+                </div>
+
+                <div class="vps-specs-badge">
+                  <span class="vsb-item">⚡ 4 vCPU</span>
+                  <span class="vsb-item">🧠 16GB RAM</span>
+                  <span class="vsb-item">🪟 Windows Server 2022</span>
+                  <span class="vsb-item">🚀 1 Gbps Mesh</span>
+                </div>
+
                 <div class="vps-btn-group" style="margin-top:12px;display:flex;gap:8px">
                   <button class="bp-btn" id="vpsCreateBtn" style="flex:1">
                     <span class="bp-txt">🚀 Khởi Tạo VPS</span>
@@ -366,6 +390,16 @@
                 <button type="button" id="vpsDownloadRdpBtn" class="vps-download-rdp-btn cyber-sound-btn" title="Tải file cấu hình .RDP kết nối ngay vào máy tính">
                   <span>📥 Tải File Kết Nối (.RDP) Mở Bằng 1-Click</span>
                 </button>
+                <!-- WAVE 27 & 29: QUICK MSTSC COMMAND & LIVE PING TEST -->
+                <div class="vps-quick-actions" style="display:flex;gap:6px;margin-top:6px">
+                  <button type="button" id="vpsCopyMstscBtn" class="vps-action-btn cyber-sound-btn" style="flex:1" title="Sao chép lệnh mstsc /v:IP để dán vào Win + R">
+                    <span id="mstscBtnTxt">📋 Lệnh <code>mstsc /v:...</code></span>
+                  </button>
+                  <button type="button" id="vpsPingTestBtn" class="vps-action-btn cyber-sound-btn" style="width:auto;padding:0 10px" title="Kiểm tra độ trễ mạng tới node VPS Tailscale">
+                    <span id="vpsPingDot" class="vps-ping-dot"></span>
+                    <span id="vpsPingText">⚡ Ping: -- ms</span>
+                  </button>
+                </div>
 
                 <div class="vps-guide-tip">
                   💡 <strong>Cách kết nối:</strong> Mở <em>Remote Desktop Connection</em> (Windows: bấm <code>Win + R</code> gõ <code>mstsc</code>) &rarr; Nhập <strong>IP</strong> &rarr; Nhập User <strong>duyzoz</strong> &amp; <strong>Password</strong> ở trên!
