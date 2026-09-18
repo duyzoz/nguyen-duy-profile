@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
 </head>
-<body>
+<body class="turbo-120-active">
 
   <!-- VIDEO & IMAGE BG (Cross-fade) -->
   <div class="bg-wrap">
@@ -312,23 +312,16 @@
                 </div>
               </div>
 
-              <!-- NÚT MỞ NHANH APP TRÊN THIẾT BỊ -->
-              <div class="ts-quick-launchers">
-                <a href="tailscale://" class="ts-launch-btn ts-launch-tailscale" title="Bấm để bật chạy ngầm app Tailscale trên máy">
-                  <span class="ts-launch-icon">🚀</span> Mở App Tailscale (Chạy Ngầm)
-                </a>
-                <button type="button" id="vpsDemoBtn" class="ts-launch-btn ts-launch-demo" title="Xem thử khung đăng nhập VPS ngay">
-                  <span class="ts-launch-icon">⚡</span> Xem Demo Khung Login
-                </button>
-              </div>
-
-                            <!-- THÔNG TIN KẾT NỐI SAU KHI SẴN SÀNG (WAVE 14 VIP CARD) -->
+              <!-- THÔNG TIN KẾT NỐI SAU KHI SẴN SÀNG (WAVE 14 VIP CARD) -->
               <div class="vps-ready-box" id="vpsReadyBox" style="display:none;flex-direction:column;gap:10px;margin-top:12px">
-                <div class="vps-ready-header" style="display:flex;justify-content:space-between;align-items:center">
-                  <span class="vps-ready-glow">🎉 MÁY CHỦ SẴN SÀNG!</span>
-                  <div class="vps-countdown-wrap">
-                    <span class="vcd-label">⏳ Hết hạn sau:</span>
-                    <span class="vcd-timer" id="vpsCountdown">05:40:00</span>
+                <div class="vps-ready-header">
+                  <div class="rdp-live-badge rdp-live" id="rdpLiveStatus">
+                    <span class="rdp-live-dot"></span>
+                    <span class="rdp-live-text" id="rdpLiveText">RDP LIVE</span>
+                  </div>
+                  <div class="vps-timer-pill" id="vpsTimerPill">
+                    <span class="vtp-icon">⏳</span>
+                    <span class="vtp-time" id="vpsCountdown">05:40:00</span>
                   </div>
                 </div>
 
@@ -369,13 +362,6 @@
                       </button>
                     </div>
                   </div>
-                </div>
-
-                <!-- NÚT MỞ TRỰC TIẾP REMOTE DESKTOP -->
-                <div class="vps-action-shortcuts">
-                  <a id="vpsRdpLink" href="ms-rd:connect?server=100.86.124.90" class="vps-rdp-direct-btn cyber-sound-btn">
-                    🖥️ Mở Remote Desktop Kết Nối Ngay
-                  </a>
                 </div>
 
                 <div class="vps-guide-tip">

@@ -4042,3 +4042,117 @@ body.lang-en, body.lang-en button, body.lang-en input, body.lang-en textarea {
   font-size: 0.75rem;
   color: #94a3b8;
 }
+
+
+/* ══ WAVES 21: SLEEK RDP LIVE, SHIMMER WAVE & COMPACT GFN ══ */
+.vps-ready-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 6px 10px !important;
+  background: rgba(10, 15, 29, 0.75) !important;
+  border: 1px solid rgba(0, 240, 255, 0.25) !important;
+  border-radius: 8px !important;
+  margin-bottom: 6px !important;
+}
+
+.rdp-live-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #00f0ff;
+  transition: all .2s ease;
+}
+
+.rdp-live-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 10px #22c55e, 0 0 16px rgba(34, 197, 94, 0.6);
+  animation: pulseLiveDot 1.4s infinite ease-in-out;
+}
+
+.rdp-live-badge.rdp-deploying {
+  color: #fde047;
+}
+.rdp-live-badge.rdp-deploying .rdp-live-dot {
+  background: #eab308;
+  box-shadow: 0 0 10px #eab308;
+}
+
+.rdp-live-badge.rdp-offline {
+  color: #f87171;
+}
+.rdp-live-badge.rdp-offline .rdp-live-dot {
+  background: #ef4444;
+  box-shadow: 0 0 10px #ef4444;
+  animation: none;
+}
+
+@keyframes pulseLiveDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+}
+
+.vps-timer-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  background: rgba(255, 0, 85, 0.12);
+  border: 1px solid rgba(255, 0, 85, 0.35);
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: #ff3366;
+  white-space: nowrap;
+}
+
+.vps-timer-pill .vtp-time {
+  letter-spacing: 0.5px;
+}
+
+/* Shimmer Wave rolling loading effect on IP/User/Pass */
+.shimmer-wave {
+  background: linear-gradient(90deg, rgba(0, 240, 255, 0.12) 0%, rgba(255, 0, 85, 0.38) 50%, rgba(0, 240, 255, 0.12) 100%) !important;
+  background-size: 200% 100% !important;
+  animation: shimmerRolling 1.4s infinite linear !important;
+  color: #00f0ff !important;
+  font-style: italic !important;
+  border-radius: 4px !important;
+  display: inline-block !important;
+}
+
+@keyframes shimmerRolling {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* GFN All-In-One Compact Layout */
+.gfn-server-list {
+  max-height: 180px !important;
+  overflow-y: auto !important;
+  padding-right: 3px !important;
+}
+
+.gfn-item {
+  padding: 5px 8px !important;
+  border-radius: 6px !important;
+}
+
+/* 120 FPS Turbo Mode Hardware Acceleration */
+body.turbo-120-active {
+  image-rendering: auto;
+}
+body.turbo-120-active .scene,
+body.turbo-120-active .tool-card,
+body.turbo-120-active .profile-card {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
