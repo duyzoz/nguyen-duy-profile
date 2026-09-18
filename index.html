@@ -26,7 +26,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" href="assets/avatar.png" />
   <link rel="apple-touch-icon" href="assets/avatar.png" />
-  <link rel="stylesheet" href="style.css?v=20260917_v48" />
+  <link rel="stylesheet" href="style.css?v=20260917_v50" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -204,95 +204,37 @@
           <button class="tc-tab" id="tabGame" data-panel="panelGame" title="Echo Hunter Mini-Game">🎮</button>
         </div>
 
-        <!-- PANEL: BYPASS -->
+        <!-- PANEL: STARTUT CONSOLE (startut.log) -->
         <div class="tc-panel" id="panelBypass">
-          <div class="log-win">
-            <div class="log-win-hdr">
-              <span class="lw-dot lw-r"></span>
-              <span class="lw-dot lw-y"></span>
-              <span class="lw-dot lw-g"></span>
-              <span class="lw-title">bypass.log</span>
-              <button class="lw-clear" id="lwClear">clear</button>
+          <div class="startut-console-wrap">
+            <div class="log-win startut-full-log">
+              <div class="log-win-hdr">
+                <span class="lw-dot lw-r"></span>
+                <span class="lw-dot lw-y"></span>
+                <span class="lw-dot lw-g"></span>
+                <span class="lw-title">startut.log</span>
+                <button class="lw-clear" id="lwClear">clear</button>
+              </div>
+              <div class="log-body startut-log-body" id="logBody">
+                <div class="le cyan">[STARTUT] Khởi động hệ sinh thái Nguyễn Duy Cyber v2.0... OK</div>
+                <div class="le dim" id="logInitMsg">[--:--:--] Sẵn sàng theo dõi mọi thao tác tương tác hệ thống.</div>
+              </div>
             </div>
-            <div class="log-body" id="logBody">
-              <div class="le dim" id="logInitMsg">[--:--:--] Ready for commands...</div>
-            </div>
-          </div>
 
-          <div class="bypass-result-box" id="bypassResultBox" style="display:none">
-            <div class="brb-label">✅ Bypass Successful</div>
-            <div class="brb-row">
-              <a class="brb-link" id="brbLink" href="#" target="_blank" rel="noopener noreferrer"></a>
-              <button class="brb-copy" id="brbCopy" title="Copy">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2"/>
-                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                </svg>
+            <!-- NÚT XÓA TẤT CẢ CACHE & DỮ LIỆU (FACTORY RESET) -->
+            <div class="startut-reset-card">
+              <button class="startut-reset-btn cyber-sound-btn" id="btnResetAllCache" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                <span>XÓA TẤT CẢ CACHE &amp; DỮ LIỆU (RESET)</span>
               </button>
-              <a class="brb-open" id="brbOpen" href="#" target="_blank" rel="noopener noreferrer">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
-                  <polyline points="15 3 21 3 21 9"/>
-                  <line x1="10" y1="14" x2="21" y2="3"/>
-                </svg>
-              </a>
-            </div>
-          </div>
-
-          <div class="t-inner">
-            <div class="t-block">
-              <div class="t-title" id="tokenTitle">🔑 GitHub Token</div>
-              <div class="t-sub" id="tokenSub">
-                How to get GitHub token
-                <a href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=VPS-Bypass" target="_blank" class="t-link t-link-glow">click here</a>
+              <div class="startut-reset-tip">
+                ⚠️ Xóa sạch toàn bộ LocalStorage, API Key AI, Token GitHub, Key Tailscale, dữ liệu cache để tải lại web sạch 100%.
               </div>
-              <!-- Tên token (bắt buộc) -->
-              <input id="tokenLabel" class="bp-input" type="text" placeholder="Token label/name (Required) *" autocomplete="off" style="margin-bottom:6px" />
-              <div class="key-err" id="tokenLabelErr" style="display:none">⚠️ Token name is required!</div>
-              <div class="key-row">
-                <input id="githubToken" class="bp-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
-                <button class="key-eye-btn" id="keyEyeBtn" title="Show/Hide token">
-                  <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                </button>
-                <button class="key-save-btn" id="keySaveBtn" title="Save">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
-                    <polyline points="17 21 17 13 7 13 7 21"/>
-                    <polyline points="7 3 7 8 15 8"/>
-                  </svg>
-                </button>
-              </div>
-              <div class="key-status" id="keyStatus" style="display:none"></div>
-            </div>
-
-            <div class="t-divider"></div>
-
-            <div class="t-block">
-              <div class="t-title-row">
-                <span class="t-title" id="bpTitle">🔗 Link Bypass</span>
-                <button class="sl-badge" id="slBadgeBtn">✅ Supported Links</button>
-              </div>
-              <div class="t-sub" id="bpSub">Automated all-in-one link bypass</div>
-              <input id="bypassInput" class="bp-input" type="url" placeholder="https://link-to-bypass.net/..." autocomplete="off" />
-              <button class="bp-btn" id="bypassBtn">
-                <span class="bp-txt">⚡ Bypass Now</span>
-                <span class="bp-spin" style="display:none"><i></i><i></i><i></i></span>
-              </button>
-              <div class="bp-err" id="bpErr" style="display:none"></div>
-            </div>
-
-            <div class="t-divider"></div>
-            <div class="t-soon">
-              <span class="sd"></span><span class="sd"></span><span class="sd"></span>
-              More utilities coming soon
             </div>
           </div>
         </div>
 
-        <!-- PANEL: TẠO VPS (TAILSCALE RDP CLOUD) -->
+        
         <div class="tc-panel" id="panelCreateVPS" style="display:none">
           <div class="t-inner">
             <div class="t-block">
@@ -380,31 +322,46 @@
                 </button>
               </div>
 
-              <!-- THÔNG TIN KẾT NỐI SAU KHI SẴN SÀNG (WAVE 14 VIP CARD) -->
+                            <!-- THÔNG TIN KẾT NỐI SAU KHI SẴN SÀNG (WAVE 14 VIP CARD) -->
               <div class="vps-ready-box" id="vpsReadyBox" style="display:none;flex-direction:column;gap:10px;margin-top:12px">
                 <div class="vps-ready-header" style="display:flex;justify-content:space-between;align-items:center">
                   <span class="vps-ready-glow">🎉 MÁY CHỦ SẴN SÀNG!</span>
                   <div class="vps-countdown-wrap">
-                    <span class="vcd-label">⏳ Còn:</span>
-                    <span class="vcd-timer" id="vpsCountdown">5:40:00</span>
+                    <span class="vcd-label">⏳ Hết hạn sau:</span>
+                    <span class="vcd-timer" id="vpsCountdown">05:40:00</span>
                   </div>
                 </div>
 
                 <div class="vps-cred-card">
                   <div class="vps-cred-row">
-                    <span class="cred-label">🌐 IP Tailscale:</span>
-                    <code class="cred-val" id="vpsIpVal">100.86.124.90</code>
-                    <button class="cred-copy-btn cyber-sound-btn" data-copy="vpsIpVal" type="button">📋 Sao Chép</button>
+                    <span class="cred-label">IP:</span>
+                    <div class="cred-val-wrap">
+                      <code class="cred-val" id="vpsIpVal">100.86.124.90</code>
+                    </div>
+                    <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsIpVal" type="button" title="Sao chép IP">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    </button>
                   </div>
                   <div class="vps-cred-row">
-                    <span class="cred-label">👤 Tài khoản:</span>
-                    <code class="cred-val" id="vpsUserVal">AISTV-PREMIUM</code>
-                    <button class="cred-copy-btn cyber-sound-btn" data-copy="vpsUserVal" type="button">📋 Sao Chép</button>
+                    <span class="cred-label">User name:</span>
+                    <div class="cred-val-wrap">
+                      <code class="cred-val" id="vpsUserVal">duyzoz</code>
+                    </div>
+                    <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsUserVal" type="button" title="Sao chép User name">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    </button>
                   </div>
                   <div class="vps-cred-row">
-                    <span class="cred-label">🔐 Mật khẩu:</span>
-                    <code class="cred-val" id="vpsPassVal">DuyZoz@938210</code>
-                    <button class="cred-copy-btn cyber-sound-btn" data-copy="vpsPassVal" type="button">📋 Sao Chép</button>
+                    <span class="cred-label">Password:</span>
+                    <div class="cred-val-wrap">
+                      <code class="cred-val" id="vpsPassVal">nhn9jB#7ypQ]VE;</code>
+                    </div>
+                    <button class="cred-eye-btn cyber-sound-btn" id="togglePassEyeBtn" type="button" title="Ẩn/Hiện mật khẩu">
+                      <svg id="passEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                    <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsPassVal" type="button" title="Sao chép Password">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    </button>
                   </div>
                 </div>
 
@@ -416,11 +373,10 @@
                 </div>
 
                 <div class="vps-guide-tip">
-                  💡 <strong>Cách kết nối:</strong> Mở <em>Remote Desktop Connection</em> (Windows: bấm <code>Win + R</code> gõ <code>mstsc</code>) &rarr; Nhập <strong>IP Tailscale</strong> &rarr; Nhập <strong>Tài khoản</strong> &amp; <strong>Mật khẩu</strong> ở trên!
+                  💡 <strong>Cách kết nối:</strong> Mở <em>Remote Desktop Connection</em> (Windows: bấm <code>Win + R</code> gõ <code>mstsc</code>) &rarr; Nhập <strong>IP</strong> &rarr; Nhập User <strong>duyzoz</strong> &amp; <strong>Password</strong> ở trên!
                 </div>
               </div>
             </div>
-
             <div class="t-divider"></div>
             <div class="vps-status-box" id="vpsStatusBox" style="display:none">
               <div class="vps-status-title" id="vpsStatusTitle">⚡ Trạng Thái</div>
@@ -432,22 +388,35 @@
         <!-- PANEL: QUẢN LÝ -->
         <div class="tc-panel" id="panelManage" style="display:none">
           <div class="t-inner">
+            <!-- GitHub Tokens List -->
             <div class="t-block">
-              <div class="t-title" id="mngTokensTitle" style="font-size:.85rem;margin-bottom:8px">🔑 Saved Token List</div>
+              <div class="t-title" id="mngTokensTitle" style="font-size:.85rem;margin-bottom:8px">🔑 Danh sách Token GitHub đã lưu</div>
               <div class="token-list" id="tokenList">
-                <div class="token-empty" id="tokenEmptyMsg">No tokens saved yet</div>
+                <div class="token-empty" id="tokenEmptyMsg">Chưa có token GitHub nào được lưu</div>
               </div>
             </div>
             <div class="t-divider"></div>
+
+            <!-- Tailscale Auth Keys List -->
             <div class="t-block">
-              <div class="t-title" id="mngVpsTitle" style="font-size:.85rem;margin-bottom:8px">🖥️ Created VPS Instances</div>
+              <div class="t-title" style="font-size:.85rem;margin-bottom:8px">🔒 Danh sách Tailscale Auth Key đã lưu</div>
+              <div class="token-list" id="tsKeyList">
+                <div class="token-empty" id="tsKeyEmptyMsg">Chưa có Tailscale Auth Key nào được lưu</div>
+              </div>
+            </div>
+            <div class="t-divider"></div>
+
+            <!-- VPS List -->
+            <div class="t-block">
+              <div class="t-title" id="mngVpsTitle" style="font-size:.85rem;margin-bottom:8px">🖥️ Danh sách VPS đã tạo</div>
               <div class="vps-list" id="vpsList">
-                <div class="token-empty" id="vpsEmptyMsg">No VPS instances created yet</div>
+                <div class="token-empty" id="vpsEmptyMsg">Chưa có VPS nào được tạo</div>
               </div>
             </div>
           </div>
         </div>
 
+        
         <!-- PANEL: DỰ ÁN (PROJECT SHOWCASE) -->
         <div class="tc-panel" id="panelProjects" style="display:none">
           <div class="t-inner">
@@ -476,7 +445,7 @@
                 <div class="proj-tags"><span>JavaScript</span><span>Workers</span><span>Edge API</span></div>
                 <div class="proj-actions">
                   <a href="https://github.com/duyzoz" target="_blank" class="proj-btn proj-gh">GitHub</a>
-                  <button class="proj-btn proj-live" onclick="document.getElementById('tabBypass').click()">Try it</button>
+                  <button class="proj-btn proj-live" onclick="document.getElementById('tabTools').click()">Try it</button>
                 </div>
               </div>
 
@@ -501,7 +470,7 @@
           <div class="t-inner">
             <!-- Ping Tester -->
             <div class="t-block">
-              <div class="t-title" id="pingTitle" style="font-size:.82rem;margin-bottom:8px">⚡ Live Network Ping Monitor</div>
+              <div class="t-title" id="pingTitle" style="font-size:.82rem;margin-bottom:8px">⚡ Kiểm tra Ping mạng Live</div>
               <div class="ping-grid">
                 <div class="ping-item">
                   <span class="ping-host">Cloudflare CDN</span>
@@ -516,8 +485,8 @@
                   <span class="ping-val" id="pingJsd">-- ms</span>
                 </div>
               </div>
-              <button class="bp-btn" id="btnTestPing" style="margin-top:8px;padding:6px 0;font-size:.66rem">
-                <span>🔄 Measure Latency</span>
+              <button class="bp-btn cyber-sound-btn" id="btnTestPing" style="margin-top:8px;padding:6px 0;font-size:.66rem">
+                <span>🔄 Bắt đầu đo Ping</span>
               </button>
             </div>
 
@@ -525,33 +494,114 @@
 
             <!-- Base64 Quick Converter -->
             <div class="t-block">
-              <div class="t-title" id="b64Title" style="font-size:.82rem;margin-bottom:8px">🔐 Base64 Encode / Decode</div>
-              <input class="bp-input" id="b64Input" placeholder="Enter text to encode or decode..." style="margin-bottom:6px" />
+              <div class="t-title" id="b64Title" style="font-size:.82rem;margin-bottom:8px">🔐 Mã hóa / Giải mã Base64</div>
+              <input class="bp-input" id="b64Input" placeholder="Nhập văn bản cần mã hóa/giải mã..." style="margin-bottom:6px" />
               <div class="b64-btn-row">
-                <button class="proj-btn proj-live" id="btnB64Enc" style="flex:1">Encode Base64</button>
-                <button class="proj-btn proj-gh" id="btnB64Dec" style="flex:1">Decode Base64</button>
+                <button class="proj-btn proj-live cyber-sound-btn" id="btnB64Enc" style="flex:1">Mã hóa Base64</button>
+                <button class="proj-btn proj-gh cyber-sound-btn" id="btnB64Dec" style="flex:1">Giải mã Base64</button>
               </div>
               <div class="b64-result" id="b64Result" style="display:none">
                 <span id="b64ResultText"></span>
-                <button id="btnCopyB64" class="tia-use" title="Copy">📋</button>
+                <button id="btnCopyB64" class="tia-use cyber-sound-btn" title="Sao chép">📋</button>
               </div>
             </div>
 
             <div class="t-divider"></div>
 
-            <!-- Backup & Restore Data Safe -->
+            <!-- BYPASS LINK (MOVED HERE AS REQUESTED) -->
             <div class="t-block">
-              <div class="t-title" id="backupTitle" style="font-size:.82rem;margin-bottom:6px">💾 Data Backup (Tokens &amp; VPS)</div>
-              <div class="backup-btn-row">
-                <button class="proj-btn proj-live" id="btnExportData" style="flex:1">📥 Export JSON</button>
-                <button class="proj-btn proj-gh" id="btnImportData" style="flex:1">📤 Import JSON</button>
-                <input type="file" id="importFileInput" accept=".json" style="display:none" />
+              <div class="t-title-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                <span class="t-title" id="bpTitle">🔗 Bypass Link</span>
+                <button class="sl-badge cyber-sound-btn" id="slBadgeBtn">✅ Xem link hỗ trợ</button>
               </div>
-              <div id="backupMsg" class="backup-msg" style="display:none"></div>
+              <div class="t-sub" id="bpSub">Tự động Bypass all-in-one link rút gọn</div>
+              <input id="bypassInput" class="bp-input" type="url" placeholder="https://link-can-bypass.net/..." autocomplete="off" />
+              <button class="bp-btn cyber-sound-btn" id="bypassBtn" style="margin-top:8px">
+                <span class="bp-txt">⚡ Bypass ngay</span>
+                <span class="bp-spin" style="display:none"><i></i><i></i><i></i></span>
+              </button>
+              <div class="bp-err" id="bpErr" style="display:none"></div>
+
+              <!-- Bypass Result Box -->
+              <div class="bypass-result-box" id="bypassResultBox" style="display:none;margin-top:8px">
+                <div class="brb-label">✅ Bypass Thành Công</div>
+                <div class="brb-row">
+                  <a class="brb-link" id="brbLink" href="#" target="_blank" rel="noopener noreferrer"></a>
+                  <button class="brb-copy cyber-sound-btn" id="brbCopy" title="Sao chép">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  </button>
+                  <a class="brb-open cyber-sound-btn" id="brbOpen" href="#" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                </div>
+              </div>
             </div>
+
+            <div class="t-divider"></div>
+
+            <!-- GEFORCE NOW LIVE QUEUE & PING MONITOR -->
+            <div class="t-block gfn-block">
+              <div class="t-title-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                <span class="t-title" style="color:#76b900">🎮 GeForce NOW Hàng Chờ &amp; Ping</span>
+                <button class="gfn-refresh-btn cyber-sound-btn" id="btnRefreshGfn" title="Làm mới dữ liệu hàng chờ">🔄 Cập nhật</button>
+              </div>
+              <div class="t-sub">Dữ liệu hàng chờ &amp; độ trễ máy chủ GeForce NOW (Tự động mỗi 1 phút)</div>
+
+              <div class="gfn-server-list" id="gfnServerList">
+                <div class="gfn-item" data-region="sg">
+                  <div class="gfn-item-hdr">
+                    <span class="gfn-flag">🇸🇬</span>
+                    <strong class="gfn-name">StarHub Singapore</strong>
+                    <span class="gfn-status-dot online"></span>
+                  </div>
+                  <div class="gfn-item-stats">
+                    <span class="gfn-queue">Hàng chờ: <strong id="gfnQueueSg">12</strong></span>
+                    <span class="gfn-ping" id="gfnPingSg">Ping: <strong class="ping-fast">38 ms</strong></span>
+                  </div>
+                </div>
+
+                <div class="gfn-item" data-region="jp">
+                  <div class="gfn-item-hdr">
+                    <span class="gfn-flag">🇯🇵</span>
+                    <strong class="gfn-name">Japan (Tokyo)</strong>
+                    <span class="gfn-status-dot online"></span>
+                  </div>
+                  <div class="gfn-item-stats">
+                    <span class="gfn-queue">Hàng chờ: <strong id="gfnQueueJp">45</strong></span>
+                    <span class="gfn-ping" id="gfnPingJp">Ping: <strong class="ping-med">72 ms</strong></span>
+                  </div>
+                </div>
+
+                <div class="gfn-item" data-region="usc">
+                  <div class="gfn-item-hdr">
+                    <span class="gfn-flag">🇺🇸</span>
+                    <strong class="gfn-name">US Central (Dallas)</strong>
+                    <span class="gfn-status-dot online"></span>
+                  </div>
+                  <div class="gfn-item-stats">
+                    <span class="gfn-queue">Hàng chờ: <strong id="gfnQueueUsc">0 (Trống)</strong></span>
+                    <span class="gfn-ping" id="gfnPingUsc">Ping: <strong class="ping-slow">185 ms</strong></span>
+                  </div>
+                </div>
+
+                <div class="gfn-item" data-region="euc">
+                  <div class="gfn-item-hdr">
+                    <span class="gfn-flag">🇩🇪</span>
+                    <strong class="gfn-name">EU Central (Frankfurt)</strong>
+                    <span class="gfn-status-dot online"></span>
+                  </div>
+                  <div class="gfn-item-stats">
+                    <span class="gfn-queue">Hàng chờ: <strong id="gfnQueueEuc">8</strong></span>
+                    <span class="gfn-ping" id="gfnPingEuc">Ping: <strong class="ping-slow">210 ms</strong></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
+        
         <!-- PANEL: LƯU BÚT (GUESTBOOK - Wave 8 & Wave 11) -->
         <div class="tc-panel" id="panelGuestbook" style="display:none">
           <div class="t-inner gb-full-inner">
@@ -634,7 +684,7 @@
               <!-- API Key Modal / Popover -->
               <div class="ai-key-modal" id="aiKeyModal" style="display:none">
                 <div class="ai-key-modal-inner">
-                  <div class="ai-key-modal-title" id="aiKeyTitle">🔑 Cài Đặt AI API Key (Google Gemini v48)</div>
+                  <div class="ai-key-modal-title" id="aiKeyTitle">🔑 Cài Đặt AI API Key (Google Gemini v50)</div>
                   <div class="ai-key-modal-desc" id="aiKeyDesc">
                     Dán API Key Google Gemini (từ Google AI Studio - Free Tier, bắt đầu bằng AIza... hoặc AQ...) hoặc Groq / OpenAI để trò chuyện với AI thật 100%!
                   </div>
@@ -956,7 +1006,7 @@
     </div>
   </div>
 
-  <script src="app_nd.js?v=20260917_v48"></script>
+  <script src="app_nd.js?v=20260917_v50"></script>
 <textarea id="rawWorkflowYaml" style="display:none" readonly>name: 🚀 SEVER AI STV PREMIUM
 
 on:
@@ -992,9 +1042,9 @@ jobs:
         run: |
           $pw = "DuyZoz@" + (Get-Random -Minimum 100000 -Maximum 999999)
           $sec = ConvertTo-SecureString $pw -AsPlainText -Force
-          New-LocalUser -Name "AISTV-PREMIUM" -Password $sec -AccountNeverExpires
-          Add-LocalGroupMember -Group "Administrators" -Member "AISTV-PREMIUM"
-          Add-LocalGroupMember -Group "Remote Desktop Users" -Member "AISTV-PREMIUM"
+          New-LocalUser -Name "duyzoz" -Password $sec -AccountNeverExpires
+          Add-LocalGroupMember -Group "Administrators" -Member "duyzoz"
+          Add-LocalGroupMember -Group "Remote Desktop Users" -Member "duyzoz"
           echo "RDP_PASS=$pw" >> $env:GITHUB_ENV
           echo "$pw" > $env:TEMP\rdp_password.txt
 
