@@ -148,11 +148,12 @@
             <polygon points="19 20 9 12 19 4 19 20"/><rect x="5" y="4" width="2" height="16" rx="1"/>
           </svg>
         </button>
-        <button class="mp-btn mp-play" id="mpPlay">
+        <button class="mp-btn mp-play cyber-sound-btn" id="mpPlay">
           <svg id="mpPlayIcon" viewBox="0 0 24 24" fill="currentColor">
             <polygon points="5 3 19 12 5 21 5 3"/>
           </svg>
         </button>
+        <button class="mp-btn mp-mob-expand cyber-sound-btn" id="mpMobExpandBtn" title="Mở rộng trình phát nhạc" aria-label="Mở rộng">▲</button>
         <button class="mp-btn mp-skip" id="mpNext" title="Bài tiếp">
           <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
             <polygon points="5 4 15 12 5 20 5 4"/><rect x="17" y="4" width="2" height="16" rx="1"/>
@@ -199,22 +200,22 @@
         <!-- MOBILE SHEET HEADER & DRAG HANDLE -->
         <div class="tool-card-mob-hdr" id="toolCardMobHdr">
           <div class="tool-card-mob-handle" id="toolCardMobHandle"></div>
-          <div class="tool-card-mob-title" id="toolCardMobTitle">⚡ Cyber Tools</div>
-          <button class="tool-card-mob-close" id="toolCardMobClose" aria-label="Close">✕</button>
+          <div class="tool-card-mob-title" id="toolCardMobTitle">⚡ Tiện Ích Cyber</div>
+          <button class="tool-card-mob-close cyber-sound-btn" id="toolCardMobClose" aria-label="Đóng bảng tiện ích" title="Đóng bảng tiện ích">✕</button>
         </div>
 
-        <div class="card-hdr tool-hdr" id="toolHdr">⚡ Tools &amp; Utilities</div>
+        <div class="card-hdr tool-hdr" id="toolHdr">⚡ Tiện Ích &amp; Công Cụ</div>
 
         <!-- TABS (Icon-only taskbar) -->
         <div class="tc-tabs">
-          <button class="tc-tab active" id="tabBypass" data-panel="panelBypass" title="Bypass">⚡</button>
-          <button class="tc-tab" id="tabCreateVPS" data-panel="panelCreateVPS" title="Create VPS">➕</button>
-          <button class="tc-tab" id="tabManage" data-panel="panelManage" title="Manage Tokens">🔑</button>
-          <button class="tc-tab" id="tabProjects" data-panel="panelProjects" title="Projects">🚀</button>
-          <button class="tc-tab" id="tabTools" data-panel="panelTools" title="Dev Tools">🛠️</button>
-          <button class="tc-tab" id="tabGuestbook" data-panel="panelGuestbook" title="Guestbook">💬</button>
-          <button class="tc-tab" id="tabAi" data-panel="panelAi" title="AI Assistant">🤖</button>
-          <button class="tc-tab" id="tabGame" data-panel="panelGame" title="Echo Hunter Mini-Game">🎮</button>
+          <button class="tc-tab active cyber-sound-btn" id="tabBypass" data-panel="panelBypass" title="⚡ Bật Mã / Bypass Link">⚡</button>
+          <button class="tc-tab cyber-sound-btn" id="tabCreateVPS" data-panel="panelCreateVPS" title="➕ Khởi Tạo VPS Cloud">➕</button>
+          <button class="tc-tab cyber-sound-btn" id="tabManage" data-panel="panelManage" title="🔑 Quản Lý Token & VPS">🔑</button>
+          <button class="tc-tab cyber-sound-btn" id="tabProjects" data-panel="panelProjects" title="🚀 Dự Án Tiêu Biểu">🚀</button>
+          <button class="tc-tab cyber-sound-btn" id="tabTools" data-panel="panelTools" title="🛠️ Tiện Ích & Dev Tools">🛠️</button>
+          <button class="tc-tab cyber-sound-btn" id="tabGuestbook" data-panel="panelGuestbook" title="💬 Lưu Bút Trực Tuyến">💬</button>
+          <button class="tc-tab cyber-sound-btn" id="tabAi" data-panel="panelAi" title="🤖 Trợ Lý AI Nguyễn Duy">🤖</button>
+          <button class="tc-tab cyber-sound-btn" id="tabGame" data-panel="panelGame" title="🎮 Echo Hunter Mini-Game">🎮</button>
         </div>
 
         <!-- PANEL: STARTUT CONSOLE (startut.log) -->
@@ -891,29 +892,29 @@
 
     <!-- MOBILE CYBER NAVIGATION DOCK (Thumb-friendly 6-item bar) -->
     <nav class="mobile-nav-dock" id="mobileNavDock" aria-label="Mobile Navigation">
-      <button class="mob-nav-item active" id="mobNavProfile" data-target="profile" aria-label="Profile">
+      <button class="mob-nav-item active cyber-sound-btn" id="mobNavProfile" data-target="profile" aria-label="Hồ Sơ">
         <span class="mob-nav-icon">👤</span>
-        <span class="mob-nav-label" id="mobLblProfile">Profile</span>
+        <span class="mob-nav-label" id="mobLblProfile">Hồ Sơ</span>
       </button>
-      <button class="mob-nav-item" id="mobNavBypass" data-target="panelBypass" aria-label="Bypass">
+      <button class="mob-nav-item cyber-sound-btn" id="mobNavBypass" data-target="panelBypass" aria-label="Bypass">
         <span class="mob-nav-icon">⚡</span>
         <span class="mob-nav-label" id="mobLblBypass">Bypass</span>
       </button>
-      <button class="mob-nav-item" id="mobNavChat" data-target="panelGuestbook" aria-label="Chat">
-        <span class="mob-nav-icon">💬</span>
-        <span class="mob-nav-label" id="mobLblChat">Chat</span>
+      <button class="mob-nav-item cyber-sound-btn" id="mobNavVps" data-target="panelCreateVPS" aria-label="Tạo VPS">
+        <span class="mob-nav-icon">🖥️</span>
+        <span class="mob-nav-label" id="mobLblVps">Tạo VPS</span>
       </button>
-      <button class="mob-nav-item" id="mobNavAi" data-target="panelAi" aria-label="AI Bot">
+      <button class="mob-nav-item cyber-sound-btn" id="mobNavManage" data-target="panelManage" aria-label="Quản Lý">
+        <span class="mob-nav-icon">🔑</span>
+        <span class="mob-nav-label" id="mobLblManage">Quản Lý</span>
+      </button>
+      <button class="mob-nav-item cyber-sound-btn" id="mobNavChat" data-target="panelGuestbook" aria-label="Lưu Bút">
+        <span class="mob-nav-icon">💬</span>
+        <span class="mob-nav-label" id="mobLblChat">Lưu Bút</span>
+      </button>
+      <button class="mob-nav-item cyber-sound-btn" id="mobNavAi" data-target="panelAi" aria-label="AI Bot">
         <span class="mob-nav-icon">🤖</span>
         <span class="mob-nav-label" id="mobLblAi">AI Bot</span>
-      </button>
-      <button class="mob-nav-item" id="mobNavTools" data-target="panelTools" aria-label="Tools">
-        <span class="mob-nav-icon">🛠️</span>
-        <span class="mob-nav-label" id="mobLblTools">Tools</span>
-      </button>
-      <button class="mob-nav-item" id="mobNavGame" data-target="panelGame" aria-label="Game">
-        <span class="mob-nav-icon">🎮</span>
-        <span class="mob-nav-label" id="mobLblGame">Game</span>
       </button>
     </nav>
   </div>

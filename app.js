@@ -705,13 +705,14 @@ window.TYPING_DATA = {
   /* ── Dedicated Mobile View Switcher (100% Direct, Zero Black Screen, Zero Lag) ── */
   const MOB_TITLES = {
     profile: '👤 Nguyễn Duy Profile',
-    panelBypass: '⚡ Link Bypass All-in-One',
-    panelGuestbook: '💬 Lưu Bút Cộng Đồng',
-    panelAi: '🤖 Nguyễn Duy AI',
-    panelTools: '🛠️ Dev Tools',
-    panelCreateVPS: '🖥️ Create VPS',
-    panelManage: '🔑 VPS Manager',
-    panelGame: '🎮 Echo Hunter'
+    panelBypass: '⚡ Bật Mã / Bypass Link',
+    panelCreateVPS: '🖥️ Khởi Tạo VPS Cloud',
+    panelManage: '🔑 Quản Lý Token & VPS',
+    panelProjects: '🚀 Dự Án Tiêu Biểu',
+    panelTools: '🛠️ Tiện Ích & Dev Tools',
+    panelGuestbook: '💬 Lưu Bút Trực Tuyến',
+    panelAi: '🤖 Trợ Lý AI Nguyễn Duy',
+    panelGame: '🎮 Echo Hunter Mini-Game'
   };
 
   function setMobileTab(target) {
@@ -728,20 +729,24 @@ window.TYPING_DATA = {
 
     if (isMobile()) {
       if (target === 'profile') {
+        document.body.classList.remove('mob-sheet-open');
         if (toolCard) {
           toolCard.classList.remove('active-mobile');
           toolCard.style.display = 'none';
+          toolCard.style.transform = '';
         }
         if (profileCard) {
           profileCard.style.display = 'flex';
         }
       } else {
+        document.body.classList.add('mob-sheet-open');
         if (profileCard) {
           profileCard.style.display = 'none';
         }
         if (toolCard) {
           toolCard.style.display = 'flex';
           toolCard.classList.add('active-mobile');
+          toolCard.style.transform = '';
           // Activate corresponding panel tab
           const tabEl = document.querySelector(`.tc-tab[data-panel="${target}"]`);
           if (tabEl) tabEl.click();
@@ -864,25 +869,25 @@ window.TYPING_DATA = {
   const mobTitle = document.getElementById('toolCardMobTitle');
 
   const TITLE_MAP = {
-    panelBypass: '⚡ Bypass Engine',
-    panelCreateVPS: '➕ Create VPS 6H',
-    panelManage: '🔑 Token Manager',
-    panelProjects: '🚀 Featured Projects',
-    panelTools: '🛠️ Dev Cyber Toolkit',
-    panelGuestbook: '💬 Cyber Guestbook',
-    panelAi: '🤖 Nguyễn Duy AI Twin',
+    panelBypass: '⚡ Bật Mã / Bypass Link',
+    panelCreateVPS: '🖥️ Khởi Tạo VPS Cloud',
+    panelManage: '🔑 Quản Lý Token & VPS',
+    panelProjects: '🚀 Dự Án Tiêu Biểu',
+    panelTools: '🛠️ Tiện Ích & Dev Tools',
+    panelGuestbook: '💬 Lưu Bút Trực Tuyến',
+    panelAi: '🤖 Trợ Lý AI Nguyễn Duy',
     panelGame: '🎮 Echo Hunter Mini-Game'
   };
 
   const MOB_NAV_MAP = {
     panelBypass: 'mobNavBypass',
-    panelCreateVPS: 'mobNavTools',
-    panelManage: 'mobNavTools',
-    panelProjects: 'mobNavTools',
-    panelTools: 'mobNavTools',
+    panelCreateVPS: 'mobNavVps',
+    panelManage: 'mobNavManage',
+    panelProjects: 'mobNavProfile',
+    panelTools: 'mobNavProfile',
     panelGuestbook: 'mobNavChat',
     panelAi: 'mobNavAi',
-    panelGame: 'mobNavGame'
+    panelGame: 'mobNavProfile'
   };
 
   tabs.forEach(tab=>{
@@ -5410,3 +5415,126 @@ Respond accurately with this ground truth knowledge:
       }
     });
   }
+
+/* ═══════════════════════════════════════════════════════════
+   WAVES 35 - 40: SMARTPHONE INTERACTION & GESTURE ENGINE
+   ═══════════════════════════════════════════════════════════ */
+(function() {
+  const toolCard = document.getElementById('toolCard');
+  const mobHdr = document.getElementById('toolCardMobHdr');
+  const isMobile = () => window.innerWidth < 768;
+
+  // Wave 36: Mobile Bottom Sheet Swipe-to-Dismiss Gesture
+  if (mobHdr && toolCard) {
+    let startY = 0;
+    let currentY = 0;
+    let isDragging = false;
+
+    mobHdr.addEventListener('touchstart', (e) => {
+      if (!isMobile()) return;
+      startY = e.touches[0].clientY;
+      isDragging = true;
+      toolCard.style.transition = 'none';
+    }, { passive: true });
+
+    mobHdr.addEventListener('touchmove', (e) => {
+      if (!isDragging || !isMobile()) return;
+      currentY = e.touches[0].clientY;
+      const deltaY = currentY - startY;
+      if (deltaY > 0) {
+        toolCard.style.transform = `translateY(${deltaY}px)`;
+      }
+    }, { passive: true });
+
+    mobHdr.addEventListener('touchend', (e) => {
+      if (!isDragging || !isMobile()) return;
+      isDragging = false;
+      const deltaY = currentY - startY;
+      toolCard.style.transition = 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)';
+      if (deltaY > 65) {
+        toolCard.style.transform = 'translateY(100%)';
+        setTimeout(() => {
+          toolCard.style.transform = '';
+          if (window.setMobileTab) window.setMobileTab('profile');
+        }, 220);
+      } else {
+        toolCard.style.transform = 'translateY(0)';
+        setTimeout(() => {
+          toolCard.style.transform = '';
+        }, 220);
+      }
+      startY = 0;
+      currentY = 0;
+    }, { passive: true });
+  }
+
+  // Wave 37: Virtual Keyboard Avoidance (Auto-scroll & Bottom Padding)
+  if (window.visualViewport) {
+    const origHeight = window.visualViewport.height;
+    window.visualViewport.addEventListener('resize', () => {
+      if (!isMobile()) return;
+      const currentHeight = window.visualViewport.height;
+      const activeEl = document.activeElement;
+      if (activeEl && /INPUT|TEXTAREA/i.test(activeEl.tagName) && toolCard && toolCard.contains(activeEl)) {
+        if (origHeight - currentHeight > 140) {
+          const panel = activeEl.closest('.tc-panel');
+          if (panel) {
+            panel.style.paddingBottom = (origHeight - currentHeight + 25) + 'px';
+          }
+          setTimeout(() => {
+            activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 60);
+        } else {
+          const panels = toolCard.querySelectorAll('.tc-panel');
+          panels.forEach(p => p.style.paddingBottom = '');
+        }
+      }
+    });
+  }
+
+  document.addEventListener('focusin', (e) => {
+    if (!isMobile()) return;
+    const target = e.target;
+    if (target && /INPUT|TEXTAREA/i.test(target.tagName) && toolCard && toolCard.contains(target)) {
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    }
+  });
+
+  document.addEventListener('focusout', (e) => {
+    if (!isMobile()) return;
+    if (toolCard) {
+      const panels = toolCard.querySelectorAll('.tc-panel');
+      panels.forEach(p => p.style.paddingBottom = '');
+    }
+  });
+
+  // Wave 39: Mini Music Player Expand/Collapse on Mobile
+  const playerCard = document.getElementById('musicPlayer');
+  const mobExpandBtn = document.getElementById('mpMobExpandBtn');
+  if (playerCard && mobExpandBtn) {
+    mobExpandBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      playerCard.classList.toggle('mp-expanded');
+      mobExpandBtn.textContent = playerCard.classList.contains('mp-expanded') ? '✕' : '▲';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!isMobile() || !playerCard.classList.contains('mp-expanded')) return;
+      if (!playerCard.contains(e.target)) {
+        playerCard.classList.remove('mp-expanded');
+        mobExpandBtn.textContent = '▲';
+      }
+    });
+  }
+
+  // Wave 40: Mobile Haptic Feedback on button tap
+  document.addEventListener('pointerdown', (e) => {
+    if (!isMobile()) return;
+    const btn = e.target.closest('button, .tc-tab, .mob-nav-item, .vps-dur-pill, .vps-action-btn, .cred-copy-icon-btn, .cred-eye-btn, .key-eye-btn');
+    if (btn && typeof navigator !== 'undefined' && navigator.vibrate) {
+      try { navigator.vibrate(10); } catch(err) {}
+    }
+  }, { passive: true });
+})();

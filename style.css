@@ -4483,3 +4483,201 @@ html[data-theme="synthwave"] {
   --a2: #8b5cf6 !important;
   --a3: #ec4899 !important;
 }
+
+/* WAVE 39: DESKTOP HIDE MOBILE MUSIC EXPAND */
+.mp-mob-expand { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   WAVES 35 - 40: SMARTPHONE COMPREHENSIVE UI/UX ENGINE
+   ═══════════════════════════════════════════════════════════ */
+
+/* Wave 36: Mobile Scroll Lock when sheet open */
+body.mob-sheet-open {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+
+@media (max-width: 767px) {
+  /* Wave 36: Mobile Drag Handle & Sheet Header */
+  .tool-card-mob-hdr {
+    position: relative !important;
+    height: 42px !important;
+    padding: 6px 12px 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    touch-action: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  .tool-card-mob-handle {
+    display: block !important;
+    width: 44px !important;
+    height: 5px !important;
+    border-radius: 3px !important;
+    background: rgba(255, 255, 255, 0.32) !important;
+    position: absolute !important;
+    top: 5px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    cursor: grab !important;
+    touch-action: none !important;
+    transition: background .2s ease !important;
+  }
+  .tool-card-mob-handle:active {
+    background: #00f0ff !important;
+  }
+
+  /* Wave 38: Ergonomic 44px+ Tap Targets for Fingers */
+  .cred-copy-icon-btn, .cred-eye-btn {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    border-radius: 8px !important;
+  }
+  .cred-copy-icon-btn svg, .cred-eye-btn svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+  .cred-row-actions {
+    gap: 8px !important;
+  }
+  .vps-cred-row {
+    gap: 8px !important;
+    min-height: 44px !important;
+    margin-bottom: 6px !important;
+  }
+  .key-eye-btn {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    border-radius: 8px !important;
+  }
+  .token-del-btn, .vps-del-btn {
+    min-width: 36px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+  }
+  .vps-dur-pill {
+    min-height: 40px !important;
+    padding: 8px 4px !important;
+    font-size: 0.76rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .vps-action-btn {
+    min-height: 42px !important;
+    font-size: 0.74rem !important;
+  }
+  #vpsCreateBtn {
+    min-height: 46px !important;
+    font-size: 0.88rem !important;
+  }
+  .tc-tab {
+    min-height: 38px !important;
+    min-width: 38px !important;
+    border-radius: 8px !important;
+    font-size: 1.05rem !important;
+  }
+  .mob-nav-item {
+    min-height: 52px !important;
+  }
+  .tc-panel {
+    transition: padding-bottom 0.2s ease !important;
+    padding: 8px 10px 16px !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Wave 39: Mobile Compact Mini Music Player & Expander */
+  .mp-mob-expand {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #00f0ff !important;
+    font-size: 0.65rem !important;
+    border: none !important;
+    cursor: pointer !important;
+    margin-left: 2px !important;
+    transition: transform .2s ease !important;
+  }
+  .music-player.mp-expanded .mp-mob-expand {
+    transform: rotate(180deg) !important;
+    color: #ff5f57 !important;
+  }
+
+  .music-player.mp-expanded {
+    position: fixed !important;
+    top: 48px !important;
+    right: 8px !important;
+    width: calc(100vw - 16px) !important;
+    max-width: 350px !important;
+    height: auto !important;
+    padding: 12px 14px !important;
+    border-radius: 16px !important;
+    background: rgba(12, 10, 28, 0.98) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid rgba(0, 240, 255, 0.45) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.92) !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    animation: mpPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  @keyframes mpPopIn {
+    from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .music-player.mp-expanded .mp-art-wrap {
+    width: 46px !important;
+    height: 46px !important;
+    margin: 0 auto !important;
+  }
+  .music-player.mp-expanded .mp-marquee-wrap {
+    max-width: 100% !important;
+    font-size: 0.74rem !important;
+    text-align: center !important;
+    margin-bottom: 2px !important;
+  }
+  .music-player.mp-expanded .mp-timeline-wrap,
+  .music-player.mp-expanded .mp-vol-wrap,
+  .music-player.mp-expanded .mp-bottom-row,
+  .music-player.mp-expanded .mp-btn.mp-skip,
+  .music-player.mp-expanded .mp-btn.mp-repeat-btn,
+  .music-player.mp-expanded .mp-btn#mpMute {
+    display: flex !important;
+  }
+  .music-player.mp-expanded .mp-controls {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 14px !important;
+  }
+  .music-player.mp-expanded .mp-btn.mp-play {
+    width: 38px !important;
+    height: 38px !important;
+  }
+  .music-player.mp-expanded .mp-vol-wrap {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  .music-player.mp-expanded .mp-vol-slider {
+    flex: 1 !important;
+    height: 4px !important;
+  }
+
+  /* Wave 40: Touch Ripple Feedback & Active State (Zero-overhead GPU transforms) */
+  .cyber-sound-btn:active, .tc-tab:active, .mob-nav-item:active, .vps-dur-pill:active, 
+  .vps-action-btn:active, .cred-copy-icon-btn:active, .cred-eye-btn:active, 
+  .key-eye-btn:active, .bp-btn:active, .tool-card-mob-close:active {
+    transform: scale(0.94) !important;
+    transition: transform 0.08s ease !important;
+    filter: brightness(1.25) !important;
+  }
+}
