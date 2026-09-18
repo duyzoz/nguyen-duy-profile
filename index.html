@@ -108,13 +108,45 @@
     </button>
   </div>
 
-  <!-- MUSIC PLAYER — floating cyber card -->
+    <!-- MUSIC PLAYER — PEAK CYBER VINYL DECK (Wave 46) -->
   <div class="music-player" id="musicPlayer">
-    <div class="mp-art-wrap">
+    <!-- Spinning Vinyl Disc & Holographic Album Art -->
+    <div class="mp-vinyl-wrap" id="mpVinylWrap" title="Nhấp để mở rộng đĩa nhạc Cyber">
+      <div class="mp-vinyl-disc" id="mpVinylDisc">
+        <div class="mp-vinyl-grooves"></div>
+        <div class="mp-vinyl-label">
+          <img src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg" alt="cover" class="mp-art" id="mpArt" />
+          <div class="mp-vinyl-spindle"></div>
+        </div>
+      </div>
       <div class="mp-art-glow" id="mpSpin"></div>
-      <img src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg" alt="cover" class="mp-art" id="mpArt" />
     </div>
-    <div class="mp-info">
+
+    <!-- Mobile Dynamic Island Capsule Bar (Visible on mobile header) -->
+    <div class="mp-mob-island-bar" id="mpMobIslandBar">
+      <div class="mp-mob-island-info">
+        <span class="mp-mob-note">🎵</span>
+        <div class="mp-mob-marquee-wrap">
+          <span class="mp-mob-title" id="mpMobTitle">2IN1 - Người Đã Yêu Ai</span>
+        </div>
+        <div class="mp-eq mp-mob-eq" id="mpMobEq">
+          <span class="mp-eq-bar"></span>
+          <span class="mp-eq-bar"></span>
+          <span class="mp-eq-bar"></span>
+        </div>
+      </div>
+      <button class="mp-btn mp-play mp-mob-island-play cyber-sound-btn" id="mpMobPlayBtn" type="button" aria-label="Phát nhạc">
+        <svg id="mpMobPlayIcon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </button>
+      <button class="mp-btn mp-mob-expand cyber-sound-btn" id="mpMobExpandBtn" type="button" aria-label="Mở rộng">▲</button>
+    </div>
+
+    <!-- Main Cyber Player Deck -->
+    <div class="mp-info" id="mpDeckInfo">
+      <div class="mp-header-row">
+        <div class="mp-badge-tag"><span class="mp-badge-dot"></span>CYBER VINYL DECK</div>
+        <button class="mp-modal-close cyber-sound-btn" id="mpModalClose" type="button" aria-label="Đóng đĩa nhạc">✕</button>
+      </div>
       <div class="mp-marquee-wrap">
         <div class="mp-marquee" id="mpMarquee">
           <span>2IN1 - Người Đã Yêu Ai Remix</span>
@@ -124,18 +156,19 @@
           <span class="mp-eq-bar"></span>
           <span class="mp-eq-bar"></span>
           <span class="mp-eq-bar"></span>
+          <span class="mp-eq-bar"></span>
         </div>
       </div>
       <div class="mp-timeline-wrap">
         <span class="mp-time" id="mpCur">0:00</span>
         <div class="mp-track" id="mpTrack">
           <div class="mp-fill" id="mpFill"></div>
-          <input class="mp-seek" id="mpSeek" type="range" min="0" max="100" value="0" step="0.1" />
+          <input class="mp-seek" id="mpSeek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Timeline" />
         </div>
         <span class="mp-time" id="mpDur">0:00</span>
       </div>
       <div class="mp-controls">
-        <button class="mp-btn mp-repeat-btn" id="mpRepeat" title="Lặp tất cả">
+        <button class="mp-btn mp-repeat-btn cyber-sound-btn" id="mpRepeat" title="Lặp tất cả">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="17 1 21 5 17 9"/>
             <path d="M3 11V9a4 4 0 014-4h14"/>
@@ -143,23 +176,22 @@
             <path d="M21 13v2a4 4 0 01-4 4H3"/>
           </svg>
         </button>
-        <button class="mp-btn mp-skip" id="mpPrev" title="Bài trước">
+        <button class="mp-btn mp-skip cyber-sound-btn" id="mpPrev" title="Bài trước">
           <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
             <polygon points="19 20 9 12 19 4 19 20"/><rect x="5" y="4" width="2" height="16" rx="1"/>
           </svg>
         </button>
-        <button class="mp-btn mp-play cyber-sound-btn" id="mpPlay">
+        <button class="mp-btn mp-play cyber-sound-btn" id="mpPlay" title="Phát / Dừng">
           <svg id="mpPlayIcon" viewBox="0 0 24 24" fill="currentColor">
             <polygon points="5 3 19 12 5 21 5 3"/>
           </svg>
         </button>
-        <button class="mp-btn mp-mob-expand cyber-sound-btn" id="mpMobExpandBtn" title="Mở rộng trình phát nhạc" aria-label="Mở rộng">▲</button>
-        <button class="mp-btn mp-skip" id="mpNext" title="Bài tiếp">
+        <button class="mp-btn mp-skip cyber-sound-btn" id="mpNext" title="Bài tiếp">
           <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
             <polygon points="5 4 15 12 5 20 5 4"/><rect x="17" y="4" width="2" height="16" rx="1"/>
           </svg>
         </button>
-        <button class="mp-btn" id="mpMute" title="Tắt tiếng">
+        <button class="mp-btn cyber-sound-btn" id="mpMute" title="Tắt / Bật tiếng">
           <svg id="mpVolIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
             <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
@@ -170,20 +202,15 @@
         <svg class="mp-vol-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
         </svg>
-        <input class="mp-vol-slider" id="mpVol" type="range" min="0" max="1" value="0.8" step="0.01" />
+        <input class="mp-vol-slider" id="mpVol" type="range" min="0" max="1" value="0.8" step="0.01" aria-label="Âm lượng" />
         <svg class="mp-vol-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
           <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
         </svg>
       </div>
       <div class="mp-bottom-row">
-        <!-- WAVE 10: REAL-TIME CYBER AUDIO VISUALIZER -->
         <canvas id="audioVisualizerCanvas" class="mp-visualizer-canvas" width="120" height="18"></canvas>
-        <div class="mp-eq-bars" id="mpEqBars" style="display:none">
-          <span class="eq-b"></span><span class="eq-b"></span><span class="eq-b"></span><span class="eq-b"></span>
-          <span class="eq-b"></span><span class="eq-b"></span><span class="eq-b"></span><span class="eq-b"></span>
-        </div>
-        <span class="mp-hotkey-tip" title="Space: Play/Pause | M: Mute | ← →: Đổi bài | ↑ ↓: Âm lượng">⌨️ Space · M · ← →</span>
+        <span class="mp-hotkey-tip" title="Space: Play/Pause | M: Mute | ← →: Đổi bài">⌨️ Space · M · ← →</span>
       </div>
     </div>
     <audio id="mpAudio" preload="none">

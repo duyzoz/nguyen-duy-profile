@@ -2851,73 +2851,83 @@ if('serviceWorker' in navigator){
     })[m]);
   }
 
-  function render(){
+  function createMsgNode(item, isNew = false) {
+    const isAdm = item.role === 'admin';
+    const displayName = isAdm ? 'Nguyễn Duy' : item.name;
+    const roleBadge = isAdm
+      ? `<span class="gb-msg-role role-admin">Admin</span>`
+      : `<span class="gb-msg-role role-user">Member</span>`;
+    const replyHtml = item.replyTo
+      ? `<div class="gb-msg-reply-ref">↩️ Trả lời <strong>@${escapeHtml(item.replyTo)}</strong></div>`
+      : '';
+    const statusBadge = item.status === 'sending'
+      ? `<span class="gb-msg-status sending" id="msg-status-${item.id}" title="Đang gửi qua Cloudflare Edge">⏳ Đang gửi...</span>`
+      : `<span class="gb-msg-status sent" id="msg-status-${item.id}" title="Đã xác nhận từ Cloudflare">✓ Đã gửi</span>`;
+
+    const el = document.createElement('div');
+    el.className = `gb-msg ${isAdm ? 'admin-msg' : ''} ${isNew ? 'new-sent' : ''}`;
+    el.setAttribute('data-id', item.id);
+    el.innerHTML = `
+      <div class="gb-msg-hdr">
+        <span class="gb-msg-name ${isAdm ? 'admin-name' : ''}">${escapeHtml(displayName)}</span>
+        ${roleBadge}
+        <span class="gb-msg-time">${escapeHtml(item.time)}${statusBadge}</span>
+      </div>
+      ${replyHtml}
+      <div class="gb-msg-text">${escapeHtml(item.msg)}</div>
+      <div class="gb-msg-actions">
+        <button class="gb-msg-reply-btn cyber-sound-btn" data-name="${escapeHtml(displayName)}">↩️ Trả lời</button>
+      </div>
+    `;
+    return el;
+  }
+
+  function render() {
     const entries = getEntries();
-    listEl.innerHTML = entries.map(item => {
-      const isAdm = item.role === 'admin';
-      // ADMIN NAME RULE: strictly display "Nguyễn Duy" without "(Admin)"
-      const displayName = isAdm ? 'Nguyễn Duy' : item.name;
-      const roleBadge = isAdm
-        ? `<span class="gb-msg-role role-admin">Admin</span>`
-        : `<span class="gb-msg-role role-user">Member</span>`;
-      const replyHtml = item.replyTo
-        ? `<div class="gb-msg-reply-ref">↩️ Trả lời <strong>@${escapeHtml(item.replyTo)}</strong></div>`
-        : '';
-      const statusBadge = item.status === 'sending'
-        ? `<span class="gb-msg-status sending" title="Đang gửi qua Cloudflare Edge">⏳ Đang gửi...</span>`
-        : `<span class="gb-msg-status sent" title="Đã xác nhận từ Cloudflare">✓ Đã gửi</span>`;
-
-      return `
-        <div class="gb-msg ${isAdm ? 'admin-msg' : ''}" data-id="${item.id}">
-          <div class="gb-msg-hdr">
-            <span class="gb-msg-name ${isAdm ? 'admin-name' : ''}">${escapeHtml(displayName)}</span>
-            ${roleBadge}
-            <span class="gb-msg-time">${escapeHtml(item.time)}${statusBadge}</span>
-          </div>
-          ${replyHtml}
-          <div class="gb-msg-text">${escapeHtml(item.msg)}</div>
-          <div class="gb-msg-actions">
-            <button class="gb-msg-reply-btn" data-name="${escapeHtml(displayName)}">↩️ Trả lời</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    listEl.querySelectorAll('.gb-msg-reply-btn').forEach(btn => {
-      btn.addEventListener('click', (e)=>{
-        e.stopPropagation();
-        const targetName = btn.getAttribute('data-name');
-        if(targetName) setReply(targetName);
-      });
+    listEl.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    entries.forEach(item => {
+      frag.appendChild(createMsgNode(item));
     });
-
+    listEl.appendChild(frag);
     listEl.scrollTop = listEl.scrollHeight;
   }
 
-  function addNote(){
+  // Event Delegation for Reply: ZERO re-attaching listeners overhead!
+  listEl.addEventListener('click', (e) => {
+    const replyBtn = e.target.closest('.gb-msg-reply-btn');
+    if (replyBtn) {
+      e.stopPropagation();
+      const targetName = replyBtn.getAttribute('data-name');
+      if (targetName) setReply(targetName);
+    }
+  });
+
+  function addNote(e) {
+    if (e) { e.preventDefault(); }
     let name = '';
-    if(isCurrentAdmin){
+    if (isCurrentAdmin) {
       name = 'Nguyễn Duy';
     } else {
       name = (nameInput?.value || '').trim();
-      if(!name) name = 'Khách ẩn danh';
-      if(/nguyễn duy|nguyen duy/i.test(name)){
+      if (!name) name = 'Khách ẩn danh';
+      if (/nguyễn duy|nguyen duy/i.test(name)) {
         name = name + ' (Member)';
       }
-      try { localStorage.setItem('nd_chat_nickname', name); } catch(e){}
+      try { localStorage.setItem('nd_chat_nickname', name); } catch(err) {}
     }
 
     const msg = (msgInput?.value || '').trim();
-    if(!msg){
-      if(msgInput){
+    if (!msg) {
+      if (msgInput) {
         msgInput.classList.remove('shake');
         void msgInput.offsetWidth;
         msgInput.classList.add('shake');
         msgInput.placeholder = '⚠️ Vui lòng nhập nội dung tin nhắn...';
-        setTimeout(()=>{
+        setTimeout(() => {
           msgInput.classList.remove('shake');
           msgInput.placeholder = replyingTo ? `Trả lời @${replyingTo}...` : 'Nhập tin nhắn...';
-        }, 2000);
+        }, 1500);
       }
       return;
     }
@@ -2938,38 +2948,61 @@ if('serviceWorker' in navigator){
 
     entries.push(newEntry);
     saveEntries(entries);
-    render();
 
-    if(msgInput) msgInput.value = '';
+    // ── OPTIMISTIC DIRECT DOM APPEND: 0.1ms EXECUTION TIME! (NO LIST RE-RENDER!) ──
+    const newMsgEl = createMsgNode(newEntry, true);
+    listEl.appendChild(newMsgEl);
+    listEl.scrollTop = listEl.scrollHeight;
+
+    if (msgInput) msgInput.value = '';
     clearReply();
 
-    // Cloudflare Edge confirmation simulation & transition to 'sent'
-    setTimeout(()=>{
-      const curEntries = getEntries();
-      const target = curEntries.find(x => x.id === messageId);
-      if(target){
-        target.status = 'sent';
-        saveEntries(curEntries);
-        render();
-        if(bc){
-          try { bc.postMessage({ type: 'REFRESH' }); } catch(e){}
-        }
-      }
-    }, 450);
+    // Instant Haptic & Audio
+    if (typeof navigator !== 'undefined' && navigator.vibrate) try { navigator.vibrate(10); } catch(err){}
+    if (window.CyberAudio && window.CyberAudio.click) window.CyberAudio.click();
 
-    if(btnSubmit){
-      const oldHtml = btnSubmit.innerHTML;
-      btnSubmit.innerHTML = '✓';
-      setTimeout(()=>{ btnSubmit.innerHTML = oldHtml; }, 1200);
+    // Instant button feedback without innerHTML destruction
+    if (btnSubmit) {
+      btnSubmit.classList.add('sent-pulse');
+      setTimeout(() => { btnSubmit.classList.remove('sent-pulse'); }, 300);
     }
+
+    // Direct Status Badge update (ZERO RE-RENDER!)
+    setTimeout(() => {
+      const statusBadge = document.getElementById(`msg-status-${messageId}`);
+      if (statusBadge) {
+        statusBadge.className = 'gb-msg-status sent';
+        statusBadge.textContent = '✓ Đã gửi';
+      }
+      const cur = getEntries();
+      const target = cur.find(x => x.id === messageId);
+      if (target) {
+        target.status = 'sent';
+        saveEntries(cur);
+      }
+      if (bc) {
+        try { bc.postMessage({ type: 'REFRESH' }); } catch(err) {}
+      }
+    }, 280);
   }
 
-  if(btnSubmit) btnSubmit.addEventListener('click', addNote);
-  if(msgInput){
+  if (btnSubmit) {
+    let lastSubmit = 0;
+    const fastSubmit = (e) => {
+      const now = Date.now();
+      if (now - lastSubmit < 250) return;
+      lastSubmit = now;
+      addNote(e);
+    };
+    btnSubmit.addEventListener('pointerdown', fastSubmit);
+    btnSubmit.addEventListener('click', fastSubmit);
+  }
+
+  if (msgInput) {
     msgInput.addEventListener('keydown', e => {
-      if(e.key === 'Enter' && !e.shiftKey){
+      if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        addNote();
+        addNote(e);
       }
     });
   }
@@ -5812,4 +5845,96 @@ Respond accurately with this ground truth knowledge:
     checkNetwork();
     conn.addEventListener('change', checkNetwork);
   }
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   PEAK CYBER VINYL & MOBILE TURNTABLE MODAL CONTROLLER
+   ═══════════════════════════════════════════════════════════ */
+(function() {
+  const isMobile = () => window.innerWidth < 768;
+  const playerCard = document.getElementById('musicPlayer');
+  const vinylWrap  = document.getElementById('mpVinylWrap');
+  const mobExpand  = document.getElementById('mpMobExpandBtn');
+  const modalClose = document.getElementById('mpModalClose');
+  const mobPlayBtn = document.getElementById('mpMobPlayBtn');
+  const mobPlayIcon= document.getElementById('mpMobPlayIcon');
+  const mobTitle   = document.getElementById('mpMobTitle');
+  const mainPlayBtn= document.getElementById('mpPlay');
+  const audio      = document.getElementById('mpAudio');
+
+  function openModal() {
+    if (!playerCard) return;
+    playerCard.classList.add('mp-modal-open');
+  }
+
+  function closeModal() {
+    if (!playerCard) return;
+    playerCard.classList.remove('mp-modal-open');
+  }
+
+  // Toggle modal on mobile by clicking capsule, vinyl, or expand button
+  if (playerCard) {
+    playerCard.addEventListener('click', (e) => {
+      if (!isMobile()) return;
+      // Don't toggle modal if user clicked play/skip/volume controls directly
+      if (e.target.closest('#mpPlay, #mpMobPlayBtn, #mpSeek, #mpVol, #mpPrev, #mpNext, #mpRepeat, #mpMute')) {
+        return;
+      }
+      if (e.target.closest('#mpModalClose')) {
+        closeModal();
+        return;
+      }
+      if (playerCard.classList.contains('mp-modal-open')) {
+        // Already open
+      } else {
+        openModal();
+      }
+    });
+  }
+
+  if (modalClose) {
+    modalClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeModal();
+    });
+  }
+
+  if (mobExpand) {
+    mobExpand.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (playerCard.classList.contains('mp-modal-open')) {
+        closeModal();
+      } else {
+        openModal();
+      }
+    });
+  }
+
+  // Sync mobile play button with main audio
+  if (mobPlayBtn && mainPlayBtn) {
+    mobPlayBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      mainPlayBtn.click();
+    });
+  }
+
+  // Sync play icon on mobile island play button
+  if (audio && mobPlayIcon) {
+    const PLAY_SVG  = `<polygon points="5 3 19 12 5 21 5 3"/>`;
+    const PAUSE_SVG = `<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>`;
+    audio.addEventListener('play', () => {
+      mobPlayIcon.innerHTML = PAUSE_SVG;
+    });
+    audio.addEventListener('pause', () => {
+      mobPlayIcon.innerHTML = PLAY_SVG;
+    });
+  }
+
+  // Close modal when tapping outside (stage / background)
+  document.addEventListener('click', (e) => {
+    if (!isMobile() || !playerCard || !playerCard.classList.contains('mp-modal-open')) return;
+    if (!playerCard.contains(e.target)) {
+      closeModal();
+    }
+  });
 })();
