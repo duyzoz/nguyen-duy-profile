@@ -5080,3 +5080,47 @@ Respond accurately with this ground truth knowledge:
     }
   }, { passive: true });
 
+
+
+  // Wave 24: One-Click .RDP Connection Profile Downloader
+  const dlRdpBtn = document.getElementById('vpsDownloadRdpBtn');
+  if(dlRdpBtn){
+    dlRdpBtn.addEventListener('click', () => {
+      const ip = (document.getElementById('vpsIpVal')?.textContent || '').trim() || '100.86.124.90';
+      const user = (document.getElementById('vpsUserVal')?.textContent || '').trim() || 'duyzoz';
+      
+      const rdpContent = [
+        `full address:s:${ip}:3389`,
+        `username:s:${user}`,
+        `prompt for credentials:i:1`,
+        `administrative session:i:1`,
+        `screen mode id:i:2`,
+        `use multimon:i:0`,
+        `desktopwidth:i:1920`,
+        `desktopheight:i:1080`,
+        `session bpp:i:32`,
+        `compression:i:1`,
+        `keyboardhook:i:2`,
+        `audiomode:i:0`,
+        `redirectprinters:i:0`,
+        `redirectclipboard:i:1`,
+        `displayconnectionbar:i:1`,
+        `autoreconnection enabled:i:1`,
+        `authentication level:i:2`
+      ].join('\r\n');
+
+      const blob = new Blob([rdpContent], { type: 'application/rdp;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `NguyenDuy_VPS_${ip.replace(/\./g, '_')}.rdp`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      if(typeof addLog === 'function'){
+        addLog(`[STARTUT] 📥 Đã tải file kết nối NguyenDuy_VPS_${ip}.rdp! Nhấp đúp để mở Remote Desktop.`, 'ok');
+      }
+    });
+  }

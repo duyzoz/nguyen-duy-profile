@@ -735,47 +735,71 @@ body.perf-mode .tool-card{
 }
 
 
-/* ══ TOOL CARD TABS (Icon-only Taskbar) ══ */
+/* ══ TOOL CARD TABS (Icon-only Taskbar with Cyber Glow) ══ */
 .tc-tabs {
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
-  gap: 2px !important;
-  padding: 5px 6px !important;
-  border-bottom: 1px solid rgba(124,111,255,.15) !important;
-  background: rgba(10, 15, 30, 0.85) !important;
+  gap: 3px !important;
+  padding: 6px 8px !important;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.2) !important;
+  background: rgba(8, 12, 26, 0.92) !important;
   flex-shrink: 0 !important;
   overflow: hidden !important; /* NO HORIZONTAL SCROLLBAR! */
 }
 .tc-tabs::-webkit-scrollbar { height: 3px; }
 .tc-tabs::-webkit-scrollbar-track { background: transparent; }
-.tc-tabs::-webkit-scrollbar-thumb { background: rgba(124,111,255,.3); border-radius: 4px; }
+.tc-tabs::-webkit-scrollbar-thumb { background: rgba(0, 240, 255, 0.4); border-radius: 4px; }
 .tc-tab {
   flex: 1 1 0 !important;
   min-width: 0 !important;
-  height: 34px !important;
+  height: 36px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  border: 1px solid rgba(124,111,255,.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 8px !important;
-  background: rgba(255,255,255,0.02) !important;
-  color: rgba(180,175,255,.7) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: #64748b !important;
+  opacity: 0.45 !important;
   font-size: 0.95rem !important;
   cursor: pointer !important;
   padding: 0 !important;
-  transition: all .15s ease !important;
+  position: relative !important;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 .tc-tab:hover {
-  background: rgba(124,111,255,.14);
-  border-color: rgba(124,111,255,.45);
-  transform: translateY(-1px);
+  opacity: 0.85 !important;
+  background: rgba(0, 240, 255, 0.08) !important;
+  border-color: rgba(0, 240, 255, 0.35) !important;
+  color: #00f0ff !important;
+  transform: translateY(-1px) scale(1.02) !important;
 }
 .tc-tab.active {
-  background: linear-gradient(135deg,rgba(124,111,255,.28),rgba(255,107,157,.15));
-  border-color: rgba(124,111,255,.6);
-  box-shadow: 0 0 10px rgba(124,111,255,.25), 0 2px 6px rgba(0,0,0,.2);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.28) 0%, rgba(124, 58, 237, 0.45) 100%) !important;
+  border: 1.5px solid #00f0ff !important;
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.6), inset 0 0 10px rgba(0, 240, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.9)) !important;
+  transform: translateY(-2px) scale(1.1) !important;
+  z-index: 2 !important;
+}
+.tc-tab.active::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -1px !important;
+  left: 15% !important;
+  right: 15% !important;
+  height: 2.5px !important;
+  background: #00f0ff !important;
+  border-radius: 99px !important;
+  box-shadow: 0 0 8px #00f0ff, 0 0 16px rgba(0, 240, 255, 0.9) !important;
+  animation: neonTabPulse 1.6s infinite ease-in-out !important;
+}
+@keyframes neonTabPulse {
+  0%, 100% { opacity: 1; transform: scaleX(1); }
+  50% { opacity: 0.55; transform: scaleX(0.75); }
 }
 .tc-panel {
   flex: 1;
@@ -4150,4 +4174,32 @@ body.turbo-120-active .tool-card,
 body.turbo-120-active .profile-card {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+}
+
+
+/* RDP One-Click Download File Button */
+.vps-download-rdp-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  padding: 8px 12px !important;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(124, 58, 237, 0.25)) !important;
+  border: 1px solid rgba(0, 240, 255, 0.4) !important;
+  border-radius: 8px !important;
+  color: #00f0ff !important;
+  font-size: 0.74rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  margin-top: 6px !important;
+  box-sizing: border-box !important;
+}
+.vps-download-rdp-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.3), rgba(124, 58, 237, 0.45)) !important;
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.4) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
 }
