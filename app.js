@@ -5538,3 +5538,278 @@ Respond accurately with this ground truth knowledge:
     }
   }, { passive: true });
 })();
+
+/* ═══════════════════════════════════════════════════════════
+   WAVES 41 - 45: ADVANCED SMARTPHONE ENGINE CONTROLLER
+   ═══════════════════════════════════════════════════════════ */
+(function() {
+  const isMobile = () => window.innerWidth < 768;
+  const toolCard = document.getElementById('toolCard');
+
+  // ── WAVE 41: HORIZONTAL SWIPE TAB SWITCHER ──
+  const TABS_ORDER = [
+    'panelBypass',
+    'panelCreateVPS',
+    'panelManage',
+    'panelProjects',
+    'panelTools',
+    'panelGuestbook',
+    'panelAi',
+    'panelGame'
+  ];
+
+  if (toolCard) {
+    let swStartX = 0, swStartY = 0;
+    toolCard.addEventListener('touchstart', (e) => {
+      if (!isMobile()) return;
+      swStartX = e.touches[0].clientX;
+      swStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    toolCard.addEventListener('touchend', (e) => {
+      if (!isMobile()) return;
+      const swEndX = e.changedTouches[0].clientX;
+      const swEndY = e.changedTouches[0].clientY;
+      const diffX = swEndX - swStartX;
+      const diffY = swEndY - swStartY;
+
+      // Swipe threshold: distance > 60px and horizontal ratio > 1.6
+      if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.6) {
+        const curPanel = Array.from(document.querySelectorAll('.tc-panel')).find(p => p.style.display !== 'none');
+        if (!curPanel) return;
+        const curIdx = TABS_ORDER.indexOf(curPanel.id);
+        if (curIdx === -1) return;
+
+        let nextIdx = curIdx;
+        let slideClass = '';
+        if (diffX < 0) {
+          // Swipe Left -> Next Tab
+          nextIdx = (curIdx + 1) % TABS_ORDER.length;
+          slideClass = 'slide-right';
+        } else {
+          // Swipe Right -> Prev Tab
+          nextIdx = (curIdx - 1 + TABS_ORDER.length) % TABS_ORDER.length;
+          slideClass = 'slide-left';
+        }
+
+        const nextPanelId = TABS_ORDER[nextIdx];
+        const targetTab = document.querySelector(`.tc-tab[data-panel="${nextPanelId}"]`);
+        if (targetTab) {
+          if (typeof navigator !== 'undefined' && navigator.vibrate) try { navigator.vibrate(10); } catch(err){}
+          if (window.CyberAudio && window.CyberAudio.click) window.CyberAudio.click();
+          targetTab.click();
+          const nextPanel = document.getElementById(nextPanelId);
+          if (nextPanel) {
+            nextPanel.classList.remove('slide-right', 'slide-left');
+            void nextPanel.offsetWidth;
+            nextPanel.classList.add(slideClass);
+          }
+        }
+      }
+    }, { passive: true });
+  }
+
+  // ── WAVE 42: MOBILE QUICK ACTION FAB MENU ──
+  const fabContainer = document.getElementById('mobFabContainer');
+  const fabBtn = document.getElementById('mobFabBtn');
+  const fabCopyCombo = document.getElementById('fabCopyCombo');
+  const fabPing = document.getElementById('fabPing');
+  const fabTheme = document.getElementById('fabTheme');
+  const fabSaver = document.getElementById('fabSaver');
+  const fabSaverTxt = document.getElementById('fabSaverTxt');
+
+  if (fabBtn && fabContainer) {
+    fabBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fabContainer.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!isMobile()) return;
+      if (fabContainer && !fabContainer.contains(e.target)) {
+        fabContainer.classList.remove('active');
+      }
+    });
+
+    // 1. Copy Combo: IP | duyzoz | Password
+    if (fabCopyCombo) {
+      fabCopyCombo.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fabContainer.classList.remove('active');
+        const ipEl = document.getElementById('vpsIpVal');
+        const passEl = document.getElementById('vpsPassVal');
+        const ip = ipEl ? ipEl.textContent.trim() : '100.86.124.90';
+        const pass = passEl ? passEl.textContent.trim() : 'nhn9jB#7ypQ]VE;';
+        const combo = `IP: ${ip} | User name: duyzoz | Password: ${pass}`;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(combo).then(() => {
+            alert(`📋 ĐÃ SAO CHÉP TOÀN BỘ:\n${combo}`);
+          }).catch(() => {
+            prompt('Sao chép thông tin VPS:', combo);
+          });
+        } else {
+          prompt('Sao chép thông tin VPS:', combo);
+        }
+      });
+    }
+
+    // 2. Ping Tailscale
+    if (fabPing) {
+      fabPing.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fabContainer.classList.remove('active');
+        const pingBtn = document.getElementById('vpsPingTestBtn');
+        if (pingBtn) pingBtn.click();
+      });
+    }
+
+    // 3. Cycle Themes
+    const THEMES = ['default', 'matrix', 'amber', 'synthwave'];
+    let curThemeIdx = 0;
+    if (fabTheme) {
+      fabTheme.addEventListener('click', (e) => {
+        e.stopPropagation();
+        curThemeIdx = (curThemeIdx + 1) % THEMES.length;
+        const theme = THEMES[curThemeIdx];
+        if (theme === 'default') {
+          document.documentElement.removeAttribute('data-theme');
+        } else {
+          document.documentElement.setAttribute('data-theme', theme);
+        }
+        try { localStorage.setItem('nd_theme', theme); } catch(err){}
+        const themeNames = { default: 'Cyan Cyber', matrix: 'Matrix Green', amber: 'Cyber Amber', synthwave: 'Synthwave Pink' };
+        alert(`🎨 Đã đổi sang giao diện: ${themeNames[theme] || theme}`);
+      });
+    }
+
+    // 4. Toggle Saver
+    if (fabSaver) {
+      fabSaver.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.body.classList.toggle('battery-saver');
+        const isSaver = document.body.classList.contains('battery-saver');
+        if (fabSaverTxt) fabSaverTxt.textContent = isSaver ? '⚡ Chế Độ Thường' : '🔋 Tiết Kiệm Pin';
+        const bgVid = document.getElementById('bgVideo');
+        if (bgVid) {
+          if (isSaver) bgVid.pause();
+          else bgVid.play().catch(()=>{});
+        }
+      });
+    }
+  }
+
+  // ── WAVE 43: PWA INSTALL BANNER ──
+  let deferredPrompt = null;
+  const pwaBanner = document.getElementById('pwaInstallBanner');
+  const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+  const pwaDismissBtn = document.getElementById('pwaDismissBtn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const isDismissed = localStorage.getItem('pwa_dismissed');
+    if (!isDismissed && isMobile() && pwaBanner) {
+      pwaBanner.style.display = 'flex';
+    }
+  });
+
+  if (pwaInstallBtn) {
+    pwaInstallBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+      }
+      if (pwaBanner) pwaBanner.style.display = 'none';
+      try { localStorage.setItem('pwa_dismissed', '1'); } catch(err){}
+    });
+  }
+
+  if (pwaDismissBtn) {
+    pwaDismissBtn.addEventListener('click', () => {
+      if (pwaBanner) pwaBanner.style.display = 'none';
+      try { localStorage.setItem('pwa_dismissed', '1'); } catch(err){}
+    });
+  }
+
+  // ── WAVE 44: MOBILE IN-APP LIVE LOG DRAWER ──
+  const logDrawerBtn = document.getElementById('mobLogDrawerBtn');
+  const logDrawer = document.getElementById('mobLogDrawer');
+  const logClose = document.getElementById('mobLogClose');
+  const mobLogBody = document.getElementById('mobLogBody');
+
+  if (logDrawerBtn && logDrawer) {
+    logDrawerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      logDrawer.style.display = 'flex';
+      syncMobLogs();
+    });
+
+    if (logClose) {
+      logClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        logDrawer.style.display = 'none';
+      });
+    }
+
+    function syncMobLogs() {
+      if (!mobLogBody) return;
+      const startutLog = document.getElementById('startutLogBody');
+      if (startutLog && startutLog.children.length > 0) {
+        mobLogBody.innerHTML = startutLog.innerHTML;
+        mobLogBody.scrollTop = mobLogBody.scrollHeight;
+      }
+    }
+
+    // Expose log streamer for mobile
+    window.appendMobLog = function(text, cls = 'info') {
+      if (!mobLogBody) return;
+      const line = document.createElement('div');
+      line.className = `mob-log-line ${cls}`;
+      line.textContent = text;
+      mobLogBody.appendChild(line);
+      mobLogBody.scrollTop = mobLogBody.scrollHeight;
+      if (logDrawerBtn) logDrawerBtn.style.display = 'flex';
+    };
+  }
+
+  // Automatically show log drawer button when Deploy VPS is clicked
+  const vpsCreateBtn = document.getElementById('vpsCreateBtn');
+  if (vpsCreateBtn && logDrawerBtn) {
+    vpsCreateBtn.addEventListener('click', () => {
+      if (isMobile()) {
+        logDrawerBtn.style.display = 'flex';
+      }
+    });
+  }
+
+  // ── WAVE 45: SMART BATTERY & NETWORK SAVER DETECTOR ──
+  if (navigator.getBattery) {
+    navigator.getBattery().then(battery => {
+      function checkBattery() {
+        if (battery.level <= 0.20 && !battery.charging) {
+          document.body.classList.add('battery-saver');
+          if (fabSaverTxt) fabSaverTxt.textContent = '⚡ Chế Độ Thường';
+          const bgVid = document.getElementById('bgVideo');
+          if (bgVid) bgVid.pause();
+        }
+      }
+      checkBattery();
+      battery.addEventListener('levelchange', checkBattery);
+      battery.addEventListener('chargingchange', checkBattery);
+    }).catch(()=>{});
+  }
+
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (conn) {
+    function checkNetwork() {
+      if (conn.saveData || conn.effectiveType === '2g' || conn.effectiveType === '3g') {
+        document.body.classList.add('battery-saver');
+        const bgVid = document.getElementById('bgVideo');
+        if (bgVid) bgVid.pause();
+      }
+    }
+    checkNetwork();
+    conn.addEventListener('change', checkNetwork);
+  }
+})();

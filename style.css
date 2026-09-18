@@ -4681,3 +4681,300 @@ body.mob-sheet-open {
     filter: brightness(1.25) !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   DESKTOP GUARDS: HIDE SMARTPHONE SPECIFIC COMPONENTS
+   ═══════════════════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  .mob-fab-container,
+  .pwa-install-banner,
+  .mob-log-drawer,
+  .mob-log-drawer-btn {
+    display: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   WAVES 41 - 45: SMARTPHONE ADVANCED ENGINE
+   ═══════════════════════════════════════════════════════════ */
+
+/* Wave 41: Horizontal Swipe Slide Animations */
+@keyframes slideInFromRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInFromLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.tc-panel.slide-right {
+  animation: slideInFromRight 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.tc-panel.slide-left {
+  animation: slideInFromLeft 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@media (max-width: 767px) {
+  /* Wave 42: Mobile Quick Action FAB */
+  .mob-fab-container {
+    position: fixed !important;
+    bottom: 66px !important;
+    right: 14px !important;
+    z-index: 99990 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+  }
+  .mob-fab-btn {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.85), rgba(124, 58, 237, 0.9)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 4px 18px rgba(0, 240, 255, 0.55) !important;
+    color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  }
+  .mob-fab-btn .mfb-icon {
+    font-size: 1.25rem !important;
+    line-height: 1 !important;
+    transition: transform 0.25s ease !important;
+  }
+  .mob-fab-container.active .mob-fab-btn {
+    transform: rotate(45deg) scale(1.05) !important;
+    background: linear-gradient(135deg, #ef4444, #f43f5e) !important;
+    box-shadow: 0 4px 18px rgba(239, 68, 68, 0.6) !important;
+  }
+  .mob-fab-menu {
+    position: absolute !important;
+    bottom: 52px !important;
+    right: 0 !important;
+    display: none !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    background: rgba(12, 10, 28, 0.96) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(0, 240, 255, 0.35) !important;
+    border-radius: 14px !important;
+    padding: 8px !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.85) !important;
+    min-width: 170px !important;
+    animation: fabPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  @keyframes fabPop {
+    from { opacity: 0; transform: translateY(10px) scale(0.92); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .mob-fab-container.active .mob-fab-menu {
+    display: flex !important;
+  }
+  .mob-fab-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 7px 10px !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #e2e8f0 !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    text-align: left !important;
+    transition: background .15s ease !important;
+  }
+  .mob-fab-item:active {
+    background: rgba(0, 240, 255, 0.2) !important;
+    border-color: #00f0ff !important;
+  }
+  .mob-fab-item .mfi-icon {
+    font-size: 0.95rem !important;
+  }
+
+  /* Wave 43: PWA Install Banner */
+  .pwa-install-banner {
+    position: fixed !important;
+    top: 48px !important;
+    left: 8px !important;
+    right: 8px !important;
+    z-index: 99995 !important;
+    background: linear-gradient(135deg, rgba(16, 14, 38, 0.98), rgba(8, 7, 20, 0.99)) !important;
+    border: 1px solid rgba(0, 240, 255, 0.4) !important;
+    border-radius: 12px !important;
+    padding: 8px 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8) !important;
+    animation: pwaSlideDown 0.25s ease !important;
+  }
+  @keyframes pwaSlideDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .pwa-banner-content {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+  .pwa-banner-icon {
+    font-size: 1.3rem !important;
+  }
+  .pwa-banner-text {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+  }
+  .pwa-banner-title {
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    color: #00f0ff !important;
+    white-space: nowrap !important;
+  }
+  .pwa-banner-sub {
+    font-size: 0.58rem !important;
+    color: #94a3b8 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .pwa-banner-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+  .pwa-install-btn {
+    padding: 5px 10px !important;
+    border-radius: 8px !important;
+    background: #00f0ff !important;
+    color: #000 !important;
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    border: none !important;
+    cursor: pointer !important;
+  }
+  .pwa-dismiss-btn {
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    color: #94a3b8 !important;
+    font-size: 0.7rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+  }
+
+  /* Wave 44: Mobile In-App Live Terminal Drawer */
+  .mob-log-drawer-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    margin-top: 8px !important;
+    padding: 8px 12px !important;
+    border-radius: 10px !important;
+    background: rgba(15, 23, 42, 0.8) !important;
+    border: 1px solid rgba(0, 240, 255, 0.3) !important;
+    color: #38bdf8 !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+  }
+  .mob-log-drawer {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 230px !important;
+    max-height: 45vh !important;
+    background: rgba(10, 9, 22, 0.98) !important;
+    backdrop-filter: blur(20px) !important;
+    border-top: 1px solid #00f0ff !important;
+    border-radius: 16px 16px 0 0 !important;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.85) !important;
+    z-index: 500 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    animation: drawerSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  @keyframes drawerSlideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .mob-log-hdr {
+    height: 32px !important;
+    padding: 0 10px !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-shrink: 0 !important;
+  }
+  .mlh-title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.65rem !important;
+    color: #22c55e !important;
+  }
+  .mlh-dot {
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 50% !important;
+    background: #22c55e !important;
+    box-shadow: 0 0 6px #22c55e !important;
+  }
+  .mob-log-close {
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    color: #fff !important;
+    font-size: 0.7rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+  }
+  .mob-log-body {
+    flex: 1 !important;
+    padding: 8px 10px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.62rem !important;
+    line-height: 1.5 !important;
+    color: #e2e8f0 !important;
+  }
+  .mob-log-line {
+    margin-bottom: 2px !important;
+    word-break: break-word !important;
+  }
+  .mob-log-line.green { color: #22c55e !important; }
+  .mob-log-line.cyan { color: #00f0ff !important; }
+  .mob-log-line.yellow { color: #facc15 !important; }
+  .mob-log-line.red { color: #ef4444 !important; }
+
+  /* Wave 45: Battery Saver Mode indicators */
+  body.battery-saver #bgVideo {
+    opacity: 0.15 !important;
+  }
+  body.battery-saver .mp-visualizer-canvas {
+    display: none !important;
+  }
+}
