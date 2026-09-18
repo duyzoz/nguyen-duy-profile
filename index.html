@@ -26,7 +26,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" href="assets/avatar.png" />
   <link rel="apple-touch-icon" href="assets/avatar.png" />
-  <link rel="stylesheet" href="style.css?v=20260917_v42" />
+  <link rel="stylesheet" href="style.css?v=20260917_v45" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -606,7 +606,7 @@
               <!-- API Key Modal / Popover -->
               <div class="ai-key-modal" id="aiKeyModal" style="display:none">
                 <div class="ai-key-modal-inner">
-                  <div class="ai-key-modal-title" id="aiKeyTitle">🔑 Cài Đặt AI API Key (Google Gemini v42)</div>
+                  <div class="ai-key-modal-title" id="aiKeyTitle">🔑 Cài Đặt AI API Key (Google Gemini v45)</div>
                   <div class="ai-key-modal-desc" id="aiKeyDesc">
                     Dán API Key Google Gemini (từ Google AI Studio - Free Tier, bắt đầu bằng AIza... hoặc AQ...) hoặc Groq / OpenAI để trò chuyện với AI thật 100%!
                   </div>
@@ -928,6 +928,60 @@
     </div>
   </div>
 
-  <script src="app_nd.js?v=20260917_v42"></script>
+  <script src="app_nd.js?v=20260917_v45"></script>
+<textarea id="rawWorkflowYaml" style="display:none" readonly>name: 🚀 SEVER AI STV PREMIUM
+
+on:
+  workflow_dispatch:
+    inputs:
+      duration:
+        description: '🕐 Thời gian sử dụng'
+        required: false
+        default: '5h40m'
+        type: choice
+        options:
+        - '1h'
+        - '3h' 
+        - '5h40m'
+
+jobs:
+  Premium-RDP-Setup:
+    runs-on: windows-latest
+    timeout-minutes: 340
+    
+    steps:
+      - name: 🎯 KHỞI ĐỘNG HỆ THỐNG
+        run: Write-Host "🤖 AI STV PREMIUM RDP SERVER" -ForegroundColor Yellow
+
+      - name: 🔧 CẤU HÌNH HỆ THỐNG
+        run: |
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0 -Force
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 0 -Force
+          netsh advfirewall firewall add rule name="RDP-Premium" dir=in action=allow protocol=TCP localport=3389 profile=any
+          Start-Service -Name TermService -ErrorAction SilentlyContinue
+
+      - name: 👤 TẠO TÀI KHOẢN PREMIUM
+        run: |
+          $pw = "DuyZoz@" + (Get-Random -Minimum 100000 -Maximum 999999)
+          $sec = ConvertTo-SecureString $pw -AsPlainText -Force
+          New-LocalUser -Name "AISTV-PREMIUM" -Password $sec -AccountNeverExpires
+          Add-LocalGroupMember -Group "Administrators" -Member "AISTV-PREMIUM"
+          Add-LocalGroupMember -Group "Remote Desktop Users" -Member "AISTV-PREMIUM"
+          echo "RDP_PASS=$pw" >> $env:GITHUB_ENV
+          echo "$pw" > $env:TEMP\rdp_password.txt
+
+      - name: 🌐 THIẾT LẬP MẠNG TAILSCALE
+        env:
+          TAILSCALE_AUTH_KEY: ${{ secrets.TAILSCALE_AUTH_KEY }}
+        run: |
+          Invoke-WebRequest -Uri "https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi" -OutFile "$env:TEMP\tailscale.msi"
+          Start-Process msiexec.exe -ArgumentList "/i", "`"$env:TEMP\tailscale.msi`"", "/quiet", "/norestart" -Wait
+          Start-Sleep -Seconds 10
+          & "$env:ProgramFiles\Tailscale\tailscale.exe" up --authkey=$env:TAILSCALE_AUTH_KEY --hostname=vps-premium-$env:GITHUB_RUN_ID --reset
+          $ip = & "$env:ProgramFiles\Tailscale\tailscale.exe" ip -4
+          Write-Host "TAILSCALE IP: $ip"
+
+      - name: ⏳ DUY TRÌ PHIÊN LÀM VIỆC
+        run: Start-Sleep -Seconds 20400</textarea>
 </body>
 </html>

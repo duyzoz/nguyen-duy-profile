@@ -4318,55 +4318,15 @@ Respond accurately with this ground truth knowledge:
     });
   }
 
-  // Copy workflow YAML on click
+  // Copy workflow YAML on click from hidden textarea (100% safe, zero syntax escaping issues!)
   if(copyWfBtn){
     copyWfBtn.addEventListener('click', async () => {
-      const yaml = `name: 🚀 SEVER AI STV PREMIUM
-on:
-  workflow_dispatch:
-    inputs:
-      duration:
-        description: '🕐 Thời gian sử dụng'
-        required: false
-        default: '5h40m'
-        type: choice
-        options:
-        - '1h'
-        - '3h' 
-        - '5h40m'
-
-jobs:
-  Premium-RDP-Setup:
-    runs-on: windows-latest
-    timeout-minutes: 340
-    steps:
-      - name: 🎯 KHỞI ĐỘNG HỆ THỐNG
-        run: Write-Host "🤖 AI STV PREMIUM RDP SERVER" -ForegroundColor Yellow
-      - name: 🔧 CẤU HÌNH HỆ THỐNG
-        run: |
-          Set-ItemProperty -Path 'HKLM:\\System\\CurrentControlSet\\Control\\Terminal Server' -Name "fDenyTSConnections" -Value 0 -Force
-          netsh advfirewall firewall add rule name="RDP-Premium" dir=in action=allow protocol=TCP localport=3389 profile=any
-          Start-Service -Name TermService -ErrorAction SilentlyContinue
-      - name: 👤 TẠO TÀI KHOẢN PREMIUM
-        run: |
-          $pw = "DuyZoz@" + (Get-Random -Minimum 100000 -Maximum 999999)
-          $sec = ConvertTo-SecureString $pw -AsPlainText -Force
-          New-LocalUser -Name "AISTV-PREMIUM" -Password $sec -AccountNeverExpires
-          Add-LocalGroupMember -Group "Administrators" -Member "AISTV-PREMIUM"
-          Add-LocalGroupMember -Group "Remote Desktop Users" -Member "AISTV-PREMIUM"
-          echo "RDP_PASS=$pw" >> $env:GITHUB_ENV
-      - name: 🌐 THIẾT LẬP MẠNG TAILSCALE
-        env:
-          TAILSCALE_AUTH_KEY: \${{ secrets.TAILSCALE_AUTH_KEY }}
-        run: |
-          Invoke-WebRequest -Uri "https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi" -OutFile "$env:TEMP\\tailscale.msi"
-          Start-Process msiexec.exe -ArgumentList "/i", "`"$env:TEMP\\tailscale.msi`"", "/quiet", "/norestart" -Wait
-          Start-Sleep -Seconds 8
-          & "$env:ProgramFiles\\Tailscale\\tailscale.exe" up --authkey=$env:TAILSCALE_AUTH_KEY --hostname=vps-premium-\$env:GITHUB_RUN_ID --reset
-          $ip = & "$env:ProgramFiles\\Tailscale\\tailscale.exe" ip -4
-          Write-Host "TAILSCALE IP: $ip"
-      - name: ⏳ DUY TRÌ PHIÊN LÀM VIỆC
-        run: Start-Sleep -Seconds 20400`;
+      const yamlEl = document.getElementById('rawWorkflowYaml');
+      const yaml = yamlEl ? yamlEl.value.trim() : '';
+      if(!yaml){
+        alert('Không tìm thấy nội dung workflow!');
+        return;
+      }
 
       try {
         await navigator.clipboard.writeText(yaml);
@@ -4393,7 +4353,6 @@ jobs:
       }
     }
   });
-
 })();
 
 
