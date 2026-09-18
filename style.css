@@ -1461,17 +1461,10 @@ body.perf-mode .tool-card{
     display: flex !important;
   }
 
-  .tool-card .tc-tabs {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  gap: 2px !important;
-  padding: 5px 6px !important;
-  border-bottom: 1px solid rgba(124,111,255,.15) !important;
-  background: rgba(10, 15, 30, 0.85) !important;
-  flex-shrink: 0 !important;
-  overflow: hidden !important; /* NO HORIZONTAL SCROLLBAR! */
-}
+  .tool-card .tc-tabs,
+  .tc-tabs {
+    display: none !important;
+  }
 
   .tool-card .card-hdr.tool-hdr {
     display: none !important;
@@ -1671,35 +1664,39 @@ body.perf-mode .tool-card{
   }
 
   .mob-nav-item {
-    flex: 1 !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 2px !important;
+    gap: 1.5px !important;
     height: 100% !important;
     background: transparent !important;
     border: none !important;
     color: rgba(255, 255, 255, 0.55) !important;
     cursor: pointer !important;
-    padding: 4px 0 !important;
+    padding: 3px 1px !important;
     touch-action: manipulation !important;
     -webkit-tap-highlight-color: transparent !important;
     position: relative !important;
   }
 
   .mob-nav-icon {
-    font-size: 1.1rem !important;
+    font-size: 1.02rem !important;
     line-height: 1 !important;
   }
 
   .mob-nav-label {
-    font-size: 0.56rem !important;
+    font-size: 0.50rem !important;
     font-family: var(--font-mono, monospace) !important;
     font-weight: 600 !important;
-    letter-spacing: 0.02em !important;
+    letter-spacing: 0 !important;
     line-height: 1 !important;
     text-transform: uppercase !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
   }
 
   .mob-nav-item:active .mob-nav-icon {
@@ -5161,230 +5158,7 @@ body.mob-sheet-open {
   box-shadow: 0 0 14px #00f0ff !important;
 }
 
-/* ── 4. MOBILE PEAK DESIGN: DYNAMIC ISLAND CAPSULE & TURNTABLE SHEET ── */
-@media (max-width: 767px) {
-  /* Capsule in Top Bar (Right side) */
-  .music-player {
-    position: fixed !important;
-    top: 3px !important;
-    right: 6px !important;
-    left: auto !important;
-    bottom: auto !important;
-    width: auto !important;
-    max-width: 178px !important;
-    height: 36px !important;
-    padding: 2px 8px 2px 4px !important;
-    border-radius: 999px !important;
-    background: rgba(12, 10, 28, 0.96) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(0, 240, 255, 0.4) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), 0 0 12px rgba(0, 240, 255, 0.25) !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-    z-index: 8500 !important;
-    cursor: pointer !important;
-    box-sizing: border-box !important;
-    margin: 0 !important;
-  }
 
-  .music-player .mp-vinyl-wrap {
-    width: 28px !important;
-    height: 28px !important;
-  }
-  .music-player .mp-vinyl-disc {
-    width: 28px !important;
-    height: 28px !important;
-  }
-  .music-player .mp-vinyl-label {
-    width: 14px !important;
-    height: 14px !important;
-  }
-  .music-player .mp-vinyl-spindle {
-    width: 3px !important;
-    height: 3px !important;
-  }
-
-  /* Island bar visible */
-  .music-player .mp-mob-island-bar {
-    display: flex !important;
-    align-items: center !important;
-    gap: 5px !important;
-    flex: 1 !important;
-    min-width: 0 !important;
-  }
-  .mp-mob-island-info {
-    display: flex !important;
-    align-items: center !important;
-    gap: 3px !important;
-    flex: 1 !important;
-    min-width: 0 !important;
-  }
-  .mp-mob-note {
-    font-size: 0.65rem !important;
-    color: #00f0ff !important;
-  }
-  .mp-mob-marquee-wrap {
-    overflow: hidden !important;
-    max-width: 70px !important;
-    white-space: nowrap !important;
-  }
-  .mp-mob-title {
-    font-size: 0.62rem !important;
-    font-weight: 600 !important;
-    color: #e2e8f0 !important;
-  }
-  .mp-mob-eq {
-    display: flex !important;
-    align-items: flex-end !important;
-    gap: 1.5px !important;
-    height: 10px !important;
-  }
-  .mp-mob-island-play {
-    width: 24px !important;
-    height: 24px !important;
-    flex-shrink: 0 !important;
-  }
-  .mp-mob-island-play svg {
-    width: 10px !important;
-    height: 10px !important;
-  }
-  .mp-mob-expand {
-    display: flex !important;
-    width: 18px !important;
-    height: 18px !important;
-    font-size: 0.55rem !important;
-    color: #00f0ff !important;
-  }
-
-  /* Main Deck is hidden when in capsule mode */
-  .music-player:not(.mp-modal-open) .mp-info {
-    display: none !important;
-  }
-
-  /* ── 5. FULL CYBER TURNTABLE MODAL SHEET (When Opened on Mobile) ── */
-  .music-player.mp-modal-open {
-    position: fixed !important;
-    inset: 0 !important;
-    top: auto !important;
-    bottom: 0 !important;
-    right: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    max-height: 82vh !important;
-    padding: 16px 16px calc(20px + env(safe-area-inset-bottom, 0px)) !important;
-    border-radius: 24px 24px 0 0 !important;
-    background: rgba(10, 8, 24, 0.98) !important;
-    backdrop-filter: blur(32px) !important;
-    -webkit-backdrop-filter: blur(32px) !important;
-    border: 1px solid #00f0ff !important;
-    border-bottom: none !important;
-    box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.95), 0 0 35px rgba(0, 240, 255, 0.3) !important;
-    z-index: 999999 !important;
-    flex-direction: column !important;
-    gap: 14px !important;
-    animation: modalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    cursor: default !important;
-  }
-  @keyframes modalSlideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-  }
-
-  .music-player.mp-modal-open .mp-mob-island-bar {
-    display: none !important;
-  }
-
-  /* Large Turntable Vinyl in Modal */
-  .music-player.mp-modal-open .mp-vinyl-wrap {
-    width: 100px !important;
-    height: 100px !important;
-    margin: 4px auto 0 !important;
-  }
-  .music-player.mp-modal-open .mp-vinyl-disc {
-    width: 100px !important;
-    height: 100px !important;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.95), 0 0 24px rgba(0, 240, 255, 0.45) !important;
-  }
-  .music-player.mp-modal-open .mp-vinyl-label {
-    width: 48px !important;
-    height: 48px !important;
-  }
-  .music-player.mp-modal-open .mp-vinyl-spindle {
-    width: 8px !important;
-    height: 8px !important;
-  }
-
-  /* Modal Deck Info */
-  .music-player.mp-modal-open .mp-info {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 12px !important;
-    width: 100% !important;
-  }
-  .music-player.mp-modal-open .mp-modal-close {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 28px !important;
-    height: 28px !important;
-    border-radius: 50% !important;
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    color: #fff !important;
-    font-size: 0.85rem !important;
-    cursor: pointer !important;
-  }
-  .music-player.mp-modal-open .mp-marquee-wrap {
-    max-width: 100% !important;
-    font-size: 0.8rem !important;
-    text-align: center !important;
-  }
-  .music-player.mp-modal-open .mp-timeline-wrap,
-  .music-player.mp-modal-open .mp-vol-wrap,
-  .music-player.mp-modal-open .mp-bottom-row,
-  .music-player.mp-modal-open .mp-btn.mp-skip,
-  .music-player.mp-modal-open .mp-btn.mp-repeat-btn,
-  .music-player.mp-modal-open .mp-btn#mpMute {
-    display: flex !important;
-  }
-  .music-player.mp-modal-open .mp-controls {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 18px !important;
-    margin: 4px 0 !important;
-  }
-  .music-player.mp-modal-open .mp-btn.mp-skip {
-    width: 38px !important;
-    height: 38px !important;
-  }
-  .music-player.mp-modal-open .mp-btn.mp-play {
-    width: 48px !important;
-    height: 48px !important;
-  }
-  .music-player.mp-modal-open .mp-btn.mp-play svg {
-    width: 18px !important;
-    height: 18px !important;
-  }
-  .music-player.mp-modal-open .mp-btn.mp-repeat-btn,
-  .music-player.mp-modal-open .mp-btn#mpMute {
-    width: 34px !important;
-    height: 34px !important;
-  }
-  .music-player.mp-modal-open .mp-vol-wrap {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-  }
-  .music-player.mp-modal-open .mp-vol-slider {
-    flex: 1 !important;
-    height: 6px !important;
-  }
-}
 
 /* ═══════════════════════════════════════════════════════════
    FULL THEME ENGINE: COMPREHENSIVE VISUAL TRANSFORMATION
@@ -5472,12 +5246,13 @@ html[data-theme="synthwave"] .mp-vinyl-label {
    MOBILE SMARTPHONE REFACTOR (PERFECT PROFILE FIT, PEAK VINYL)
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 767px) {
-  /* 1. HIDE TOP MINI TABS COMPLETELY ON MOBILE (User only uses bottom 6-item dock!) */
-  .tc-tabs {
+  /* 1. HIDE TOP MINI TABS COMPLETELY ON MOBILE (User only uses bottom 7-item dock!) */
+  .tc-tabs,
+  .tool-card .tc-tabs {
     display: none !important;
   }
 
-  /* 2. TOP HUD: Sleek left alignment, no overlap */
+  /* 2. TOP HUD: Sleek left alignment, no overlap; SFX and THEME hidden on mobile */
   .hud-top-left {
     position: fixed !important;
     top: 0 !important;
@@ -5511,11 +5286,15 @@ html[data-theme="synthwave"] .mp-vinyl-label {
     border-radius: 999px !important;
     padding: 3px 6px !important;
   }
+  #sfxToggleBtn,
+  #themeToggleBtn {
+    display: none !important;
+  }
 
-  /* 3. MUSIC PLAYER: ONLY A SMALL SPINNING VINYL DISC IN TOP-RIGHT! */
-  .music-player {
+  /* 3. MUSIC PLAYER: ONLY A COMPACT SPINNING VINYL DISC IN TOP-RIGHT */
+  .music-player:not(.mp-open) {
     position: fixed !important;
-    top: 3px !important;
+    top: 4px !important;
     right: 8px !important;
     left: auto !important;
     bottom: auto !important;
@@ -5537,20 +5316,21 @@ html[data-theme="synthwave"] .mp-vinyl-label {
     pointer-events: auto !important;
     opacity: 1 !important;
   }
-  .music-player .mp-vinyl-wrap {
+  .music-player:not(.mp-open) .mp-vinyl-wrap {
     width: 36px !important;
     height: 36px !important;
+    display: flex !important;
   }
-  .music-player .mp-vinyl-disc {
+  .music-player:not(.mp-open) .mp-vinyl-disc {
     width: 36px !important;
     height: 36px !important;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 240, 255, 0.4) !important;
   }
-  .music-player .mp-vinyl-label {
+  .music-player:not(.mp-open) .mp-vinyl-label {
     width: 17px !important;
     height: 17px !important;
   }
-  .music-player .mp-vinyl-spindle {
+  .music-player:not(.mp-open) .mp-vinyl-spindle {
     width: 4px !important;
     height: 4px !important;
   }
@@ -5560,27 +5340,50 @@ html[data-theme="synthwave"] .mp-vinyl-label {
     display: none !important;
   }
 
-  /* 4. WHEN VINYL CLICKED: POP OUT GORGEOUS ROUNDED RECTANGLE DECK */
+  /* 4. WHEN VINYL CLICKED: POP OUT ROUNDED RECTANGLE DECK IN EXACT CENTER OF SCREEN (CHÍNH GIỮA) */
   .music-player.mp-open {
     position: fixed !important;
-    top: 44px !important;
-    right: 8px !important;
-    width: min(320px, calc(100vw - 16px)) !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: min(315px, 86vw) !important;
     height: auto !important;
-    border-radius: 18px !important;
-    padding: 12px 14px !important;
+    max-height: 85vh !important;
+    border-radius: 20px !important;
+    padding: 14px 16px !important;
     background: rgba(12, 10, 26, 0.98) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     border: 1px solid rgba(0, 240, 255, 0.45) !important;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 240, 255, 0.25) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95), 0 0 30px rgba(0, 240, 255, 0.25) !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 10px !important;
+    gap: 9px !important;
     z-index: 999999 !important;
-    animation: mpDeckPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    animation: mpCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
   }
-  @keyframes mpDeckPop {
-    from { opacity: 0; transform: translateY(-8px) scale(0.96); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+  @keyframes mpCenterIn {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -42%) scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  .music-player.mp-closing {
+    animation: mpCenterOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  }
+  @keyframes mpCenterOut {
+    0% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -44%) scale(0.95);
+    }
   }
   .music-player.mp-open .mp-vinyl-wrap {
     display: none !important;
@@ -5591,22 +5394,43 @@ html[data-theme="synthwave"] .mp-vinyl-label {
     gap: 8px !important;
     width: 100% !important;
   }
+  .music-player.mp-open .mp-header-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+  .music-player.mp-open .mp-badge-tag {
+    font-size: 0.65rem !important;
+    letter-spacing: 0.08em !important;
+  }
   .music-player.mp-open .mp-modal-close {
     display: flex !important;
-    width: 22px !important;
-    height: 22px !important;
+    width: 24px !important;
+    height: 24px !important;
     align-items: center !important;
     justify-content: center !important;
     border-radius: 50% !important;
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: none !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
     color: #fff !important;
-    font-size: 0.75rem !important;
+    font-size: 0.78rem !important;
     cursor: pointer !important;
+    transition: background 0.15s ease !important;
+  }
+  .music-player.mp-open .mp-modal-close:active {
+    background: rgba(239, 68, 68, 0.4) !important;
+    color: #ff8888 !important;
   }
   .music-player.mp-open .mp-marquee-wrap {
     font-size: 0.75rem !important;
     max-width: 100% !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+  .music-player.mp-open .mp-marquee span {
+    font-size: 0.72rem !important;
+    white-space: nowrap !important;
   }
   .music-player.mp-open .mp-timeline-wrap,
   .music-player.mp-open .mp-vol-wrap,
@@ -5620,11 +5444,11 @@ html[data-theme="synthwave"] .mp-vinyl-label {
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 12px !important;
+    gap: 14px !important;
   }
   .music-player.mp-open .mp-btn.mp-play {
-    width: 36px !important;
-    height: 36px !important;
+    width: 40px !important;
+    height: 40px !important;
   }
 
   /* 5. PERFECT PROFILE FIT FOR ALL IPHONES (IP7 PLUS TO 16 PRO MAX) */
@@ -5785,55 +5609,83 @@ html[data-theme="synthwave"] .mp-vinyl-label {
 
   /* 6. FAB PALETTE MENU DESIGN */
   .mob-fab-container {
+    position: fixed !important;
     bottom: 64px !important;
     right: 12px !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    pointer-events: auto !important;
   }
   .mob-fab-btn {
-    width: 42px !important;
-    height: 42px !important;
+    width: 44px !important;
+    height: 44px !important;
     border-radius: 50% !important;
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.9), rgba(0, 240, 255, 0.9)) !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    box-shadow: 0 4px 18px rgba(0, 240, 255, 0.5) !important;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(0, 240, 255, 0.95)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    box-shadow: 0 4px 18px rgba(0, 240, 255, 0.6) !important;
     color: #fff !important;
-    font-size: 1.25rem !important;
+    font-size: 1.3rem !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    cursor: pointer !important;
+    touch-action: manipulation !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  }
+  .mob-fab-container.active .mob-fab-btn {
+    transform: rotate(45deg) scale(1.05) !important;
+    background: linear-gradient(135deg, #ef4444, #f43f5e) !important;
+    box-shadow: 0 4px 18px rgba(239, 68, 68, 0.6) !important;
   }
   .mob-fab-menu {
-    min-width: 175px !important;
-    padding: 8px !important;
-    border-radius: 14px !important;
-    background: rgba(10, 8, 24, 0.98) !important;
-    border: 1px solid rgba(0, 240, 255, 0.4) !important;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.9) !important;
-    gap: 6px !important;
+    position: absolute !important;
+    bottom: 54px !important;
+    right: 0 !important;
+    display: none !important;
+    flex-direction: column !important;
+    min-width: 185px !important;
+    padding: 10px !important;
+    border-radius: 16px !important;
+    background: rgba(12, 10, 26, 0.98) !important;
+    border: 1px solid rgba(0, 240, 255, 0.45) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 240, 255, 0.25) !important;
+    gap: 7px !important;
+    z-index: 999999 !important;
+    pointer-events: auto !important;
+    animation: fabPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .mob-fab-container.active .mob-fab-menu {
+    display: flex !important;
   }
   .mfm-header {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.62rem;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.64rem;
     font-weight: 700;
     color: #00f0ff;
-    padding: 2px 4px 4px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2px 4px 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     text-align: center;
+    letter-spacing: 0.05em;
   }
   .mob-fab-item {
-    padding: 6px 8px !important;
-    font-size: 0.68rem !important;
+    padding: 8px 10px !important;
+    font-size: 0.72rem !important;
     font-weight: 600 !important;
-    border-radius: 8px !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    color: #e2e8f0 !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #f1f5f9 !important;
     display: flex !important;
     align-items: center !important;
-    gap: 7px !important;
+    gap: 8px !important;
     cursor: pointer !important;
+    touch-action: manipulation !important;
+    transition: background 0.15s ease, border-color 0.15s ease !important;
   }
   .mob-fab-item:active {
-    background: rgba(0, 240, 255, 0.2) !important;
+    background: rgba(0, 240, 255, 0.25) !important;
     border-color: #00f0ff !important;
   }
 }

@@ -873,7 +873,7 @@ window.TYPING_DATA = {
     panelCreateVPS: '🖥️ Khởi Tạo VPS Cloud',
     panelManage: '🔑 Quản Lý Token & VPS',
     panelProjects: '🚀 Dự Án Tiêu Biểu',
-    panelTools: '🛠️ Tiện Ích & Dev Tools',
+    panelTools: '🚀 Tiện Ích & Dev Tools',
     panelGuestbook: '💬 Lưu Bút Trực Tuyến',
     panelAi: '🤖 Trợ Lý AI Nguyễn Duy',
     panelGame: '🎮 Echo Hunter Mini-Game'
@@ -884,7 +884,7 @@ window.TYPING_DATA = {
     panelCreateVPS: 'mobNavVps',
     panelManage: 'mobNavManage',
     panelProjects: 'mobNavProfile',
-    panelTools: 'mobNavProfile',
+    panelTools: 'mobNavTools',
     panelGuestbook: 'mobNavChat',
     panelAi: 'mobNavAi',
     panelGame: 'mobNavProfile'
@@ -4034,10 +4034,12 @@ Respond accurately with this ground truth knowledge:
       donateBtn: 'PLSDONET',
       mobileFabLabel: 'Tool',
       mobLblProfile: 'Profile',
-      mobLblBypass: 'Bypass',
+      mobLblStartut: 'Startut',
+      mobLblVps: 'Create VPS',
+      mobLblManage: 'Manage',
+      mobLblTools: 'Tools',
       mobLblChat: 'Chat',
       mobLblAi: 'AI Bot',
-      mobLblTools: 'Tools',
       mobLblGame: 'Game',
       slTitle: '✅ Supported Bypass Links'
     },
@@ -4175,10 +4177,12 @@ Respond accurately with this ground truth knowledge:
       donateBtn: 'PLSDONET',
       mobileFabLabel: 'Tool',
       mobLblProfile: 'Hồ Sơ',
-      mobLblBypass: 'Bypass',
+      mobLblStartut: 'Startut',
+      mobLblVps: 'Tạo VPS',
+      mobLblManage: 'Quản Lý',
+      mobLblTools: 'Tiện Ích',
       mobLblChat: 'Lưu Bút',
       mobLblAi: 'AI Bot',
-      mobLblTools: 'Tiện Ích',
       mobLblGame: 'Mini Game',
       slTitle: '✅ Link được hỗ trợ bypass'
     },
@@ -4316,10 +4320,12 @@ Respond accurately with this ground truth knowledge:
       donateBtn: 'PLSDONET',
       mobileFabLabel: 'ツール',
       mobLblProfile: 'プロフィール',
-      mobLblBypass: 'バイパス',
+      mobLblStartut: '起動ログ',
+      mobLblVps: 'VPS作成',
+      mobLblManage: '管理',
+      mobLblTools: 'ツール',
       mobLblChat: 'チャット',
       mobLblAi: 'AIボット',
-      mobLblTools: 'ツール',
       mobLblGame: 'ゲーム',
       slTitle: '✅ 対応バイパスリンク一覧'
     }
@@ -4559,10 +4565,12 @@ Respond accurately with this ground truth knowledge:
 
     // Mobile Navigation Dock Labels
     safeSet('mobLblProfile', dict.mobLblProfile);
-    safeSet('mobLblBypass', dict.mobLblBypass);
+    safeSet('mobLblStartut', dict.mobLblStartut);
+    safeSet('mobLblVps', dict.mobLblVps);
+    safeSet('mobLblManage', dict.mobLblManage);
+    safeSet('mobLblTools', dict.mobLblTools);
     safeSet('mobLblChat', dict.mobLblChat);
     safeSet('mobLblAi', dict.mobLblAi);
-    safeSet('mobLblTools', dict.mobLblTools);
     safeSet('mobLblGame', dict.mobLblGame);
   }
 
@@ -5642,94 +5650,7 @@ Respond accurately with this ground truth knowledge:
     }, { passive: true });
   }
 
-  // ── WAVE 42: MOBILE QUICK ACTION FAB MENU ──
-  const fabContainer = document.getElementById('mobFabContainer');
-  const fabBtn = document.getElementById('mobFabBtn');
-  const fabCopyCombo = document.getElementById('fabCopyCombo');
-  const fabPing = document.getElementById('fabPing');
-  const fabTheme = document.getElementById('fabTheme');
-  const fabSaver = document.getElementById('fabSaver');
-  const fabSaverTxt = document.getElementById('fabSaverTxt');
 
-  if (fabBtn && fabContainer) {
-    fabBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      fabContainer.classList.toggle('active');
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!isMobile()) return;
-      if (fabContainer && !fabContainer.contains(e.target)) {
-        fabContainer.classList.remove('active');
-      }
-    });
-
-    // 1. Copy Combo: IP | duyzoz | Password
-    if (fabCopyCombo) {
-      fabCopyCombo.addEventListener('click', (e) => {
-        e.stopPropagation();
-        fabContainer.classList.remove('active');
-        const ipEl = document.getElementById('vpsIpVal');
-        const passEl = document.getElementById('vpsPassVal');
-        const ip = ipEl ? ipEl.textContent.trim() : '100.86.124.90';
-        const pass = passEl ? passEl.textContent.trim() : 'nhn9jB#7ypQ]VE;';
-        const combo = `IP: ${ip} | User name: duyzoz | Password: ${pass}`;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(combo).then(() => {
-            alert(`📋 ĐÃ SAO CHÉP TOÀN BỘ:\n${combo}`);
-          }).catch(() => {
-            prompt('Sao chép thông tin VPS:', combo);
-          });
-        } else {
-          prompt('Sao chép thông tin VPS:', combo);
-        }
-      });
-    }
-
-    // 2. Ping Tailscale
-    if (fabPing) {
-      fabPing.addEventListener('click', (e) => {
-        e.stopPropagation();
-        fabContainer.classList.remove('active');
-        const pingBtn = document.getElementById('vpsPingTestBtn');
-        if (pingBtn) pingBtn.click();
-      });
-    }
-
-    // 3. Cycle Themes
-    const THEMES = ['default', 'matrix', 'amber', 'synthwave'];
-    let curThemeIdx = 0;
-    if (fabTheme) {
-      fabTheme.addEventListener('click', (e) => {
-        e.stopPropagation();
-        curThemeIdx = (curThemeIdx + 1) % THEMES.length;
-        const theme = THEMES[curThemeIdx];
-        if (theme === 'default') {
-          document.documentElement.removeAttribute('data-theme');
-        } else {
-          document.documentElement.setAttribute('data-theme', theme);
-        }
-        try { localStorage.setItem('nd_theme', theme); } catch(err){}
-        const themeNames = { default: 'Cyan Cyber', matrix: 'Matrix Green', amber: 'Cyber Amber', synthwave: 'Synthwave Pink' };
-        alert(`🎨 Đã đổi sang giao diện: ${themeNames[theme] || theme}`);
-      });
-    }
-
-    // 4. Toggle Saver
-    if (fabSaver) {
-      fabSaver.addEventListener('click', (e) => {
-        e.stopPropagation();
-        document.body.classList.toggle('battery-saver');
-        const isSaver = document.body.classList.contains('battery-saver');
-        if (fabSaverTxt) fabSaverTxt.textContent = isSaver ? '⚡ Chế Độ Thường' : '🔋 Tiết Kiệm Pin';
-        const bgVid = document.getElementById('bgVideo');
-        if (bgVid) {
-          if (isSaver) bgVid.pause();
-          else bgVid.play().catch(()=>{});
-        }
-      });
-    }
-  }
 
   // ── WAVE 43: PWA INSTALL BANNER ──
   let deferredPrompt = null;
@@ -5848,129 +5769,62 @@ Respond accurately with this ground truth knowledge:
 })();
 
 /* ═══════════════════════════════════════════════════════════
-   PEAK CYBER VINYL & MOBILE TURNTABLE MODAL CONTROLLER
+   MOBILE VINYL & CENTERED POPUP DECK CONTROLLER (60-120 FPS)
    ═══════════════════════════════════════════════════════════ */
 (function() {
   const isMobile = () => window.innerWidth < 768;
   const playerCard = document.getElementById('musicPlayer');
-  const vinylWrap  = document.getElementById('mpVinylWrap');
-  const mobExpand  = document.getElementById('mpMobExpandBtn');
   const modalClose = document.getElementById('mpModalClose');
-  const mobPlayBtn = document.getElementById('mpMobPlayBtn');
-  const mobPlayIcon= document.getElementById('mpMobPlayIcon');
-  const mobTitle   = document.getElementById('mpMobTitle');
-  const mainPlayBtn= document.getElementById('mpPlay');
-  const audio      = document.getElementById('mpAudio');
+  let isClosing = false;
 
-  function openModal() {
-    if (!playerCard) return;
-    playerCard.classList.add('mp-modal-open');
+  function closeDeck() {
+    if (!playerCard || !playerCard.classList.contains('mp-open') || isClosing) return;
+    isClosing = true;
+    playerCard.classList.add('mp-closing');
+    setTimeout(() => {
+      playerCard.classList.remove('mp-open', 'mp-closing');
+      isClosing = false;
+    }, 200);
   }
 
-  function closeModal() {
-    if (!playerCard) return;
-    playerCard.classList.remove('mp-modal-open');
-  }
-
-  // Toggle modal on mobile by clicking capsule, vinyl, or expand button
-  if (playerCard) {
-    playerCard.addEventListener('click', (e) => {
-      if (!isMobile()) return;
-      // Don't toggle modal if user clicked play/skip/volume controls directly
-      if (e.target.closest('#mpPlay, #mpMobPlayBtn, #mpSeek, #mpVol, #mpPrev, #mpNext, #mpRepeat, #mpMute')) {
-        return;
-      }
-      if (e.target.closest('#mpModalClose')) {
-        closeModal();
-        return;
-      }
-      if (playerCard.classList.contains('mp-modal-open')) {
-        // Already open
-      } else {
-        openModal();
-      }
-    });
-  }
-
-  if (modalClose) {
-    modalClose.addEventListener('click', (e) => {
-      e.stopPropagation();
-      closeModal();
-    });
-  }
-
-  if (mobExpand) {
-    mobExpand.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (playerCard.classList.contains('mp-modal-open')) {
-        closeModal();
-      } else {
-        openModal();
-      }
-    });
-  }
-
-  // Sync mobile play button with main audio
-  if (mobPlayBtn && mainPlayBtn) {
-    mobPlayBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      mainPlayBtn.click();
-    });
-  }
-
-  // Sync play icon on mobile island play button
-  if (audio && mobPlayIcon) {
-    const PLAY_SVG  = `<polygon points="5 3 19 12 5 21 5 3"/>`;
-    const PAUSE_SVG = `<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>`;
-    audio.addEventListener('play', () => {
-      mobPlayIcon.innerHTML = PAUSE_SVG;
-    });
-    audio.addEventListener('pause', () => {
-      mobPlayIcon.innerHTML = PLAY_SVG;
-    });
-  }
-
-  // Close modal when tapping outside (stage / background)
-  document.addEventListener('click', (e) => {
-    if (!isMobile() || !playerCard || !playerCard.classList.contains('mp-modal-open')) return;
-    if (!playerCard.contains(e.target)) {
-      closeModal();
+  function openDeck() {
+    if (!playerCard || isClosing) return;
+    playerCard.classList.remove('mp-closing');
+    playerCard.classList.add('mp-open');
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try { navigator.vibrate(10); } catch(err){}
     }
-  });
-})();
+  }
 
-/* ═══════════════════════════════════════════════════════════
-   MOBILE VINYL CLICK-TO-OPEN POPUP DECK CONTROLLER
-   ═══════════════════════════════════════════════════════════ */
-(function() {
-  const isMobile = () => window.innerWidth < 768;
-  const playerCard = document.getElementById('musicPlayer');
-  const modalClose = document.getElementById('mpModalClose');
-
+  // Click on vinyl disc (or player container when closed) opens the deck
   if (playerCard) {
     playerCard.addEventListener('click', (e) => {
       if (!isMobile()) return;
-      // If user clicked close button
+      // Close button
       if (e.target.closest('#mpModalClose')) {
-        playerCard.classList.remove('mp-open');
+        e.preventDefault();
+        e.stopPropagation();
+        closeDeck();
         return;
       }
-      // If user clicked controls inside the deck, don't close
+      // Controls inside deck (play/pause, seek, volume, next, prev, etc.)
       if (e.target.closest('#mpPlay, #mpSeek, #mpVol, #mpPrev, #mpNext, #mpRepeat, #mpMute')) {
         return;
       }
-      // If closed, click on vinyl disc opens the deck
+      // If closed, open
       if (!playerCard.classList.contains('mp-open')) {
-        playerCard.classList.add('mp-open');
-        if (typeof navigator !== 'undefined' && navigator.vibrate) try { navigator.vibrate(10); } catch(err){}
+        e.preventDefault();
+        e.stopPropagation();
+        openDeck();
       }
     });
   }
 
   if (modalClose) {
     modalClose.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
-      if (playerCard) playerCard.classList.remove('mp-open');
+      closeDeck();
     });
   }
 
@@ -5978,31 +5832,43 @@ Respond accurately with this ground truth knowledge:
   document.addEventListener('click', (e) => {
     if (!isMobile() || !playerCard || !playerCard.classList.contains('mp-open')) return;
     if (!playerCard.contains(e.target)) {
-      playerCard.classList.remove('mp-open');
+      closeDeck();
     }
   });
 
-  // 3.3 THEME PALETTE SWITCHER
+  /* ═══════════════════════════════════════════════════════════
+     THEME PALETTE SWITCHER (CYAN, MATRIX, AMBER, SYNTHWAVE)
+     ═══════════════════════════════════════════════════════════ */
   const fabContainer = document.getElementById('mobFabContainer');
   const fabBtn = document.getElementById('mobFabBtn');
+
   if (fabBtn && fabContainer) {
     fabBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
       fabContainer.classList.toggle('active');
     });
 
     document.querySelectorAll('#mobFabMenu .mob-fab-item').forEach(btn => {
       btn.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        const theme = btn.getAttribute('data-theme');
-        if (theme === 'default') {
+        const theme = btn.getAttribute('data-theme') || 'cyan';
+        if (theme === 'cyan' || theme === 'default') {
           document.documentElement.removeAttribute('data-theme');
         } else {
           document.documentElement.setAttribute('data-theme', theme);
         }
-        try { localStorage.setItem('nd_theme', theme); } catch(err){}
+        try {
+          localStorage.setItem('cyber_theme', theme);
+          localStorage.setItem('nd_theme', theme);
+        } catch(err){}
+        const themeText = document.getElementById('themeText');
+        if (themeText) themeText.textContent = theme.toUpperCase();
         fabContainer.classList.remove('active');
-        if (typeof navigator !== 'undefined' && navigator.vibrate) try { navigator.vibrate(12); } catch(err){}
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+          try { navigator.vibrate(12); } catch(err){}
+        }
         if (window.CyberAudio && window.CyberAudio.click) window.CyberAudio.click();
       });
     });
