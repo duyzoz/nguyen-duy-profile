@@ -838,10 +838,10 @@ body.perf-mode .tool-card{
   transform: translateY(-1px) !important;
 }
 .tc-tab.active {
-  background: linear-gradient(135deg, rgba(0, 240, 255, 0.16) 0%, rgba(124, 58, 237, 0.25) 100%) !important;
-  border: 1px solid rgba(0, 240, 255, 0.7) !important;
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.25), inset 0 0 6px rgba(0, 240, 255, 0.15) !important;
-  color: #ffffff !important;
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.16)) !important;
+  border: 1px solid var(--theme-accent, rgba(0, 240, 255, 0.7)) !important;
+  box-shadow: 0 0 10px var(--theme-glow, rgba(0, 240, 255, 0.25)), inset 0 0 6px var(--theme-glow, rgba(0, 240, 255, 0.15)) !important;
+  color: var(--theme-accent, #ffffff) !important;
   opacity: 1 !important;
   transform: translateY(-1px) scale(1.03) !important;
   z-index: 2 !important;
@@ -850,12 +850,12 @@ body.perf-mode .tool-card{
   content: '' !important;
   position: absolute !important;
   bottom: -1px !important;
-  left: 20% !important;
-  right: 20% !important;
-  height: 1.5px !important;
-  background: #00f0ff !important;
+  left: 15% !important;
+  right: 15% !important;
+  height: 2px !important;
+  background: var(--theme-accent, #00f0ff) !important;
   border-radius: 99px !important;
-  box-shadow: 0 0 4px #00f0ff, 0 0 8px rgba(0, 240, 255, 0.5) !important;
+  box-shadow: 0 0 6px var(--theme-accent, #00f0ff), 0 0 10px var(--theme-glow, rgba(0, 240, 255, 0.5)) !important;
 }
 @keyframes neonTabPulse {
   0%, 100% { opacity: 1; transform: scaleX(1); }
@@ -4307,15 +4307,15 @@ body.turbo-120-active .profile-card {
   text-align: center !important;
 }
 .vps-dur-pill:hover {
-  background: rgba(0, 240, 255, 0.08) !important;
-  border-color: rgba(0, 240, 255, 0.35) !important;
-  color: #00f0ff !important;
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.08)) !important;
+  border-color: var(--theme-accent, #00f0ff) !important;
+  color: var(--theme-accent, #00f0ff) !important;
 }
 .vps-dur-pill.active {
-  background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(124, 58, 237, 0.35)) !important;
-  border: 1px solid #00f0ff !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.35) !important;
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.25)) !important;
+  border: 1px solid var(--theme-accent, #00f0ff) !important;
+  color: var(--theme-accent, #ffffff) !important;
+  box-shadow: 0 0 12px var(--theme-glow, rgba(0, 240, 255, 0.35)) !important;
 }
 
 /* Hardware Specs Badge */
@@ -5284,22 +5284,143 @@ html[data-theme="frost"] {
   --a4: #e0f2fe !important;
 }
 
-/* Universal Theme Surface Application */
+/* 7. Pure Snow White (Trắng Tuyết Full / Blizzard Light) */
+html[data-theme="snow"] {
+  --theme-card-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.98) 50%, rgba(238, 242, 246, 0.98) 100%);
+  --theme-deck-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.99) 0%, rgba(241, 245, 249, 0.99) 100%);
+  --theme-block-bg: rgba(241, 245, 249, 0.95);
+  --theme-inner-bg: rgba(255, 255, 255, 0.98);
+  --theme-border: rgba(100, 116, 139, 0.45);
+  --theme-glow: rgba(148, 163, 184, 0.4);
+  --theme-accent: #0f172a;
+  --theme-accent-sec: #334155;
+  --theme-accent-gradient: linear-gradient(135deg, #1e293b, #0f172a);
+  --theme-badge-bg: rgba(15, 23, 42, 0.08);
+  --a1: #0f172a !important;
+  --a2: #334155 !important;
+  --a3: #475569 !important;
+  --a4: #64748b !important;
+}
+
+/* Universal Theme Surface Application & Dynamic Tab Engine */
 .t-block,
 .ts-steps-card,
 .vps-card,
 .proj-card,
 .gb-card,
-.ai-chat-wrap {
+.ai-chat-wrap,
+.vps-manage-list,
+.vm-item,
+.vm-token-box,
+.dev-tool-card,
+.tg-item,
+.ping-box,
+.base64-box,
+.gfn-box,
+.vps-cred-card,
+.sb-stats,
+.sb-stat-box,
+.vps-ready-box,
+.ts-rainbow-alert {
   background: var(--theme-block-bg) !important;
   border-color: var(--theme-border) !important;
   transition: background .35s ease, border-color .3s ease !important;
 }
+
 .startut-full-log,
 .log-win {
   background: var(--theme-inner-bg) !important;
   border-color: var(--theme-border) !important;
 }
+
+/* Dynamic Theme-Aware Tabs for ALL Themes (No more stuck cyan!) */
+.tc-tabs {
+  background: var(--theme-inner-bg, rgba(8, 12, 26, 0.92)) !important;
+  border-bottom: 1px solid var(--theme-border, rgba(0, 240, 255, 0.2)) !important;
+}
+
+.tc-tab {
+  border: 1px solid var(--theme-border, rgba(255, 255, 255, 0.08)) !important;
+  background: var(--theme-badge-bg, rgba(255, 255, 255, 0.02)) !important;
+  color: #94a3b8 !important;
+}
+
+.tc-tab:hover {
+  opacity: 0.95 !important;
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.08)) !important;
+  border-color: var(--theme-accent, rgba(0, 240, 255, 0.35)) !important;
+  color: var(--theme-accent, #00f0ff) !important;
+}
+
+.tc-tab.active {
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.16)) !important;
+  border: 1px solid var(--theme-accent, #00f0ff) !important;
+  box-shadow: 0 0 12px var(--theme-glow, rgba(0, 240, 255, 0.35)), inset 0 0 6px var(--theme-glow, rgba(0, 240, 255, 0.15)) !important;
+  color: var(--theme-accent, #ffffff) !important;
+  opacity: 1 !important;
+  transform: translateY(-1px) scale(1.03) !important;
+  z-index: 2 !important;
+}
+
+.tc-tab.active::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -1px !important;
+  left: 15% !important;
+  right: 15% !important;
+  height: 2px !important;
+  background: var(--theme-accent, #00f0ff) !important;
+  border-radius: 99px !important;
+  box-shadow: 0 0 6px var(--theme-accent, #00f0ff), 0 0 10px var(--theme-glow, rgba(0, 240, 255, 0.5)) !important;
+}
+
+/* Dynamic Duration Pills across all themes */
+.vps-dur-pill {
+  border-color: var(--theme-border, rgba(255, 255, 255, 0.1)) !important;
+}
+
+.vps-dur-pill:hover {
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.08)) !important;
+  border-color: var(--theme-accent, #00f0ff) !important;
+  color: var(--theme-accent, #00f0ff) !important;
+}
+
+.vps-dur-pill.active {
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.25)) !important;
+  border: 1px solid var(--theme-accent, #00f0ff) !important;
+  color: var(--theme-accent, #ffffff) !important;
+  box-shadow: 0 0 12px var(--theme-glow, rgba(0, 240, 255, 0.35)) !important;
+}
+
+#vpsDurValDisplay {
+  color: var(--theme-accent, #00f0ff) !important;
+}
+
+/* Dynamic Action Buttons across all themes */
+.vps-download-rdp-btn {
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.2)) !important;
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.4)) !important;
+  color: var(--theme-accent, #00f0ff) !important;
+}
+
+.vps-download-rdp-btn:hover {
+  background: var(--theme-accent-gradient, #00f0ff) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 15px var(--theme-glow, rgba(0, 240, 255, 0.4)) !important;
+}
+
+.vps-ready-header {
+  border-bottom: 1px solid var(--theme-border, rgba(0, 240, 255, 0.25)) !important;
+}
+
+.vps-specs-badge {
+  border-color: var(--theme-border, rgba(0, 240, 255, 0.2)) !important;
+}
+
+.vsb-item {
+  color: var(--theme-accent, #00f0ff) !important;
+}
+
 .mob-nav-item.active,
 .mob-nav-item.active .mob-nav-label {
   color: var(--theme-accent) !important;
@@ -5312,6 +5433,273 @@ html[data-theme="frost"] {
 .mp-vinyl-label {
   border-color: var(--theme-accent) !important;
   box-shadow: 0 0 10px var(--theme-glow) !important;
+}
+.mp-btn.mp-play {
+  background: var(--theme-accent-gradient, linear-gradient(135deg, #00f0ff, #7c3aed)) !important;
+  box-shadow: 0 0 14px var(--theme-glow, rgba(0, 240, 255, 0.4)) !important;
+}
+
+/* ════ SNOW WHITE THEME: HIGH CONTRAST DEEP SLATE / BLACK TYPOGRAPHY ════ */
+html[data-theme="snow"] body,
+html[data-theme="snow"] .profile-card,
+html[data-theme="snow"] .tool-card,
+html[data-theme="snow"] .music-player,
+html[data-theme="snow"] .t-block,
+html[data-theme="snow"] .vps-card,
+html[data-theme="snow"] .proj-card,
+html[data-theme="snow"] .gb-card,
+html[data-theme="snow"] .tc-panel,
+html[data-theme="snow"] .tc-tabs,
+html[data-theme="snow"] .startut-full-log,
+html[data-theme="snow"] .card-hdr,
+html[data-theme="snow"] .p-tagline,
+html[data-theme="snow"] .p-bio-tag,
+html[data-theme="snow"] .mp-marquee span,
+html[data-theme="snow"] .mp-time,
+html[data-theme="snow"] .vps-card-title,
+html[data-theme="snow"] .proj-name,
+html[data-theme="snow"] .gb-title,
+html[data-theme="snow"] .sb-stat-label,
+html[data-theme="snow"] .sb-stat-val,
+html[data-theme="snow"] .donate-txt,
+html[data-theme="snow"] .view-counter span,
+html[data-theme="snow"] .le-txt,
+html[data-theme="snow"] .le-time,
+html[data-theme="snow"] .vps-label,
+html[data-theme="snow"] .gb-author,
+html[data-theme="snow"] .gb-text,
+html[data-theme="snow"] .dev-tool-title,
+html[data-theme="snow"] .dev-tool-desc,
+html[data-theme="snow"] .sl-cat-title,
+html[data-theme="snow"] .sl-items span,
+html[data-theme="snow"] .fps-hud-val,
+html[data-theme="snow"] .fps-hud-tag,
+html[data-theme="snow"] .lang-btn,
+html[data-theme="snow"] .perf-toggle-btn,
+html[data-theme="snow"] .theme-toggle-btn,
+html[data-theme="snow"] .cli-toggle-btn,
+html[data-theme="snow"] .mob-nav-item,
+html[data-theme="snow"] .mob-nav-label,
+html[data-theme="snow"] .t-title,
+html[data-theme="snow"] .t-sub,
+html[data-theme="snow"] .ts-step-body span,
+html[data-theme="snow"] .vps-guide-tip,
+html[data-theme="snow"] .token-empty,
+html[data-theme="snow"] .vps-status-title,
+html[data-theme="snow"] .vps-status-msg,
+html[data-theme="snow"] .proj-desc,
+html[data-theme="snow"] .gb-empty {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .p-name {
+  background: linear-gradient(135deg, #0f172a 0%, #334155 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+html[data-theme="snow"] .p-bio-tag {
+  background: rgba(15, 23, 42, 0.07) !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .vps-dur-pill {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border-color: rgba(15, 23, 42, 0.16) !important;
+  color: #334155 !important;
+}
+
+html[data-theme="snow"] .vps-dur-pill.active {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #0f172a !important;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.3) !important;
+}
+
+html[data-theme="snow"] .tc-tab {
+  color: #475569 !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  background: rgba(15, 23, 42, 0.03) !important;
+}
+
+html[data-theme="snow"] .tc-tab.active {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #0f172a !important;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.3) !important;
+}
+
+html[data-theme="snow"] .tc-tab.active::after {
+  background: #0f172a !important;
+  box-shadow: 0 0 6px rgba(15, 23, 42, 0.4) !important;
+}
+
+html[data-theme="snow"] .tc-tab:hover {
+  background: rgba(15, 23, 42, 0.08) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .mp-btn.mp-play {
+  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="snow"] .mp-btn {
+  color: #1e293b !important;
+}
+
+html[data-theme="snow"] .mp-btn:hover {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .mp-badge-tag {
+  background: rgba(15, 23, 42, 0.08) !important;
+  color: #0f172a !important;
+  border-color: rgba(15, 23, 42, 0.2) !important;
+}
+
+html[data-theme="snow"] .mp-badge-dot {
+  background: #0f172a !important;
+  box-shadow: 0 0 6px rgba(15, 23, 42, 0.6) !important;
+}
+
+html[data-theme="snow"] .mp-vinyl-label {
+  border-color: #0f172a !important;
+  box-shadow: 0 0 8px rgba(15, 23, 42, 0.3) !important;
+}
+
+html[data-theme="snow"] .startut-full-log,
+html[data-theme="snow"] .log-win {
+  background: rgba(241, 245, 249, 0.95) !important;
+  border-color: rgba(148, 163, 184, 0.45) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .le {
+  color: #1e293b !important;
+}
+
+html[data-theme="snow"] .vps-select,
+html[data-theme="snow"] .vps-input,
+html[data-theme="snow"] .gb-input,
+html[data-theme="snow"] .bp-input,
+html[data-theme="snow"] .sb-input {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #0f172a !important;
+  border-color: rgba(148, 163, 184, 0.5) !important;
+}
+
+html[data-theme="snow"] .vps-select option {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .vps-btn,
+html[data-theme="snow"] .sb-btn,
+html[data-theme="snow"] .gb-btn,
+html[data-theme="snow"] .bp-btn {
+  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25) !important;
+}
+
+html[data-theme="snow"] .ts-step-item {
+  background: rgba(15, 23, 42, 0.04) !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+html[data-theme="snow"] .ts-step-num {
+  background: #0f172a !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="snow"] .ts-link-btn {
+  background: rgba(15, 23, 42, 0.08) !important;
+  color: #0f172a !important;
+  border-color: rgba(15, 23, 42, 0.2) !important;
+}
+
+html[data-theme="snow"] .vps-specs-badge {
+  background: rgba(15, 23, 42, 0.04) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+html[data-theme="snow"] .vsb-item {
+  color: #1e293b !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+html[data-theme="snow"] .vps-ready-header {
+  border-bottom-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+html[data-theme="snow"] .vps-cred-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(148, 163, 184, 0.45) !important;
+}
+
+html[data-theme="snow"] .cred-label {
+  color: #475569 !important;
+}
+
+html[data-theme="snow"] .cred-val {
+  color: #0f172a !important;
+  background: rgba(15, 23, 42, 0.06) !important;
+}
+
+html[data-theme="snow"] .vps-download-rdp-btn {
+  background: rgba(15, 23, 42, 0.07) !important;
+  border-color: rgba(15, 23, 42, 0.2) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .vps-action-btn {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .vps-guide-tip {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+  color: #334155 !important;
+}
+
+html[data-theme="snow"] .soc-btn {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .soc-btn:hover {
+  background: rgba(15, 23, 42, 0.12) !important;
+  color: #000000 !important;
+}
+
+html[data-theme="snow"] .wuwa-card,
+html[data-theme="snow"] .discord-card {
+  background: rgba(15, 23, 42, 0.04) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+html[data-theme="snow"] .wuwa-card *,
+html[data-theme="snow"] .discord-card * {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .mobile-nav-dock {
+  background: rgba(255, 255, 255, 0.97) !important;
+  border-top-color: rgba(100, 116, 139, 0.3) !important;
+}
+
+html[data-theme="snow"] .mob-nav-item.active {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .mob-nav-item.active::before {
+  background: #0f172a !important;
+  box-shadow: 0 0 8px rgba(15, 23, 42, 0.5) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -5467,6 +5855,23 @@ html[data-theme="frost"] {
 .nitro-prev-frost {
   background: linear-gradient(135deg, #061a2a 0%, #0c2e46 50%, #051622 100%);
   border: 1px solid rgba(56, 189, 248, 0.5);
+}
+.nitro-prev-snow {
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 50%, #e2e8f0 100%);
+  border: 1px solid rgba(203, 213, 225, 0.8);
+}
+.nitro-prev-snow .nitro-mini-badge {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.3) !important;
+}
+.nitro-card[data-theme="snow"].active {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), inset 0 0 14px rgba(255, 255, 255, 0.15) !important;
+}
+.nitro-card[data-theme="snow"].active .nitro-active-tag {
+  background: #ffffff !important;
+  color: #0f172a !important;
 }
 
 .nitro-mini-avatar {

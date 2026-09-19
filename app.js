@@ -5348,15 +5348,16 @@ Respond accurately with this ground truth knowledge:
     }
   });
 
-  // Wave 34: Discord Nitro Profile Theme Engine (6 Themes, Complete Surface Transformation)
-  const THEMES = ['cyan', 'amethyst', 'matrix', 'amber', 'crimson', 'frost'];
+  // Wave 34: Discord Nitro Profile Theme Engine (7 Themes, Complete Surface Transformation)
+  const THEMES = ['cyan', 'amethyst', 'matrix', 'amber', 'crimson', 'frost', 'snow'];
   const THEME_NAMES = {
     cyan: 'Cyber Cyan (Mặc định)',
     amethyst: 'Amethyst Nitro Velvet',
     matrix: 'Matrix Hacker Emerald',
     amber: 'Sunset Amber 2077',
     crimson: 'Blood Moon Sakura',
-    frost: 'Abyssal Arctic Glaze'
+    frost: 'Abyssal Arctic Glaze',
+    snow: 'Trắng Tuyết (Snow White)'
   };
 
   function applyTheme(themeKey){
