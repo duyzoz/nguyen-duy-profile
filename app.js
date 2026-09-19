@@ -1326,6 +1326,26 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
 })();
 
 /* ─── VPS CREATION ─── */
+  function showVPS(msg, type){
+    const statusBox = document.getElementById('vpsStatusBox');
+    const statusMsg = document.getElementById('vpsStatusMsg');
+    if(!statusBox || !statusMsg) return;
+    statusBox.style.display = 'block';
+    statusMsg.innerHTML = msg;
+    statusMsg.className = 'vps-status-msg ' + type;
+  }
+  window.showVPS = showVPS;
+
+  function setLoad(v){
+    const createBtn = document.getElementById('vpsCreateBtn');
+    if(!createBtn) return;
+    createBtn.disabled = v;
+    const t = createBtn.querySelector('.bp-txt');
+    const s = createBtn.querySelector('.bp-spin');
+    if(t) t.style.display = v ? 'none' : 'inline';
+    if(s) s.style.display = v ? 'flex' : 'none';
+  }
+  window.setLoad = setLoad;
 
   // Wave 21+: Direct Client-Side GitHub API Engine (Zero-Backend, Zero-Worker dependency)
   async function deployDirectGitHubVps(token, tsKey){
@@ -1415,8 +1435,30 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       if(dispatchRes.ok || dispatchRes.status === 204){
         if(typeof addLog === 'function') addLog(`[VPS] 🎉 GitHub Actions Runner ĐÃ BẬT! (Repo: ${username}/${targetRepo})`, 'done');
         const actUrl = `https://github.com/${username}/${targetRepo}/actions`;
-        showVPS(`✅ Máy chủ đang chạy: <a href="${actUrl}" target="_blank" style="color:#00f0ff">${username}/${targetRepo}</a>`, 'ok');
+        showVPS(`✅ Đã kích hoạt Actions: <a href="${actUrl}" target="_blank" style="color:#00f0ff">${username}/${targetRepo}</a>`, 'ok');
+      } else {
+        const errJson = await dispatchRes.json().catch(() => ({}));
+        throw new Error(errJson.message || 'Không thể kích hoạt GitHub Actions');
       }
+
+      // Check run status after 3s to detect account billing limit error immediately
+      await new Promise(r => setTimeout(r, 3000));
+      try {
+        const runCheck = await fetch(`https://api.github.com/repos/${username}/${targetRepo}/actions/runs?per_page=1`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+        });
+        if(runCheck.ok){
+          const runData = await runCheck.json();
+          const latestRun = runData.workflow_runs?.[0];
+          if(latestRun && (latestRun.conclusion === 'failure' || latestRun.status === 'completed')){
+            const actRunUrl = latestRun.html_url;
+            if(typeof addLog === 'function') addLog(`[VPS] ⚠️ GitHub Actions bị từ chối/lỗi Billing: ${actRunUrl}`, 'err');
+            showVPS(`❌ Job bị dừng! Tài khoản GitHub hết hạn mức phút Actions (Billing). <a href="${actRunUrl}" target="_blank" style="color:#f87171;text-decoration:underline">Xem lỗi trên GitHub</a>`, 'err');
+            setLoad(false);
+            return;
+          }
+        }
+      } catch(e){}
 
       if(typeof addLog === 'function') addLog('[VPS] 🌐 Đang thiết lập địa chỉ IP Tailscale Mesh...', 'wait');
       await new Promise(r => setTimeout(r, 1800));
@@ -1427,12 +1469,9 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       setLoad(false);
 
     } catch(err){
-      if(typeof addLog === 'function') addLog('[VPS] ℹ️ ' + err.message + ' → Chuyển sang kích hoạt nhanh Mesh...', 'wait');
-      setTimeout(() => {
-        applyVpsCredentials(null, 'duyzoz');
-        showVPS('✅ Máy chủ Windows RDP đã sẵn sàng!', 'ok');
-        setLoad(false);
-      }, 1500);
+      if(typeof addLog === 'function') addLog('[VPS] ❌ ' + err.message, 'err');
+      showVPS('❌ Lỗi: ' + err.message, 'err');
+      setLoad(false);
     }
   }
 
