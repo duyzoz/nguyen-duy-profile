@@ -66,49 +66,55 @@
   <canvas id="dustCanvas"></canvas>
   <canvas id="matrixCanvas" style="display:none"></canvas>
 
-  <!-- HUD TOP-LEFT: FPS COUNTER & REGION/LANG & FIX LAG & CLI -->
-  <div class="hud-top-left">
-    <div class="fps-hud-box" id="fpsHudBox" title="Tốc độ khung hình thực tế theo máy">
-      <div class="fps-hud-dot" id="fpsDot"></div>
-      <div class="fps-hud-val"><span id="fpsCount">60</span><small>FPS</small></div>
-      <div class="fps-hud-tag" id="fpsTag">Smooth</div>
-    </div>
-
-    <!-- WAVE 13: MULTI-LANGUAGE CYBER SWITCHER WITH AUTO REGION -->
-    <div class="lang-switch-box" id="langSwitchBox">
-      <div class="lang-region-badge" id="langRegionBadge" title="Region">🌐 US</div>
-      <div class="lang-buttons">
-        <button class="lang-btn" id="langBtnVi" data-lang="vi" title="Tiếng Việt (Vietnam)">
-          <span class="lang-flag">🇻🇳</span><span class="lang-txt">VI</span>
-        </button>
-        <button class="lang-btn active" id="langBtnEng" data-lang="en" title="English (Global)">
-          <span class="lang-flag">🇺🇸</span><span class="lang-txt">ENG</span>
-        </button>
-        <button class="lang-btn" id="langBtnJp" data-lang="ja" title="日本語 (Japan)">
-          <span class="lang-flag">🇯🇵</span><span class="lang-txt">JP</span>
-        </button>
+  <!-- HUD TOP-LEFT: CYBER DOCK WITH PERFORMANCE, LANG, THEMES, SFX, CLI -->
+  <div class="hud-top-left" id="hudTopLeft">
+    <!-- Row 1: System & Lang Pill -->
+    <div class="hud-capsule-row hud-row-sys">
+      <div class="fps-hud-box" id="fpsHudBox" title="Tốc độ khung hình thực tế theo máy">
+        <div class="fps-hud-dot" id="fpsDot"></div>
+        <div class="fps-hud-val"><span id="fpsCount">60</span><small>FPS</small></div>
+        <div class="fps-hud-tag" id="fpsTag">Smooth</div>
       </div>
+
+      <div class="lang-switch-box" id="langSwitchBox">
+        <div class="lang-region-badge" id="langRegionBadge" title="Region">🌐 US</div>
+        <div class="lang-buttons">
+          <button class="lang-btn" id="langBtnVi" data-lang="vi" title="Tiếng Việt (Vietnam)">
+            <span class="lang-flag">🇻🇳</span><span class="lang-txt">VI</span>
+          </button>
+          <button class="lang-btn active" id="langBtnEng" data-lang="en" title="English (Global)">
+            <span class="lang-flag">🇺🇸</span><span class="lang-txt">ENG</span>
+          </button>
+          <button class="lang-btn" id="langBtnJp" data-lang="ja" title="日本語 (Japan)">
+            <span class="lang-flag">🇯🇵</span><span class="lang-txt">JP</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="perf-toggle-btn cyber-sound-btn" id="perfToggle" title="Bật / Tắt video nền (Tăng hiệu năng)">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span id="perfToggleText">⚡ Video</span>
+      </button>
     </div>
 
-    <button class="perf-toggle-btn" id="perfToggle" title="Toggle background video for max performance">
-      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      <span id="perfToggleText">⚡ Disable Video (Fix Lag)</span>
-    </button>
-        <button class="theme-toggle-btn cyber-sound-btn" id="themeToggleBtn" title="Chọn Giao Diện Discord Nitro cho Profile, Tiện Ích & Music">
-      <span id="themeIcon">🎨</span>
-      <span id="themeText">THEMES</span>
-    </button>
-    <button class="theme-random-btn cyber-sound-btn" id="themeRandomBtn" title="Theme ngẫu nhiên (Ctrl+T hoặc Lắc điện thoại)">
-      <span>🎲</span>
-    </button>
-    <button class="sfx-toggle-btn cyber-sound-btn" id="sfxToggleBtn" title="Bật / Tắt âm thanh Web Audio FX (0ms Latency)">
-      <span id="sfxIcon">🔊</span>
-      <span id="sfxText">SFX</span>
-    </button>
-    <button class="cli-toggle-btn" id="cliToggleBtn" title="Open Cyber Terminal CLI (~ or Ctrl+K)">
-      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-      <span>_CLI</span>
-    </button>
+    <!-- Row 2: Theme, SFX & Tools Cyber Capsule -->
+    <div class="hud-capsule-row hud-row-tools">
+      <button class="theme-toggle-btn cyber-sound-btn" id="themeToggleBtn" title="Chọn Giao Diện Discord Nitro cho Profile, Tiện Ích & Music">
+        <span id="themeIcon">🎨</span>
+        <span id="themeText">THEMES</span>
+      </button>
+      <button class="theme-random-btn cyber-sound-btn" id="themeRandomBtn" title="Theme ngẫu nhiên (Ctrl+T hoặc Lắc điện thoại)">
+        <span>🎲</span>
+      </button>
+      <button class="sfx-toggle-btn cyber-sound-btn" id="sfxToggleBtn" title="Bật / Tắt âm thanh Web Audio FX (0ms Latency)">
+        <span id="sfxIcon">🔊</span>
+        <span id="sfxText">SFX</span>
+      </button>
+      <button class="cli-toggle-btn cyber-sound-btn" id="cliToggleBtn" title="Mở Cyber Terminal CLI (~ hoặc Ctrl+K)">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        <span>_CLI</span>
+      </button>
+    </div>
   </div>
 
       <!-- MUSIC PLAYER — PEAK CYBER VINYL DECK -->
