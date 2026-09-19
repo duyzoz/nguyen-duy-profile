@@ -3360,49 +3360,51 @@ body.lang-en, body.lang-en button, body.lang-en input, body.lang-en textarea {
 }
 
 
-/* ══ TAILSCALE CLOUD VPS ENHANCEMENTS ══ */
-.ts-badge-pill {
+/* ══ NGROK CLOUD VPS RDP ENHANCEMENTS (Direct TCP Tunnel) ══ */
+.ngrok-badge-pill {
   font-size: .65rem;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 3px 10px;
   border-radius: 12px;
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.35);
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(124, 58, 237, 0.25));
+  color: #00f0ff;
+  border: 1px solid rgba(0, 240, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
   letter-spacing: .5px;
 }
-.ts-steps-card {
+.ngrok-steps-card {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
   margin: 10px 0 14px 0;
-  background: rgba(15, 23, 42, 0.65);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  border-radius: 12px;
-  padding: 10px 12px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(8, 12, 24, 0.85));
+  border: 1px solid rgba(0, 240, 255, 0.28);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px 14px;
 }
-.ts-step-item {
+.ngrok-step-item {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: .75rem;
   color: #cbd5e1;
 }
-.ts-step-num {
-  width: 20px;
-  height: 20px;
+.ngrok-step-num {
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #00d4ff, #7c3aed);
+  background: linear-gradient(135deg, #00f0ff, #8b5cf6);
   color: #fff;
-  font-weight: 700;
-  font-size: .68rem;
+  font-weight: 800;
+  font-size: .7rem;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
 }
-.ts-step-body {
+.ngrok-step-body {
   flex: 1;
   display: flex;
   align-items: center;
@@ -3410,23 +3412,45 @@ body.lang-en, body.lang-en button, body.lang-en input, body.lang-en textarea {
   gap: 8px;
   min-width: 0;
 }
-.ts-step-body strong { color: #f1f5f9; }
-.ts-link-btn {
+.ngrok-step-body strong { color: #f1f5f9; }
+.ngrok-link-btn {
   font-size: .68rem;
   font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(0, 212, 255, 0.12);
-  color: #38bdf8;
-  border: 1px solid rgba(0, 212, 255, 0.3);
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.16), rgba(124, 58, 237, 0.2));
+  color: #00f0ff;
+  border: 1px solid rgba(0, 240, 255, 0.4);
   text-decoration: none;
   white-space: nowrap;
+  transition: all .2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ngrok-link-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.3), rgba(124, 58, 237, 0.4));
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.vps-open-rdp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.35));
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  border-radius: 10px;
+  color: #34d399;
+  font-size: .78rem;
+  font-weight: 700;
+  padding: 10px 14px;
+  cursor: pointer;
   transition: all .2s ease;
 }
-.ts-link-btn:hover {
-  background: rgba(0, 212, 255, 0.25);
-  box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+.vps-open-rdp-btn:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.5));
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.5);
   color: #fff;
+  transform: translateY(-1px);
 }
 .vps-cred-card {
   display: flex;
@@ -3490,64 +3514,7 @@ body.lang-en, body.lang-en button, body.lang-en input, body.lang-en textarea {
 .vps-guide-tip strong { color: #e2e8f0; }
 
 
-/* ══ WAVE 14 — RAINBOW NEON ALERT & VIP CREDENTIALS CARD ══ */
-@keyframes rainbowBorder {
-  0% { border-color: #ff0055; box-shadow: 0 0 12px rgba(255, 0, 85, 0.4), inset 0 0 8px rgba(255, 0, 85, 0.15); }
-  25% { border-color: #ffaa00; box-shadow: 0 0 12px rgba(255, 170, 0, 0.4), inset 0 0 8px rgba(255, 170, 0, 0.15); }
-  50% { border-color: #00ff88; box-shadow: 0 0 12px rgba(0, 255, 136, 0.4), inset 0 0 8px rgba(0, 255, 136, 0.15); }
-  75% { border-color: #00d4ff; box-shadow: 0 0 12px rgba(0, 212, 255, 0.4), inset 0 0 8px rgba(0, 212, 255, 0.15); }
-  100% { border-color: #ff0055; box-shadow: 0 0 12px rgba(255, 0, 85, 0.4), inset 0 0 8px rgba(255, 0, 85, 0.15); }
-}
-
-@keyframes rainbowText {
-  0% { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(360deg); }
-}
-
-.ts-rainbow-alert {
-  margin: 10px 0;
-  padding: 10px 12px;
-  background: rgba(20, 10, 25, 0.85);
-  border: 2px solid #ff0055;
-  border-radius: 12px;
-  animation: rainbowBorder 3s infinite linear;
-  backdrop-filter: blur(8px);
-}
-
-.ts-rainbow-inner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.ts-rainbow-icon {
-  font-size: 1.25rem;
-  animation: pulseIcon 1s infinite alternate;
-}
-
-@keyframes pulseIcon {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.15); }
-}
-
-.ts-rainbow-text {
-  font-size: .76rem;
-  line-height: 1.45;
-  color: #fed7aa;
-}
-
-.ts-rainbow-badge {
-  display: inline-block;
-  font-size: .62rem;
-  font-weight: 900;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: #dc2626;
-  color: #fff;
-  letter-spacing: .5px;
-  margin-right: 4px;
-  box-shadow: 0 0 6px rgba(220, 38, 38, 0.6);
-}
+/* Ngrok RDP Sleek Experience */
 
 .ts-quick-launchers {
   display: flex;
@@ -3571,13 +3538,13 @@ body.lang-en, body.lang-en button, body.lang-en input, body.lang-en textarea {
   border: 1px solid transparent;
 }
 
-.ts-launch-tailscale {
+.ts-launch-ngrok {
   background: rgba(14, 165, 233, 0.15);
   color: #38bdf8;
   border-color: rgba(14, 165, 233, 0.4);
 }
 
-.ts-launch-tailscale:hover {
+.ts-launch-ngrok:hover {
   background: rgba(14, 165, 233, 0.3);
   box-shadow: 0 0 12px rgba(14, 165, 233, 0.5);
   transform: translateY(-1px);
@@ -3926,7 +3893,7 @@ body.lang-en, body.lang-en button, body.lang-en input, body.lang-en textarea {
   transform: scale(1.06);
 }
 
-/* ══ WAVES 18-20: 2-TIER TOKEN & TAILSCALE KEY ITEMS (NO HORIZONTAL OVERFLOW) ══ */
+/* ══ WAVES 18-20: 2-TIER TOKEN & NGROK KEY ITEMS (NO HORIZONTAL OVERFLOW) ══ */
 .token-item {
   display: flex !important;
   flex-direction: column !important;

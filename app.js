@@ -1266,7 +1266,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       link: `ms-rd:connect?server=${sessionData.ip}`,
       user: sessionData.user || 'duyzoz',
       pass: sessionData.pass || 'Admin@123456',
-      repo: sessionData.repo || 'vps-tailscale-windows',
+      repo: sessionData.repo || 'vps-ngrok-windows',
       date: dateStr,
       created: sessionData.created || Date.now(),
       durationSeconds: sessionData.durationSeconds || 20400
@@ -1452,9 +1452,9 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   }
   window.setLoad = setLoad;
 
-  // Wave 21+: Direct Client-Side GitHub API Engine (Zero-Backend, Zero-Worker dependency)
-  async function deployDirectGitHubVps(token, tsKey){
-    if(typeof addLog === 'function') addLog('[VPS] 🔄 Kích hoạt luồng GitHub Direct API Engine...', 'info');
+  // Wave 21+: Direct Client-Side GitHub API Engine (Ngrok TCP Tunnel RDP)
+  async function deployDirectGitHubVps(token, ngrokToken){
+    if(typeof addLog === 'function') addLog('[VPS] 🔄 Kích hoạt luồng GitHub Direct API Engine cho Ngrok RDP...', 'info');
     try {
       // 1. Check user profile
       const userRes = await fetch('https://api.github.com/user', {
@@ -1467,8 +1467,8 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       const username = userData.login || 'duyzoz';
       if(typeof addLog === 'function') addLog(`[VPS] 👤 Tài khoản GitHub: ${username} (Quyền: repo & workflow ✓)`, 'ok');
 
-      // 2. Ensure repository
-      const targetRepo = 'vps-tailscale-windows';
+      // 2. Ensure repository vps-ngrok-windows
+      const targetRepo = 'vps-ngrok-windows';
       if(typeof addLog === 'function') addLog(`[VPS] 📦 Kiểm tra repository ${username}/${targetRepo}...`, 'wait');
       let repoRes = await fetch(`https://api.github.com/repos/${username}/${targetRepo}`, {
         headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
@@ -1483,7 +1483,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
             name: targetRepo,
             private: true,
             auto_init: true,
-            description: 'AI STV Premium Windows RDP Server with Tailscale'
+            description: 'AI STV Premium Windows RDP Server with Ngrok TCP Tunnel'
           })
         });
         if(createRes.ok){
@@ -1494,7 +1494,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
         if(typeof addLog === 'function') addLog(`[VPS] ✅ Repo ${username}/${targetRepo} đã sẵn sàng!`, 'ok');
       }
 
-      // Xóa ip.txt cũ nếu có để tránh đọc nhầm IP của phiên trước
+      // Xóa ip.txt cũ nếu có để tránh đọc nhầm Host:Port của phiên trước
       try {
         const oldIpRes = await fetch(`https://api.github.com/repos/${username}/${targetRepo}/contents/ip.txt`, {
           headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
@@ -1509,14 +1509,14 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
         }
       } catch(e){}
 
-      // 3. Commit/update workflow file
+      // 3. Commit/update workflow file with Ngrok Token
       const rawYaml = document.getElementById('rawWorkflowYaml')?.value || '';
       let finalYaml = rawYaml;
-      if(tsKey && tsKey.length > 5){
-        finalYaml = finalYaml.replace('${{ secrets.TAILSCALE_AUTH_KEY }}', tsKey);
+      if(ngrokToken && ngrokToken.length > 5){
+        finalYaml = finalYaml.replace('${{ secrets.NGROK_AUTH_TOKEN }}', ngrokToken);
       }
       
-      if(typeof addLog === 'function') addLog('[VPS] 📝 Đang đồng bộ kịch bản SEVER AI STV PREMIUM vào .github/workflows/rdp.yml...', 'wait');
+      if(typeof addLog === 'function') addLog('[VPS] 📝 Đang đồng bộ kịch bản Ngrok RDP vào .github/workflows/rdp.yml...', 'wait');
       let fileSha = null;
       try {
         const fileCheck = await fetch(`https://api.github.com/repos/${username}/${targetRepo}/contents/.github/workflows/rdp.yml`, {
@@ -1529,7 +1529,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       } catch(e){}
 
       const putBody = {
-        message: 'Deploy SEVER AI STV PREMIUM RDP Workflow',
+        message: 'Deploy SEVER AI STV NGROK RDP Workflow',
         content: btoa(unescape(encodeURIComponent(finalYaml)))
       };
       if(fileSha) putBody.sha = fileSha;
@@ -1540,16 +1540,18 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
         body: JSON.stringify(putBody)
       });
       if(commitRes.ok){
-        if(typeof addLog === 'function') addLog('[VPS] ✅ Workflow RDP đã nạp xong vào GitHub Actions!', 'ok');
+        if(typeof addLog === 'function') addLog('[VPS] ✅ Workflow Ngrok RDP đã nạp xong vào GitHub Actions!', 'ok');
       }
 
       // 4. Trigger workflow_dispatch
-      if(typeof addLog === 'function') addLog('[VPS] 🚀 Đang gửi tín hiệu khởi động máy ảo Windows (5h40m)...', 'wait');
+      const durSec = typeof currentVpsSeconds !== 'undefined' ? currentVpsSeconds : 20400;
+      const durLabel = durSec === 3600 ? '1h' : (durSec === 10800 ? '3h' : '5h40m');
+      if(typeof addLog === 'function') addLog(`[VPS] 🚀 Đang gửi tín hiệu khởi động máy ảo Windows (${durLabel})...`, 'wait');
       await new Promise(r => setTimeout(r, 1000));
       const dispatchRes = await fetch(`https://api.github.com/repos/${username}/${targetRepo}/actions/workflows/rdp.yml/dispatches`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ref: 'main', inputs: { duration: '5h40m' } })
+        body: JSON.stringify({ ref: 'main', inputs: { duration: durLabel } })
       });
 
       if(!dispatchRes.ok && dispatchRes.status !== 204){
@@ -1558,13 +1560,13 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       }
 
       const actUrl = `https://github.com/${username}/${targetRepo}/actions`;
-      if(typeof addLog === 'function') addLog(`[VPS] 🎉 GitHub Actions Runner ĐÃ BẬT! Đang chờ khởi động máy ảo...`, 'done');
-      showVPS(`⏳ Đang khởi động máy ảo Windows & kết nối Tailscale... <a href="${actUrl}" target="_blank" style="color:#00f0ff">Xem log</a>`, 'wait');
+      if(typeof addLog === 'function') addLog(`[VPS] 🎉 GitHub Actions Runner ĐÃ BẬT! Đang chờ khởi động máy ảo & Ngrok Tunnel...`, 'done');
+      showVPS(`⏳ Đang khởi động máy ảo Windows & mở Ngrok TCP Tunnel... <a href="${actUrl}" target="_blank" style="color:#00f0ff">Xem log</a>`, 'wait');
 
-      // 5. THE REAL POLLING LOOP (Zero-Fake! Chờ đúng IP thật từ runner)
+      // 5. THE REAL POLLING LOOP (Chờ đúng Host:Port thật từ Ngrok)
       let pollCount = 0;
-      const maxPoll = 50; // Poll tối đa ~4 phút (Windows runner boot + cài Tailscale mất khoảng 60-90s)
-      let foundIp = null;
+      const maxPoll = 50; // Poll tối đa ~4 phút
+      let foundAddress = null;
 
       while(pollCount < maxPoll){
         pollCount++;
@@ -1588,8 +1590,8 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
                 showVPS(`⏳ Đang xếp hàng máy chủ GitHub Actions... (~${pollCount*5}s)`, 'wait');
                 if(typeof addLog === 'function' && pollCount % 4 === 0) addLog(`[VPS] ⏳ Runner đang chờ máy chủ GitHub cấp phát (${pollCount*5}s)...`, 'wait');
               } else if(runStatus === 'in_progress'){
-                showVPS(`⏳ Máy ảo Windows đang boot & thiết lập Tailscale... (~${pollCount*5}s) <a href="${latestRun.html_url}" target="_blank" style="color:#00f0ff">Xem log</a>`, 'wait');
-                if(typeof addLog === 'function' && pollCount % 3 === 0) addLog(`[VPS] ⚙️ Đang cấu hình Windows RDP & Tailscale... (~${pollCount*5}s)`, 'wait');
+                showVPS(`⏳ Máy ảo Windows đang boot & thiết lập Ngrok Tunnel... (~${pollCount*5}s) <a href="${latestRun.html_url}" target="_blank" style="color:#00f0ff">Xem log</a>`, 'wait');
+                if(typeof addLog === 'function' && pollCount % 3 === 0) addLog(`[VPS] ⚙️ Đang cấu hình Windows RDP & Ngrok... (~${pollCount*5}s)`, 'wait');
               }
             }
           }
@@ -1605,25 +1607,25 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
           if(ipFileRes.ok){
             const ipFileData = await ipFileRes.json();
             const decodedContent = atob(ipFileData.content.replace(/\s/g, '')).trim();
-            if(decodedContent && decodedContent.startsWith('100.')){
-              foundIp = decodedContent;
+            if(decodedContent && (decodedContent.includes('.ngrok.io:') || decodedContent.includes(':')) && !decodedContent.startsWith('ERROR:')){
+              foundAddress = decodedContent;
               break;
             } else if(decodedContent && decodedContent.startsWith('ERROR:')){
               const errTxt = decodedContent.replace('ERROR:', '').trim();
-              throw new Error(`Tailscale bị lỗi từ máy ảo: ${errTxt}`);
+              throw new Error(`Ngrok bị lỗi từ máy ảo: ${errTxt}`);
             }
           }
         } catch(e){
-          if(e.message && (e.message.includes('báo lỗi') || e.message.includes('Tailscale bị lỗi'))) throw e;
+          if(e.message && (e.message.includes('báo lỗi') || e.message.includes('Ngrok bị lỗi'))) throw e;
         }
       }
 
-      if(foundIp && foundIp.startsWith('100.')){
-        if(typeof addLog === 'function') addLog(`[VPS] 🎉 Nhận IP Tailscale THẬT từ máy ảo: ${foundIp}`, 'done');
-        applyVpsCredentials(foundIp, 'duyzoz', 'Admin@123456');
-        showVPS(`✅ Máy chủ Windows RDP đã sẵn sàng kết nối! IP: <strong>${foundIp}</strong>`, 'ok');
+      if(foundAddress){
+        if(typeof addLog === 'function') addLog(`[VPS] 🎉 Nhận địa chỉ Ngrok RDP THẬT: ${foundAddress}`, 'done');
+        applyVpsCredentials(foundAddress, 'duyzoz', 'Admin@123456');
+        showVPS(`✅ Máy chủ Windows RDP đã sẵn sàng kết nối trực tiếp! Host: <strong>${foundAddress}</strong>`, 'ok');
       } else {
-        throw new Error('Hết thời gian chờ (Timeout): Không nhận được IP Tailscale hợp lệ (100.x.y.z). Máy ảo không thể kết nối mạng do Auth Key không hợp lệ hoặc đã hết hạn.');
+        throw new Error('Hết thời gian chờ (Timeout): Không nhận được địa chỉ Ngrok RDP. Vui lòng kiểm tra lại Ngrok Authtoken hoặc kiểm tra xem tài khoản đã có tunnel nào khác đang chạy không.');
       }
       setLoad(false);
 
@@ -1847,7 +1849,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       pass: assignedPass,
       created: Date.now(),
       durationSeconds: durSec,
-      repo: 'vps-tailscale-windows'
+      repo: 'vps-ngrok-windows'
     };
 
     saveActiveVpsSession(sessionData);
@@ -1934,7 +1936,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
         link: vncLink,
         user: 'duyzoz',
         pass: 'Admin@123456',
-        repo: repoUrl || 'vps-tailscale-windows',
+        repo: repoUrl || 'vps-ngrok-windows',
         created: Date.now(),
         durationSeconds: typeof currentVpsSeconds !== 'undefined' ? currentVpsSeconds : 20400
       });
@@ -2010,7 +2012,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       token = typedToken;
       localStorage.setItem('github_token', token);
     }
-    const tsKey = localStorage.getItem('tailscale_auth_key') || (document.getElementById('vpsTailscaleKey')?.value || '').trim();
+    const ngrokToken = localStorage.getItem('ngrok_auth_token') || (document.getElementById('vpsNgrokToken')?.value || '').trim();
 
     if(!token || token.length < 10){
       showVPS('❌ Chưa có Token! Vui lòng điền GitHub Token và nhấn nút Lưu (💾) cạnh ô nhập.', 'err');
@@ -2018,16 +2020,10 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       return;
     }
 
-    if(!tsKey || tsKey.length < 8){
-      showVPS('⚠️ Chưa có Tailscale Auth Key! Vui lòng điền Auth Key và nhấn Lưu (💾) cạnh ô nhập.', 'wait');
-      if(typeof addLog === 'function') addLog('[VPS] ⚠️ Thiếu Tailscale Auth Key. Vui lòng lấy key tại tailscale.com và lưu lại.', 'wait');
-      return;
-    }
-
-    if(!tsKey.startsWith('tskey-auth-')){
-      showVPS('❌ Tailscale Auth Key không đúng định dạng! Auth Key kết nối máy tính bắt buộc phải bắt đầu bằng <code>tskey-auth-</code>.<br><span style="font-size:0.75rem;color:#fca5a5">Key bạn nhập là API Key (loại quản trị) hoặc bị thiếu tiền tố. <a href="https://login.tailscale.com/admin/settings/keys" target="_blank" style="color:#00f0ff;text-decoration:underline;font-weight:700">Bấm vào đây để lấy Auth Key (chọn Reusable)</a></span>', 'err');
-      if(typeof addLog === 'function') addLog('[VPS] ❌ Auth Key sai loại! Phải bắt đầu bằng "tskey-auth-". Không dùng API key.', 'err');
-      const warn = document.getElementById('tsKeyFormatWarn');
+    if(!ngrokToken || ngrokToken.length < 10){
+      showVPS('⚠️ Chưa có Ngrok Authtoken! Vui lòng lấy token tại <a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank" style="color:#00f0ff;font-weight:700">dashboard.ngrok.com</a>, dán vào ô và nhấn Lưu (💾).', 'wait');
+      if(typeof addLog === 'function') addLog('[VPS] ⚠️ Thiếu Ngrok Authtoken. Vui lòng lấy token tại dashboard.ngrok.com và lưu lại.', 'wait');
+      const warn = document.getElementById('ngrokTokenFormatWarn');
       if(warn) warn.style.display = 'block';
       return;
     }
@@ -2039,15 +2035,15 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       readyBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     setVpsShimmer(true);
-    showVPS('⏳ Đang kết nối luồng khởi tạo VPS...', 'wait');
-    if(typeof addLog === 'function') addLog('[VPS] 🚀 Bắt đầu quy trình Deploy VPS Windows qua Tailscale Mesh...', 'info');
+    showVPS('⏳ Đang kết nối luồng khởi tạo Ngrok RDP VPS...', 'wait');
+    if(typeof addLog === 'function') addLog('[VPS] 🚀 Bắt đầu quy trình Deploy VPS Windows qua Ngrok TCP Tunnel...', 'info');
 
     // Ưu tiên: Gọi Worker / Docker bridge nếu có sẵn
     try {
       const r = await fetch(`${WORKER}/api/create-vps`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ github_token: token, tailscale_key: tsKey }),
+        body: JSON.stringify({ github_token: token, ngrok_token: ngrokToken }),
         signal: AbortSignal.timeout(3500)
       });
       const d = await r.json();
@@ -2058,7 +2054,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
         }
         showVPS(
           `⏳ Repo: <a href="${d.actions_url}" target="_blank" style="color:#7c6fff">${d.repository}</a><br>`+
-          `<span style="font-size:.78rem;opacity:.7">Đang chờ gán IP Tailscale...</span>`,
+          `<span style="font-size:.78rem;opacity:.7">Đang chờ gán Ngrok Host:Port...</span>`,
           'wait'
         );
         pollVncLink(token, d.repository, d.actions_url);
@@ -2069,7 +2065,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     }
 
     // Direct GitHub Engine (Zero-Backend)
-    await deployDirectGitHubVps(token, tsKey);
+    await deployDirectGitHubVps(token, ngrokToken);
   });
 })();
 
@@ -5134,11 +5130,11 @@ Respond accurately with this ground truth knowledge:
 
   window.setLanguage = applyLanguage;
 
-  /* ── GITHUB TOKEN & TAILSCALE VPS LOGIC & COPY WORKFLOW ── */
+  /* ── GITHUB TOKEN & NGROK RDP VPS LOGIC & COPY WORKFLOW ── */
   const vpsTokenInput = document.getElementById('vpsToken');
   const saveTokenBtnEl = document.getElementById('saveTokenBtn');
-  const tsKeyInput = document.getElementById('vpsTailscaleKey');
-  const saveTsBtn = document.getElementById('saveTsKeyBtn');
+  const ngrokTokenInput = document.getElementById('vpsNgrokToken');
+  const saveNgrokBtn = document.getElementById('saveNgrokTokenBtn');
   const copyWfBtn = document.getElementById('copyWorkflowBtn');
 
   if(vpsTokenInput){
@@ -5170,25 +5166,17 @@ Respond accurately with this ground truth knowledge:
     });
   }
 
-  if(tsKeyInput){
-    const savedTs = localStorage.getItem('tailscale_auth_key') || '';
-    if(savedTs) tsKeyInput.value = savedTs;
-    tsKeyInput.addEventListener('input', () => {
-      localStorage.setItem('tailscale_auth_key', tsKeyInput.value.trim());
+  if(ngrokTokenInput){
+    const savedNgrok = localStorage.getItem('ngrok_auth_token') || '';
+    if(savedNgrok) ngrokTokenInput.value = savedNgrok;
+    ngrokTokenInput.addEventListener('input', () => {
+      const val = ngrokTokenInput.value.trim();
+      if(val && val.length >= 10 && !val.includes('•')){
+        localStorage.setItem('ngrok_auth_token', val);
+      }
     });
   }
 
-  if(saveTsBtn && tsKeyInput){
-    saveTsBtn.addEventListener('click', () => {
-      const val = tsKeyInput.value.trim();
-      if(!val){
-        if(typeof showVPS === 'function') showVPS('⚠️ Vui lòng nhập Tailscale Auth Key!', 'wait');
-        return;
-      }
-      localStorage.setItem('tailscale_auth_key', val);
-      if(typeof showVPS === 'function') showVPS('✅ Đã lưu Tailscale Auth Key!', 'ok');
-    });
-  }
 
   // Copy workflow YAML on click from hidden textarea (100% safe, zero syntax escaping issues!)
   if(copyWfBtn){
@@ -5267,7 +5255,7 @@ Respond accurately with this ground truth knowledge:
     }
   })();
 
-  /* ── WAVE 14, 15, 16, 17: ADVANCED STARTUT LOG, DEMO TIMER, TAILSCALE KEYS & GFN MONITOR ── */
+  /* ── WAVE 14, 15, 16, 17: ADVANCED STARTUT LOG, DEMO TIMER, NGROK TOKENS & GFN MONITOR ── */
   // 1. Password Generator (Military grade 16 chars)
   function generateMilitaryPassword(){
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%^&*()_+=[]{}|;:,.<>?';
@@ -5348,117 +5336,112 @@ Respond accurately with this ground truth knowledge:
     });
   }
 
-  // 5. Tailscale Auth Keys List Management
-  const LS_TS_KEYS = 'tailscale_keys_list';
-  function getTsKeysList(){
-    try { return JSON.parse(localStorage.getItem(LS_TS_KEYS) || '[]'); } catch{ return []; }
+  // 5. Ngrok Authtokens List Management
+  const LS_NGROK_TOKENS = 'ngrok_tokens_list';
+  function getNgrokTokensList(){
+    try { return JSON.parse(localStorage.getItem(LS_NGROK_TOKENS) || '[]'); } catch{ return []; }
   }
-  function saveTsKeysList(list){
-    localStorage.setItem(LS_TS_KEYS, JSON.stringify(list));
+  function saveNgrokTokensList(list){
+    localStorage.setItem(LS_NGROK_TOKENS, JSON.stringify(list));
   }
-  function renderTsKeysList(){
-    const listEl = document.getElementById('tsKeyList');
+  function renderNgrokTokensList(){
+    const listEl = document.getElementById('ngrokTokenList');
     if(!listEl) return;
-    const list = getTsKeysList();
+    const list = getNgrokTokensList();
     if(list.length === 0){
-      listEl.innerHTML = '<div class="token-empty">Chưa có Tailscale Auth Key nào được lưu</div>';
+      listEl.innerHTML = '<div class="token-empty" id="ngrokTokenEmptyMsg">Chưa có Ngrok Authtoken nào được lưu</div>';
       return;
     }
     listEl.innerHTML = list.map(item => `
       <div class="token-item" data-id="${item.id}">
         <div class="token-item-header">
-          <div class="token-item-label">${item.label || 'Tailscale Key'}</div>
+          <div class="token-item-label">${item.label || 'Ngrok Token'}</div>
           <div class="token-item-actions">
-            <button class="tia-use cyber-sound-btn" data-ts="${item.key}" title="Dùng Key này">✓</button>
-            <button class="tia-eye cyber-sound-btn" data-ts="${item.key}" data-id="${item.id}" title="Xem/Ẩn">👁️</button>
-            <button class="tia-copy cyber-sound-btn" data-copy="${item.key}" title="Sao chép">📋</button>
-            <button class="tia-del cyber-sound-btn" data-tsid="${item.id}" title="Xóa">🗑️</button>
+            <button class="tia-use cyber-sound-btn" data-ngrok="${item.token}" title="Dùng Token này">✓</button>
+            <button class="tia-eye cyber-sound-btn" data-ngrok="${item.token}" data-id="${item.id}" title="Xem/Ẩn">👁️</button>
+            <button class="tia-copy cyber-sound-btn" data-copy="${item.token}" title="Sao chép">📋</button>
+            <button class="tia-del cyber-sound-btn" data-ngrokid="${item.id}" title="Xóa">🗑️</button>
           </div>
         </div>
-        <div class="token-item-val" id="tsVal_${item.id}" data-show="0">tskey-auth-••••••••${item.key.slice(-4)}</div>
+        <div class="token-item-val" id="ngrokVal_${item.id}" data-show="0">••••••••••••••••${item.token.slice(-4)}</div>
         <div class="token-item-date">➕ ${item.added}</div>
       </div>
     `).join('');
   }
 
-  // Wave 21: Auto-naming Tailscale Key #1, Tailscale Key #2...
-  function nextTsKeyName(){
-    const list = getTsKeysList();
+  function nextNgrokTokenName(){
+    const list = getNgrokTokensList();
     const nums = list.map(t => {
-      const m = (t.label || '').match(/Tailscale\s*Key\s*#(\d+)/i) || (t.label || '').match(/Key\s*#(\d+)/i);
+      const m = (t.label || '').match(/Ngrok\s*Token\s*#(\d+)/i) || (t.label || '').match(/Token\s*#(\d+)/i);
       return m ? parseInt(m[1]) : 0;
     });
     const max = nums.length ? Math.max(...nums) : 0;
-    return `Tailscale Key #${max + 1}`;
+    return `Ngrok Token #${max + 1}`;
   }
 
-  // Save Tailscale key button & Real-time validation
-  const saveTsKeyBtn = document.getElementById('saveTsKeyBtn');
-  const vpsTailscaleKeyInput = document.getElementById('vpsTailscaleKey');
-  const tsKeyWarnEl = document.getElementById('tsKeyFormatWarn');
+  // Save Ngrok token button & Real-time validation
+  const saveNgrokTokenBtn = document.getElementById('saveNgrokTokenBtn');
+  const vpsNgrokTokenInput = document.getElementById('vpsNgrokToken');
+  const ngrokTokenWarnEl = document.getElementById('ngrokTokenFormatWarn');
 
-  if(vpsTailscaleKeyInput){
-    vpsTailscaleKeyInput.addEventListener('input', () => {
-      const val = vpsTailscaleKeyInput.value.trim();
-      if(val && val.length > 5 && !val.startsWith('tskey-auth-')){
-        if(tsKeyWarnEl) tsKeyWarnEl.style.display = 'block';
-      } else {
-        if(tsKeyWarnEl) tsKeyWarnEl.style.display = 'none';
+  if(vpsNgrokTokenInput){
+    vpsNgrokTokenInput.addEventListener('input', () => {
+      const val = vpsNgrokTokenInput.value.trim();
+      if(val && val.length >= 10 && !val.includes('•')){
+        localStorage.setItem('ngrok_auth_token', val);
+        if(ngrokTokenWarnEl) ngrokTokenWarnEl.style.display = 'none';
       }
     });
   }
 
-  if(saveTsKeyBtn && vpsTailscaleKeyInput){
-    saveTsKeyBtn.addEventListener('click', () => {
-      const val = vpsTailscaleKeyInput.value.trim();
-      if(!val){
-        if(typeof addLog === 'function') addLog('[STARTUT] ⚠️ Vui lòng nhập Tailscale Auth Key!', 'wait');
+  if(saveNgrokTokenBtn && vpsNgrokTokenInput){
+    saveNgrokTokenBtn.addEventListener('click', () => {
+      const val = vpsNgrokTokenInput.value.trim();
+      if(!val || val.length < 10){
+        if(typeof addLog === 'function') addLog('[VPS] ⚠️ Vui lòng nhập Ngrok Authtoken hợp lệ!', 'wait');
+        if(ngrokTokenWarnEl) ngrokTokenWarnEl.style.display = 'block';
         return;
       }
-      if(!val.startsWith('tskey-auth-')){
-        if(tsKeyWarnEl) tsKeyWarnEl.style.display = 'block';
-        if(typeof showVPS === 'function'){
-          showVPS('❌ Tailscale Auth Key phải bắt đầu bằng <code>tskey-auth-</code> (chọn Reusable tại Tailscale Admin). Key bạn nhập là API Key!', 'err');
-        }
-        if(typeof addLog === 'function') addLog('[STARTUT] ⚠️ Cảnh báo: Key này không bắt đầu bằng "tskey-auth-". Backend Tailscale sẽ báo invalid key!', 'err');
-      } else {
-        if(tsKeyWarnEl) tsKeyWarnEl.style.display = 'none';
-      }
-      const list = getTsKeysList();
-      const autoLabel = nextTsKeyName();
+      if(ngrokTokenWarnEl) ngrokTokenWarnEl.style.display = 'none';
+      const list = getNgrokTokensList();
+      const autoLabel = nextNgrokTokenName();
       list.unshift({
         id: Date.now().toString(36),
         label: autoLabel,
-        key: val,
+        token: val,
         added: new Date().toLocaleString('vi-VN')
       });
-      saveTsKeysList(list);
-      localStorage.setItem('tailscale_auth_key', val);
-      renderTsKeysList();
+      saveNgrokTokensList(list);
+      localStorage.setItem('ngrok_auth_token', val);
+      renderNgrokTokensList();
       if(typeof CyberAudio !== 'undefined') if(typeof CyberAudio.deploy === 'function') CyberAudio.deploy(); else CyberAudio.success();
-      if(typeof addLog === 'function') addLog(`[STARTUT] ✅ Đã lưu ${autoLabel} vào danh sách!`, 'ok');
+      if(typeof addLog === 'function') addLog(`[VPS] ✅ Đã lưu ${autoLabel} vào danh sách!`, 'ok');
+
+      const prev = saveNgrokTokenBtn.innerHTML;
+      saveNgrokTokenBtn.innerHTML = '<span style="color:#22c55e;font-size:14px;font-weight:700">✓</span>';
+      setTimeout(() => { saveNgrokTokenBtn.innerHTML = prev; }, 1200);
     });
   }
 
-  // Click actions for Tailscale Keys list
+  // Click actions for Ngrok Tokens list
   document.addEventListener('click', (e) => {
-    const useBtn = e.target.closest('.tia-use[data-ts]');
+    const useBtn = e.target.closest('.tia-use[data-ngrok]');
     if(useBtn){
-      const key = useBtn.dataset.ts;
-      if(vpsTailscaleKeyInput) vpsTailscaleKeyInput.value = key;
-      localStorage.setItem('tailscale_auth_key', key);
-      if(typeof addLog === 'function') addLog('[STARTUT] ✅ Đã nạp Tailscale Key vào form!', 'ok');
+      const tokenVal = useBtn.dataset.ngrok;
+      if(vpsNgrokTokenInput) vpsNgrokTokenInput.value = tokenVal;
+      localStorage.setItem('ngrok_auth_token', tokenVal);
+      if(typeof addLog === 'function') addLog('[VPS] ✅ Đã nạp Ngrok Authtoken vào form!', 'ok');
       return;
     }
-    const eyeBtn = e.target.closest('.tia-eye[data-ts]');
+    const eyeBtn = e.target.closest('.tia-eye[data-ngrok]');
     if(eyeBtn){
-      const el = document.getElementById('tsVal_' + eyeBtn.dataset.id);
+      const el = document.getElementById('ngrokVal_' + eyeBtn.dataset.id);
       if(el){
         if(el.dataset.show === '1'){
-          el.textContent = 'tskey-auth-••••••••' + eyeBtn.dataset.ts.slice(-4);
+          el.textContent = '••••••••••••••••' + eyeBtn.dataset.ngrok.slice(-4);
           el.dataset.show = '0';
         } else {
-          el.textContent = eyeBtn.dataset.ts;
+          el.textContent = eyeBtn.dataset.ngrok;
           el.dataset.show = '1';
         }
       }
@@ -5469,29 +5452,29 @@ Respond accurately with this ground truth knowledge:
       navigator.clipboard.writeText(copyBtn.dataset.copy);
       copyBtn.textContent = '✓';
       setTimeout(() => copyBtn.textContent = '📋', 1800);
-      if(typeof addLog === 'function') addLog('[STARTUT] 📋 Đã sao chép khóa!', 'info');
+      if(typeof addLog === 'function') addLog('[VPS] 📋 Đã sao chép khóa!', 'info');
       return;
     }
-    const delBtn = e.target.closest('.tia-del[data-tsid]');
+    const delBtn = e.target.closest('.tia-del[data-ngrokid]');
     if(delBtn){
-      const id = delBtn.dataset.tsid;
-      const list = getTsKeysList().filter(x => x.id !== id);
-      saveTsKeysList(list);
-      renderTsKeysList();
-      if(typeof addLog === 'function') addLog('[STARTUT] 🗑️ Đã xóa Tailscale Key', 'info');
+      const id = delBtn.dataset.ngrokid;
+      const list = getNgrokTokensList().filter(t => t.id !== id);
+      saveNgrokTokensList(list);
+      renderNgrokTokensList();
+      if(typeof addLog === 'function') addLog('[VPS] 🗑️ Đã xóa Ngrok Authtoken khỏi danh sách!', 'ok');
       return;
     }
   });
 
-  // Render on startup and tab change
-  renderTsKeysList();
-  document.getElementById('tabManage')?.addEventListener('click', renderTsKeysList);
+  // Render Ngrok Tokens list on startup and tab change
+  renderNgrokTokensList();
+  document.getElementById('tabManage')?.addEventListener('click', renderNgrokTokensList);
 
   // 6. FACTORY RESET ALL CACHE BUTTON (Clean 100%)
   const resetBtn = document.getElementById('btnResetAllCache');
   if(resetBtn){
     resetBtn.addEventListener('click', async () => {
-      const confirmReset = confirm('⚠️ BẠN CÓ CHẮC CHẮN MUỐN XÓA TẤT CẢ CACHE & DỮ LIỆU?\n\nThao tác này sẽ xóa sạch LocalStorage, Token GitHub, Tailscale Key, API Key AI và nạp lại trang sạch 100% từ đầu!');
+      const confirmReset = confirm('⚠️ BẠN CÓ CHẮC CHẮN MUỐN XÓA TẤT CẢ CACHE & DỮ LIỆU?\n\nThao tác này sẽ xóa sạch LocalStorage, Token GitHub, Ngrok Token, API Key AI và nạp lại trang sạch 100% từ đầu!');
       if(!confirmReset) return;
 
       if(typeof addLog === 'function') addLog('[STARTUT] 🧹 Đang tiến hành Factory Reset...', 'wait');
@@ -5502,6 +5485,8 @@ Respond accurately with this ground truth knowledge:
         const savedVpsSession = localStorage.getItem('active_vps_session');
         const savedVpsList = localStorage.getItem('vps_list');
         const savedTokens = localStorage.getItem('token_list');
+        const savedNgrokTokens = localStorage.getItem('ngrok_tokens_list');
+        const savedNgrokKey = localStorage.getItem('ngrok_auth_token');
         const savedTheme = localStorage.getItem('cyber_theme');
 
         localStorage.clear();
@@ -5512,6 +5497,8 @@ Respond accurately with this ground truth knowledge:
         if(savedVpsSession) localStorage.setItem('active_vps_session', savedVpsSession);
         if(savedVpsList) localStorage.setItem('vps_list', savedVpsList);
         if(savedTokens) localStorage.setItem('token_list', savedTokens);
+        if(savedNgrokTokens) localStorage.setItem('ngrok_tokens_list', savedNgrokTokens);
+        if(savedNgrokKey) localStorage.setItem('ngrok_auth_token', savedNgrokKey);
         if(savedTheme) localStorage.setItem('cyber_theme', savedTheme);
 
         if('caches' in window){
@@ -5744,15 +5731,16 @@ Respond accurately with this ground truth knowledge:
 
 
 
-  // Wave 24: One-Click .RDP Connection Profile Downloader
+  // Wave 24: One-Click .RDP Connection Profile Downloader & Direct Launch for Ngrok RDP
   const dlRdpBtn = document.getElementById('vpsDownloadRdpBtn');
   if(dlRdpBtn){
     dlRdpBtn.addEventListener('click', () => {
-      const ip = (document.getElementById('vpsIpVal')?.textContent || '').trim() || '100.86.124.90';
+      const ip = (document.getElementById('vpsIpVal')?.textContent || '').trim() || '0.tcp.ap.ngrok.io:12345';
       const user = (document.getElementById('vpsUserVal')?.textContent || '').trim() || 'duyzoz';
+      const cleanAddress = ip.includes(':') ? ip : `${ip}:3389`;
       
       const rdpContent = [
-        `full address:s:${ip}:3389`,
+        `full address:s:${cleanAddress}`,
         `username:s:${user}`,
         `prompt for credentials:i:1`,
         `administrative session:i:1`,
@@ -5768,25 +5756,38 @@ Respond accurately with this ground truth knowledge:
         `redirectclipboard:i:1`,
         `displayconnectionbar:i:1`,
         `autoreconnection enabled:i:1`,
-        `authentication level:i:2`
+        `authentication level:i:0`,
+        `enableworkspacereconnect:i:0`,
+        `gatewayusagemethod:i:0`
       ].join('\r\n');
 
-      const blob = new Blob([rdpContent], { type: 'application/rdp;charset=utf-8' });
+      const blob = new Blob([rdpContent], { type: 'application/x-rdp' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `NguyenDuy_VPS_${ip.replace(/\./g, '_')}.rdp`;
+      a.download = `Ngrok-RDP-VPS-${cleanAddress.replace(/[^a-zA-Z0-9]/g, '_')}.rdp`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-
-      if(typeof addLog === 'function'){
-        addLog(`[STARTUT] 📥 Đã tải file kết nối NguyenDuy_VPS_${ip}.rdp! Nhấp đúp để mở Remote Desktop.`, 'ok');
-      }
+      if(typeof addLog === 'function') addLog(`[RDP] 📥 Đã tải file cấu hình .RDP cho ${cleanAddress}`, 'ok');
     });
   }
 
+  // Direct 1-Click Launch Button for Mobile & PC
+  const openRdpBtn = document.getElementById('vpsOpenRdpDirectBtn');
+  if(openRdpBtn){
+    openRdpBtn.addEventListener('click', () => {
+      const ip = (document.getElementById('vpsIpVal')?.textContent || '').trim();
+      if(ip && ip !== 'Chưa nhận được IP'){
+        const cleanAddress = ip.includes(':') ? ip : `${ip}:3389`;
+        window.location.href = `ms-rd:connect?server=${cleanAddress}`;
+        if(typeof addLog === 'function') addLog(`[RDP] 🚀 Đang mở Remote Desktop tới ${cleanAddress}...`, 'ok');
+      } else {
+        if(typeof showVPS === 'function') showVPS('⚠️ Chưa có địa chỉ Host:Port để mở RDP!', 'wait');
+      }
+    });
+  }
 
   // Wave 26: Initialize SFX Toggle Button
   const sfxBtn = document.getElementById('sfxToggleBtn');
@@ -5855,21 +5856,27 @@ Respond accurately with this ground truth knowledge:
     });
   });
 
-  // Wave 29: Quick mstsc /v: Copy Button
+  // Wave 29: Quick mstsc /v: Copy Button for Ngrok RDP
   const mstscBtn = document.getElementById('vpsCopyMstscBtn');
   if(mstscBtn){
     mstscBtn.addEventListener('click', () => {
-      const ip = (document.getElementById('vpsIpVal')?.textContent || '').trim() || '100.86.124.90';
-      const cmd = `mstsc /v:${ip}`;
-      navigator.clipboard.writeText(cmd);
-      if(typeof CyberAudio !== 'undefined') CyberAudio.copy();
-      const txt = document.getElementById('mstscBtnTxt');
-      if(txt){
-        txt.innerHTML = `✓ <strong>Đã copy:</strong> ${cmd}`;
-        setTimeout(() => { txt.innerHTML = `📋 Lệnh <code>mstsc /v:...</code>`; }, 2000);
-      }
-      if(typeof addLog === 'function'){
-        addLog(`[STARTUT] 📋 Đã sao chép lệnh: ${cmd} (Bấm Win + R và dán để mở ngay)`, 'ok');
+      const ip = (document.getElementById('vpsIpVal')?.textContent || '').trim() || '0.tcp.ap.ngrok.io:12345';
+      const cleanAddress = ip.includes(':') ? ip : `${ip}:3389`;
+      const cmd = `mstsc /v:${cleanAddress}`;
+      const showCopied = () => {
+        const txt = document.getElementById('mstscBtnTxt');
+        if(txt){
+          txt.innerHTML = `✓ <strong>Đã copy:</strong> ${cmd}`;
+          setTimeout(() => { txt.innerHTML = `📋 Lệnh <code>mstsc /v:...</code>`; }, 2000);
+        }
+        if(typeof CyberAudio !== 'undefined') CyberAudio.copy();
+        if(typeof addLog === 'function') addLog(`[CLIPBOARD] 📋 Đã sao chép: ${cmd}`, 'ok');
+      };
+
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(cmd).then(showCopied).catch(showCopied);
+      } else {
+        showCopied();
       }
     });
   }
@@ -5886,7 +5893,7 @@ Respond accurately with this ground truth knowledge:
       if(txt) txt.textContent = `⚡ Ping: ${ms} ms`;
       if(typeof CyberAudio !== 'undefined') CyberAudio.success();
       if(typeof addLog === 'function'){
-        addLog(`[STARTUT] 🌐 Kết nối Tailscale Node: OK · Độ trễ: ${ms} ms`, 'done');
+        addLog(`[STARTUT] 🌐 Kết nối Ngrok Node: OK · Độ trễ: ${ms} ms`, 'done');
       }
     });
   }
@@ -6937,7 +6944,7 @@ Respond accurately with this ground truth knowledge:
       const ip = document.getElementById('vpsIpVal')?.textContent || '100.x.y.z';
       const user = document.getElementById('vpsUserVal')?.textContent || 'duyzoz';
       const shareUrl = `${window.location.origin}${window.location.pathname}#vps=${ip}`;
-      openQrModal(shareUrl, `Tailscale VPS IP: ${ip} | User: ${user}`);
+      openQrModal(shareUrl, `Ngrok VPS Host:Port: ${ip} | User: ${user}`);
       CyberSFX.click();
     });
   }

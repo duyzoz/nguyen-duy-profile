@@ -287,37 +287,30 @@
           <div class="t-inner">
             <div class="t-block">
               <div class="t-title-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-                <span class="t-title" id="vpsTitle">🖥️ Tailscale Cloud VPS</span>
-                <span class="ts-badge-pill">🔒 Mesh VPN</span>
+                <span class="t-title" id="vpsTitle">🖥️ Ngrok Cloud VPS RDP</span>
+                <span class="ngrok-badge-pill">⚡ Direct TCP 1-Click</span>
               </div>
-              <div class="t-sub" id="vpsSub">Khởi tạo Windows RDP an toàn kết nối qua mạng nội bộ ảo Tailscale</div>
+              <div class="t-sub" id="vpsSub">Khởi tạo Windows RDP cấu hình cao, kết nối trực tiếp không cần cài đặt VPN qua Ngrok Tunnel</div>
 
-              <!-- HƯỚNG DẪN 4 BƯỚC SỬ DỤNG TAILSCALE -->
-              <div class="ts-steps-card">
-                <div class="ts-step-item">
-                  <div class="ts-step-num">1</div>
-                  <div class="ts-step-body">
-                    <span><strong>Tải Tailscale:</strong> Cài đặt trên PC hoặc điện thoại</span>
-                    <a href="https://tailscale.com/download" target="_blank" rel="noopener" class="ts-link-btn">📥 Tải App</a>
+              <!-- HƯỚNG DẪN 3 BƯỚC SỬ DỤNG NGROK -->
+              <div class="ngrok-steps-card">
+                <div class="ngrok-step-item">
+                  <div class="ngrok-step-num">1</div>
+                  <div class="ngrok-step-body">
+                    <span><strong>Lấy Ngrok Authtoken:</strong> Đăng ký tài khoản miễn phí</span>
+                    <a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank" rel="noopener" class="ngrok-link-btn">🔑 Lấy Token</a>
                   </div>
                 </div>
-                <div class="ts-step-item">
-                  <div class="ts-step-num">2</div>
-                  <div class="ts-step-body">
-                    <span><strong>Tạo Auth Key:</strong> Chọn <em>Reusable</em> &amp; Generate Key</span>
-                    <a href="https://login.tailscale.com/admin/settings/keys" target="_blank" rel="noopener" class="ts-link-btn">🔑 Lấy Key</a>
+                <div class="ngrok-step-item">
+                  <div class="ngrok-step-num">2</div>
+                  <div class="ngrok-step-body">
+                    <span><strong>Nhập &amp; Lưu Khóa:</strong> Điền Ngrok Token &amp; GitHub Token</span>
                   </div>
                 </div>
-                <div class="ts-step-item">
-                  <div class="ts-step-num">3</div>
-                  <div class="ts-step-body">
-                    <span><strong>Nhập Khóa &amp; Token:</strong> Điền Auth Key &amp; GitHub Token</span>
-                  </div>
-                </div>
-                <div class="ts-step-item">
-                  <div class="ts-step-num">4</div>
-                  <div class="ts-step-body">
-                    <span><strong>Remote Desktop:</strong> Kết nối qua IP Tailscale &amp; Mật khẩu</span>
+                <div class="ngrok-step-item">
+                  <div class="ngrok-step-num">3</div>
+                  <div class="ngrok-step-body">
+                    <span><strong>Kết Nối Trực Tiếp:</strong> Mở Remote Desktop dán Host:Port là vào thẳng Windows</span>
                   </div>
                 </div>
               </div>
@@ -339,21 +332,21 @@
                 </div>
 
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;margin-bottom:4px">
-                  <label class="vps-label" style="margin-bottom:0">Tailscale Auth Key (<code>tskey-auth-...</code>)</label>
-                  <a href="https://login.tailscale.com/admin/settings/keys" target="_blank" rel="noopener" class="t-link-hint" style="color:#38bdf8;font-size:0.7rem;text-decoration:underline;font-weight:600">🔑 Lấy Key (chọn Reusable)</a>
+                  <label class="vps-label" style="margin-bottom:0">Ngrok Authtoken (<code>dashboard.ngrok.com</code>)</label>
+                  <a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank" rel="noopener" class="t-link-hint" style="color:#38bdf8;font-size:0.7rem;text-decoration:underline;font-weight:600">🔑 Lấy Authtoken miễn phí</a>
                 </div>
                 <div class="key-row" style="display:flex;gap:6px">
-                  <input id="vpsTailscaleKey" class="bp-input" type="password" placeholder="tskey-auth-kxxxxxxxxxxxxxx" autocomplete="off" />
-                  <button class="key-save-btn" id="saveTsKeyBtn" title="Lưu Auth Key">
+                  <input id="vpsNgrokToken" class="bp-input" type="password" placeholder="Nhập mã Ngrok Authtoken của bạn..." autocomplete="off" />
+                  <button class="key-save-btn" id="saveNgrokTokenBtn" title="Lưu Ngrok Authtoken">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px">
                       <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
                       <polyline points="17 21 17 13 7 13 7 21"/>
                     </svg>
                   </button>
                 </div>
-                <div id="tsKeyFormatWarn" style="display:none;color:#f87171;font-size:0.68rem;margin-top:3px;font-weight:600">⚠️ Auth Key phải bắt đầu bằng <code>tskey-auth-</code>. Không dùng API access token!</div>
+                <div id="ngrokTokenFormatWarn" style="display:none;color:#f87171;font-size:0.68rem;margin-top:3px;font-weight:600">⚠️ Vui lòng nhập đúng mã Ngrok Authtoken lấy từ dashboard.ngrok.com</div>
 
-                                <!-- WAVE 28: VPS DURATION SELECTOR & HARDWARE SPECS -->
+                <!-- VPS DURATION SELECTOR & HARDWARE SPECS -->
                 <div class="vps-duration-wrap" style="margin-top:10px">
                   <div class="vps-dur-hdr" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
                     <span class="vps-label" style="margin-bottom:0">Thời gian duy trì VPS:</span>
@@ -370,12 +363,12 @@
                   <span class="vsb-item">⚡ 4 vCPU</span>
                   <span class="vsb-item">🧠 16GB RAM</span>
                   <span class="vsb-item">🪟 Windows Server 2022</span>
-                  <span class="vsb-item">🚀 1 Gbps Mesh</span>
+                  <span class="vsb-item">🚀 Direct TCP Tunnel</span>
                 </div>
 
                 <div class="vps-btn-group" style="margin-top:12px;display:flex;gap:8px">
                   <button class="bp-btn" id="vpsCreateBtn" style="flex:1">
-                    <span class="bp-txt">🚀 Khởi Tạo VPS</span>
+                    <span class="bp-txt">🚀 Khởi Tạo Ngrok VPS</span>
                     <span class="bp-spin" style="display:none"><i></i><i></i><i></i></span>
                   </button>
                   <button class="bp-btn bp-btn-alt" id="copyWorkflowBtn" type="button" style="width:auto;padding:0 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.18);border-radius:10px;cursor:pointer;color:#a5b4fc;font-size:.78rem;font-weight:600" title="Sao chép file YAML Workflow">
@@ -384,18 +377,7 @@
                 </div>
               </div>
 
-              <!-- WAVE 14: CẢNH BÁO CẦU VỒNG RAINBOW NEON BẮT BUỘC BẬT TAILSCALE -->
-              <div class="ts-rainbow-alert" id="tsRainbowAlert">
-                <div class="ts-rainbow-inner">
-                  <span class="ts-rainbow-icon">🚨</span>
-                  <div class="ts-rainbow-text">
-                    <span class="ts-rainbow-badge">BẮT BUỘC</span>
-                    <span>Phải <strong>BẬT &amp; ĐĂNG NHẬP TAILSCALE</strong> trên máy bạn thì mới mở được Remote Desktop!</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- THÔNG TIN KẾT NỐI SAU KHI SẴN SÀNG (WAVE 14 VIP CARD) -->
+              <!-- THÔNG TIN KẾT NỐI SAU KHI SẴN SÀNG (NGROK VIP CARD) -->
               <div class="vps-ready-box" id="vpsReadyBox" style="display:none;flex-direction:column;gap:10px;margin-top:12px">
                 <div class="vps-ready-header">
                   <div class="rdp-live-badge rdp-live" id="rdpLiveStatus">
@@ -410,12 +392,12 @@
 
                 <div class="vps-cred-card">
                   <div class="vps-cred-row">
-                    <span class="cred-label">IP:</span>
+                    <span class="cred-label">Host:Port:</span>
                     <div class="cred-val-wrap">
-                      <code class="cred-val" id="vpsIpVal">100.86.124.90</code>
+                      <code class="cred-val" id="vpsIpVal">0.tcp.ap.ngrok.io:12345</code>
                     </div>
                     <div class="cred-row-actions">
-                      <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsIpVal" type="button" title="Sao chép IP">
+                      <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsIpVal" type="button" title="Sao chép Host:Port">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
                       </button>
                     </div>
@@ -434,7 +416,7 @@
                   <div class="vps-cred-row">
                     <span class="cred-label">Password:</span>
                     <div class="cred-val-wrap">
-                      <code class="cred-val" id="vpsPassVal">nhn9jB#7ypQ]VE;</code>
+                      <code class="cred-val" id="vpsPassVal">Admin@123456</code>
                     </div>
                     <div class="cred-row-actions">
                       <button class="cred-eye-btn cyber-sound-btn" id="togglePassEyeBtn" type="button" title="Ẩn/Hiện mật khẩu">
@@ -446,10 +428,17 @@
                     </div>
                   </div>
                 </div>
-                <button type="button" id="vpsDownloadRdpBtn" class="vps-download-rdp-btn cyber-sound-btn" title="Tải file cấu hình .RDP kết nối ngay vào máy tính">
-                  <span>📥 Tải File Kết Nối (.RDP) Mở Bằng 1-Click</span>
-                </button>
-                <!-- LIVE VPS SESSION COUNTDOWN TIMER & SOUND ALARM (Wave 54) -->
+
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <button type="button" id="vpsDownloadRdpBtn" class="vps-download-rdp-btn cyber-sound-btn" style="flex:1;min-width:200px" title="Tải file cấu hình .RDP kết nối ngay vào máy tính">
+                    <span>📥 Tải File Kết Nối (.RDP)</span>
+                  </button>
+                  <button type="button" id="vpsOpenRdpDirectBtn" class="vps-open-rdp-btn cyber-sound-btn" style="flex:1;min-width:160px" title="Mở trực tiếp ứng dụng Remote Desktop trên máy/điện thoại">
+                    <span>🚀 Mở RDP Ngay</span>
+                  </button>
+                </div>
+
+                <!-- LIVE VPS SESSION COUNTDOWN TIMER -->
                 <div class="vps-countdown-card" id="vpsCountdownCard" style="display:none">
                   <div class="vcc-header">
                     <span class="vcc-live-dot"></span>
@@ -462,12 +451,12 @@
                   </div>
                 </div>
 
-                <!-- WAVE 27 & 29: QUICK MSTSC COMMAND & LIVE PING TEST & QR SHARE -->
+                <!-- QUICK ACTIONS -->
                 <div class="vps-quick-actions" style="display:flex;gap:6px;margin-top:6px">
-                  <button type="button" id="vpsCopyMstscBtn" class="vps-action-btn cyber-sound-btn" style="flex:1" title="Sao chép lệnh mstsc /v:IP để dán vào Win + R">
+                  <button type="button" id="vpsCopyMstscBtn" class="vps-action-btn cyber-sound-btn" style="flex:1" title="Sao chép lệnh mstsc /v:Host:Port để dán vào Win + R">
                     <span id="mstscBtnTxt">📋 Lệnh <code>mstsc /v:...</code></span>
                   </button>
-                  <button type="button" id="vpsPingTestBtn" class="vps-action-btn cyber-sound-btn" style="width:auto;padding:0 10px" title="Kiểm tra độ trễ mạng tới node VPS Tailscale">
+                  <button type="button" id="vpsPingTestBtn" class="vps-action-btn cyber-sound-btn" style="width:auto;padding:0 10px" title="Kiểm tra độ trễ mạng tới server Ngrok">
                     <span id="vpsPingDot" class="vps-ping-dot"></span>
                     <span id="vpsPingText">⚡ Ping: -- ms</span>
                   </button>
@@ -477,7 +466,7 @@
                 </div>
 
                 <div class="vps-guide-tip">
-                  💡 <strong>Cách kết nối:</strong> Mở <em>Remote Desktop Connection</em> (Windows: bấm <code>Win + R</code> gõ <code>mstsc</code>) &rarr; Nhập <strong>IP</strong> &rarr; Nhập User <strong>duyzoz</strong> &amp; <strong>Password</strong> ở trên!
+                  💡 <strong>Cách kết nối trực tiếp:</strong> Mở <em>Remote Desktop</em> (Windows: bấm <code>Win + R</code> gõ <code>mstsc</code>, hoặc mở app Remote Desktop trên điện thoại) &rarr; Dán địa chỉ <strong>Host:Port</strong> &rarr; Đăng nhập bằng User <strong>duyzoz</strong> &amp; Password <strong>Admin@123456</strong>!
                 </div>
               </div>
             </div>
@@ -486,8 +475,6 @@
               <div class="vps-status-title" id="vpsStatusTitle">⚡ Trạng Thái</div>
               <div class="vps-status-msg" id="vpsStatusMsg"></div>
             </div>
-
-            
           </div>
         </div>
 
@@ -503,11 +490,11 @@
             </div>
             <div class="t-divider"></div>
 
-            <!-- Tailscale Auth Keys List -->
+            <!-- Ngrok Authtokens List -->
             <div class="t-block">
-              <div class="t-title" style="font-size:.85rem;margin-bottom:8px">🔒 Danh sách Tailscale Auth Key đã lưu</div>
-              <div class="token-list" id="tsKeyList">
-                <div class="token-empty" id="tsKeyEmptyMsg">Chưa có Tailscale Auth Key nào được lưu</div>
+              <div class="t-title" style="font-size:.85rem;margin-bottom:8px">🔒 Danh sách Ngrok Authtoken đã lưu</div>
+              <div class="token-list" id="ngrokTokenList">
+                <div class="token-empty" id="ngrokTokenEmptyMsg">Chưa có Ngrok Authtoken nào được lưu</div>
               </div>
             </div>
             <div class="t-divider"></div>
@@ -1398,7 +1385,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
   <script src="app_nd.js?v=20260917_v50"></script>
-<textarea id="rawWorkflowYaml" style="display:none" readonly>name: 🚀 SEVER AI STV PREMIUM
+<textarea id="rawWorkflowYaml" style="display:none" readonly>name: 🚀 SEVER AI STV NGROK RDP
 
 on:
   workflow_dispatch:
@@ -1417,7 +1404,7 @@ permissions:
   contents: write
 
 jobs:
-  Premium-RDP-Setup:
+  Ngrok-RDP-Setup:
     runs-on: windows-latest
     timeout-minutes: 340
     
@@ -1425,58 +1412,78 @@ jobs:
       - name: 🎯 CHECKOUT
         uses: actions/checkout@v4
 
-      - name: 🔧 CẤU HÌNH HỆ THỐNG
+      - name: 🔧 CẤU HÌNH HỆ THỐNG RDP
         run: |
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0 -Force
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 0 -Force
           netsh advfirewall firewall add rule name="RDP-Premium" dir=in action=allow protocol=TCP localport=3389 profile=any
           Start-Service -Name TermService -ErrorAction SilentlyContinue
 
-      - name: 👤 TẠO TÀI KHOẢN PREMIUM
+      - name: 👤 TẠO TÀI KHOẢN WINDOWS
         run: |
           net user duyzoz Admin@123456 /add /expires:never
           net localgroup administrators duyzoz /add
           net localgroup "Remote Desktop Users" duyzoz /add
 
-      - name: 🌐 THIẾT LẬP MẠNG TAILSCALE
+      - name: 🚀 THIẾT LẬP NGROK TCP TUNNEL CHO RDP
         env:
-          TAILSCALE_AUTH_KEY: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+        shell: powershell
         run: |
-          Invoke-WebRequest -Uri "https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi" -OutFile "$env:TEMP\tailscale.msi"
-          Start-Process msiexec.exe -ArgumentList "/i", "`"$env:TEMP\tailscale.msi`"", "/quiet", "/norestart" -Wait
-          Start-Sleep -Seconds 8
-
           Write-Host "=========================================="
-          Write-Host "CONNECTING TO TAILSCALE..."
+          Write-Host "DOWNLOADING NGROK V3..."
           Write-Host "=========================================="
-          $authOutput = & "$env:ProgramFiles\Tailscale\tailscale.exe" up --authkey=$env:TAILSCALE_AUTH_KEY --hostname="vps-premium-$env:GITHUB_RUN_ID" --reset 2>&1 | Out-String
-          Write-Host $authOutput
+          $ngrokZip = "$env:TEMP\ngrok.zip"
+          $ngrokDir = "$env:TEMP\ngrok"
+          Invoke-WebRequest -Uri "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip" -OutFile $ngrokZip
+          Expand-Archive -Path $ngrokZip -DestinationPath $ngrokDir -Force
+          $ngrokExe = "$ngrokDir\ngrok.exe"
 
-          Start-Sleep -Seconds 4
-          $ip = (& "$env:ProgramFiles\Tailscale\tailscale.exe" ip -4 2>&1 | Out-String).Trim()
+          Write-Host "CONFIGURING NGROK AUTHTOKEN..."
+          $authConfig = & $ngrokExe config add-authtoken $env:NGROK_AUTH_TOKEN 2>&1 | Out-String
+          Write-Host $authConfig
+
+          Write-Host "STARTING NGROK TCP TUNNEL ON PORT 3389 (REGION: AP)..."
+          Start-Process -FilePath $ngrokExe -ArgumentList "tcp", "3389", "--region", "ap", "--log=stdout" -WindowStyle Hidden
+
+          Start-Sleep -Seconds 5
+
+          Write-Host "FETCHING NGROK PUBLIC RDP ADDRESS..."
+          $cleanHostPort = ""
+          for ($i = 0; $i -lt 15; $i++) {
+            try {
+              $resp = Invoke-RestMethod -Uri "http://127.0.0.1:4040/api/tunnels" -TimeoutSec 3
+              if ($resp.tunnels -and $resp.tunnels.Count -gt 0) {
+                $publicUrl = $resp.tunnels[0].public_url
+                $cleanHostPort = $publicUrl -replace '^tcp://', ''
+                break
+              }
+            } catch {
+              Start-Sleep -Seconds 2
+            }
+          }
 
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
 
-          if (-not $ip -or $ip -notmatch '^100\.\d+\.\d+\.\d+') {
+          if (-not $cleanHostPort) {
             Write-Host "=========================================="
-            Write-Host "❌ LỖI: TAILSCALE AUTH THẤT BẠI!"
+            Write-Host "❌ LỖI: KHÔNG TẠO ĐƯỢC NGROK TUNNEL!"
             Write-Host "=========================================="
-            $cleanErr = ($authOutput -replace '[\r\n]+', ' ').Trim()
-            if (-not $cleanErr) { $cleanErr = "Tailscale không cấp IP 100.x.y.z. Vui lòng kiểm tra lại Auth Key xem có bị hết hạn hoặc sai loại không." }
-            Set-Content -Path ip.txt -Value "ERROR: $cleanErr"
+            $errMsg = "Ngrok không thể mở tunnel. Vui lòng kiểm tra lại Authtoken (có thể sai token hoặc tài khoản đã có 1 tunnel khác đang chạy)."
+            Set-Content -Path ip.txt -Value "ERROR: $errMsg"
             git add ip.txt
-            git commit -m "VPS_ERROR: $cleanErr"
+            git commit -m "VPS_ERROR: $errMsg"
             git push origin main
-            throw "❌ TAILSCALE ERROR: $cleanErr"
+            throw "❌ NGROK ERROR: $errMsg"
           }
 
           Write-Host "=========================================="
-          Write-Host "TAILSCALE IP: $ip"
+          Write-Host "NGROK RDP ADDRESS: $cleanHostPort"
           Write-Host "=========================================="
-          Set-Content -Path ip.txt -Value $ip
+          Set-Content -Path ip.txt -Value $cleanHostPort
           git add ip.txt
-          git commit -m "VPS_READY: $ip"
+          git commit -m "VPS_READY: $cleanHostPort"
           git push origin main
 
       - name: ⏳ DUY TRÌ PHIÊN LÀM VIỆC
