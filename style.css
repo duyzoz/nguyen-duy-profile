@@ -215,7 +215,7 @@ a{text-decoration:none;}
 
 /* ── INPUTS ── */
 .key-row{display:flex;gap:5px;}
-.key-row .bp-input{flex:1;}
+.key-row .bp-input{flex:1;min-width:0;}
 .key-save-btn{width:34px;height:34px;flex-shrink:0;background:rgba(124,111,255,.1);border:1px solid rgba(124,111,255,.25);border-radius:9px;color:var(--a1);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
 .key-save-btn svg{width:13px;height:13px;}
 .key-save-btn:hover{background:rgba(124,111,255,.28);}

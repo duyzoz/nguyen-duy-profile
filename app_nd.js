@@ -1510,14 +1510,45 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   const countdownEl=document.getElementById('vpsCountdown');
   const WORKER='https://vpsstore.plasma9577.workers.dev';
 
-  /* Sync token từ bypass sang VPS (readonly) */
+  /* GitHub Token Save & Sync Logic */
+  const saveTokenBtn = document.getElementById('saveTokenBtn');
   function syncToken(){
-    const t=localStorage.getItem('github_token')||'';
-    if(vpsTokenEl)vpsTokenEl.value=t?'•'.repeat(Math.min(t.length,32)):'';
+    const t = localStorage.getItem('github_token') || '';
+    if(vpsTokenEl && !vpsTokenEl.value) vpsTokenEl.value = t;
   }
   syncToken();
   /* Re-sync khi chuyển sang tab Tạo VPS */
-  document.getElementById('tabCreateVPS')?.addEventListener('click',syncToken);
+  document.getElementById('tabCreateVPS')?.addEventListener('click', syncToken);
+  document.getElementById('mobNavVps')?.addEventListener('click', syncToken);
+
+  if(vpsTokenEl){
+    vpsTokenEl.addEventListener('input', () => {
+      const val = vpsTokenEl.value.trim();
+      if(val && val.length >= 10 && !val.includes('•')){
+        localStorage.setItem('github_token', val);
+      }
+    });
+  }
+
+  if(saveTokenBtn && vpsTokenEl){
+    saveTokenBtn.addEventListener('click', () => {
+      const val = vpsTokenEl.value.trim();
+      if(!val || val.length < 10){
+        showVPS('⚠️ Vui lòng nhập GitHub Token hợp lệ (ghp_...)!', 'wait');
+        return;
+      }
+      localStorage.setItem('github_token', val);
+      if(typeof CyberSFX !== 'undefined' && CyberSFX.play) CyberSFX.play('success');
+      else if(typeof CyberAudio !== 'undefined') if(typeof CyberAudio.deploy === 'function') CyberAudio.deploy(); else CyberAudio.success();
+      
+      const oldHtml = saveTokenBtn.innerHTML;
+      saveTokenBtn.innerHTML = '<span style="color:#22c55e;font-size:14px;font-weight:700">✓</span>';
+      setTimeout(() => { saveTokenBtn.innerHTML = oldHtml; }, 1600);
+
+      showVPS('✅ Đã lưu GitHub Token thành công!', 'ok');
+      if(typeof addLog === 'function') addLog('[VPS] ✅ Đã lưu GitHub Token vào bộ nhớ!', 'ok');
+    });
+  }
 
   function showVPS(msg,type){
     if(!statusBox||!statusMsg)return;
@@ -1630,12 +1661,17 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   }
 
   createBtn.addEventListener('click', async () => {
-    const token = localStorage.getItem('github_token') || '';
+    let token = localStorage.getItem('github_token') || '';
+    const typedToken = (vpsTokenEl?.value || '').trim();
+    if((!token || token.length < 10) && typedToken && typedToken.length >= 10 && !typedToken.includes('•')){
+      token = typedToken;
+      localStorage.setItem('github_token', token);
+    }
     const tsKey = localStorage.getItem('tailscale_auth_key') || (document.getElementById('vpsTailscaleKey')?.value || '').trim();
 
     if(!token || token.length < 10){
-      showVPS('❌ Chưa có Token! Vào mục Bypass để lưu token trước.', 'err');
-      if(typeof addLog === 'function') addLog('[VPS] ⚠️ Thiếu GitHub Token. Hãy lưu token tại tab Bypass.', 'wait');
+      showVPS('❌ Chưa có Token! Vui lòng điền GitHub Token và nhấn nút Lưu (💾) cạnh ô nhập.', 'err');
+      if(typeof addLog === 'function') addLog('[VPS] ⚠️ Thiếu GitHub Token. Hãy điền token và nhấn nút Lưu (💾) cạnh ô nhập.', 'wait');
       return;
     }
 
@@ -3936,7 +3972,7 @@ Respond accurately with this ground truth knowledge:
       vpsScopeNote: 'ℹ️ Token requires scopes: <code>repo</code> + <code>workflow</code>',
       vpsLabel: 'GitHub Token',
       vpsTokenLabel: 'GitHub Token',
-      vpsTokenPh: '— Auto-filled from Bypass tab —',
+      vpsTokenPh: 'ghp_xxxxxxxxxxxxxxxxxxxx (Click 💾 to save)',
       vpsCreateBtn: '🚀 Deploy VPS Now',
       vpsAccessBtn: '🖥️ Connect Now',
       vcdLabel: '⏳ Expires in',
@@ -4079,7 +4115,7 @@ Respond accurately with this ground truth knowledge:
       vpsScopeNote: 'ℹ️ Token cần scope: <code>repo</code> + <code>workflow</code>',
       vpsLabel: 'Token GitHub',
       vpsTokenLabel: 'Token GitHub',
-      vpsTokenPh: '— Lấy từ mục Bypass —',
+      vpsTokenPh: 'ghp_xxxxxxxxxxxxxxxxxxxx (Bấm 💾 để lưu)',
       vpsCreateBtn: '🚀 Tạo VPS ngay',
       vpsAccessBtn: '🖥️ Truy cập ngay',
       vcdLabel: '⏳ Hết hạn sau',
@@ -4222,7 +4258,7 @@ Respond accurately with this ground truth knowledge:
       vpsScopeNote: 'ℹ️ 必要なスコープ: <code>repo</code> + <code>workflow</code>',
       vpsLabel: 'GitHubトークン',
       vpsTokenLabel: 'GitHubトークン',
-      vpsTokenPh: '— バイパスタブから自動取得 —',
+      vpsTokenPh: 'ghp_xxxxxxxxxxxxxxxxxxxx (💾をクリックして保存)',
       vpsCreateBtn: '🚀 VPSを作成する',
       vpsAccessBtn: '🖥️ 今すぐ接続',
       vcdLabel: '⏳ 有効期限',
@@ -4592,10 +4628,41 @@ Respond accurately with this ground truth knowledge:
 
   window.setLanguage = applyLanguage;
 
-  /* ── TAILSCALE VPS LOGIC & COPY WORKFLOW ── */
+  /* ── GITHUB TOKEN & TAILSCALE VPS LOGIC & COPY WORKFLOW ── */
+  const vpsTokenInput = document.getElementById('vpsToken');
+  const saveTokenBtnEl = document.getElementById('saveTokenBtn');
   const tsKeyInput = document.getElementById('vpsTailscaleKey');
   const saveTsBtn = document.getElementById('saveTsKeyBtn');
   const copyWfBtn = document.getElementById('copyWorkflowBtn');
+
+  if(vpsTokenInput){
+    const savedToken = localStorage.getItem('github_token') || '';
+    if(savedToken && !vpsTokenInput.value) vpsTokenInput.value = savedToken;
+    vpsTokenInput.addEventListener('input', () => {
+      const v = vpsTokenInput.value.trim();
+      if(v && v.length >= 10 && !v.includes('•')) localStorage.setItem('github_token', v);
+    });
+  }
+
+  if(saveTokenBtnEl && vpsTokenInput){
+    saveTokenBtnEl.addEventListener('click', () => {
+      const val = vpsTokenInput.value.trim();
+      if(!val || val.length < 10){
+        if(typeof showVPS === 'function') showVPS('⚠️ Vui lòng nhập GitHub Token hợp lệ (ghp_...)!', 'wait');
+        return;
+      }
+      localStorage.setItem('github_token', val);
+      if(typeof CyberSFX !== 'undefined' && CyberSFX.play) CyberSFX.play('success');
+      else if(typeof CyberAudio !== 'undefined') if(typeof CyberAudio.deploy === 'function') CyberAudio.deploy(); else CyberAudio.success();
+      
+      const prev = saveTokenBtnEl.innerHTML;
+      saveTokenBtnEl.innerHTML = '<span style="color:#22c55e;font-size:14px;font-weight:700">✓</span>';
+      setTimeout(() => { saveTokenBtnEl.innerHTML = prev; }, 1600);
+
+      if(typeof showVPS === 'function') showVPS('✅ Đã lưu GitHub Token!', 'ok');
+      if(typeof addLog === 'function') addLog('[VPS] ✅ Đã lưu GitHub Token thành công!', 'ok');
+    });
+  }
 
   if(tsKeyInput){
     const savedTs = localStorage.getItem('tailscale_auth_key') || '';

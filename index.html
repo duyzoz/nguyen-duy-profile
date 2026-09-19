@@ -328,7 +328,15 @@
                   <label class="vps-label" id="vpsTokenLabel" style="margin-bottom:0">GitHub Token (<code>repo</code> + <code>workflow</code>)</label>
                   <a href="https://github.com/settings/tokens/new?scopes=repo,workflow" target="_blank" rel="noopener" class="t-link-hint" style="color:#38bdf8;font-size:0.7rem;text-decoration:underline;font-weight:600">Lấy token GitHub tại đây</a>
                 </div>
-                <input id="vpsToken" class="bp-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+                <div class="key-row" style="display:flex;gap:6px">
+                  <input id="vpsToken" class="bp-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+                  <button class="key-save-btn" id="saveTokenBtn" title="Lưu GitHub Token">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px">
+                      <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                      <polyline points="17 21 17 13 7 13 7 21"/>
+                    </svg>
+                  </button>
+                </div>
 
                 <label class="vps-label" style="margin-top:8px">Tailscale Auth Key (Reusable)</label>
                 <div class="key-row" style="display:flex;gap:6px">
