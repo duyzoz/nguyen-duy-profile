@@ -172,7 +172,7 @@
   const output=document.getElementById('termOutput');
   const cont=document.getElementById('termContinue');
   if(cont) cont.innerHTML = `${activeConf.cont}<span class="term-blink">█</span>`;
-  ascii.textContent=ASCII;
+  if(ascii) ascii.textContent=ASCII;
 
   /* ── ADMIN IP RECOGNITION & VIP PRIVILEGE ── */
   const ADMIN_IP = '192.168.0.102';
@@ -297,7 +297,7 @@
         d.className='t-line '+cls;
         d.textContent=text;
       }
-      output.appendChild(d);
+      if(output) output.appendChild(d);
     },ms);
   });
 
@@ -323,7 +323,7 @@
     }, 650);
   }
 
-  loader.addEventListener('click', dismiss);
+  if(loader) loader.addEventListener('click', dismiss);
   document.addEventListener('keydown', e => {
     if(e.key === 'Enter'){
       if(!canDismiss){ e.preventDefault(); e.stopPropagation(); return; }
@@ -910,8 +910,22 @@ window.TYPING_DATA = {
           btn.classList.toggle('active', btn.id === mobNavId);
         });
       }
+
+      // Persist active panel across F5 refresh
+      try {
+        localStorage.setItem('nd_active_panel', target);
+      } catch(e){}
     });
   });
+
+  // Restore persisted active panel across F5
+  try {
+    const savedPanel = localStorage.getItem('nd_active_panel');
+    if(savedPanel){
+      const tTab = document.querySelector(`.tc-tab[data-panel="${savedPanel}"]`);
+      if(tTab) tTab.click();
+    }
+  } catch(e){}
 })();
 
 /* ─── VIEW COUNTER ─── */
@@ -1106,10 +1120,24 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       setTimeout(()=>{brbCopy.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>`;},1800);
     });
   });
+})();
 
-  /* ════════════════════════════════
-     QUẢN LÝ TOKEN & VPS (Panel 3)
-  ════════════════════════════════ */
+/* ════════════════════════════════
+   QUẢN LÝ TOKEN & VPS (Panel 3)
+════════════════════════════════ */
+(function(){
+  const LS_KEY  = 'github_token';
+  const LS_LIST = 'github_tokens_list';
+  const tokenInput = document.getElementById('githubToken');
+  const saved = localStorage.getItem(LS_KEY);
+  function showKS(msg, type){
+    const keyStatus = document.getElementById('keyStatus');
+    if(!keyStatus) return;
+    keyStatus.textContent = msg;
+    keyStatus.className = 'key-status ' + type;
+    keyStatus.style.display = 'block';
+  }
+
   function getTokenList(){
     try{return JSON.parse(localStorage.getItem(LS_LIST)||'[]');}catch{return[];}
   }
@@ -1205,42 +1233,93 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   }
   renderTokenList();
 
-  /* ── VPS list render with live countdown ── */
-  const LS_VPS_MGMT='vps_list';
+  /* ── VPS list render with live countdown & Session Sync ── */
+  const LS_VPS_MGMT = 'vps_list';
   function getVpsListMgmt(){try{return JSON.parse(localStorage.getItem(LS_VPS_MGMT)||'[]');}catch{return[];}}
-  function fmtCountdown(createdTs){
-    const remain=Math.max(0,createdTs+6*3600*1000-Date.now());
-    const h=Math.floor(remain/3600000);
-    const m=Math.floor((remain%3600000)/60000);
-    const s=Math.floor((remain%60000)/1000);
-    return{str:`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`,urgent:remain<300000,expired:remain===0};
+  function saveVpsListMgmt(l){localStorage.setItem(LS_VPS_MGMT, JSON.stringify(l));}
+
+  function addOrUpdateVpsInList(sessionData){
+    if(!sessionData || !sessionData.ip || sessionData.ip === 'Chưa nhận được IP') return;
+    const list = getVpsListMgmt();
+    const existingIdx = list.findIndex(v => (sessionData.id && v.id === sessionData.id) || v.ip === sessionData.ip);
+    const now = new Date(sessionData.created || Date.now());
+    const dateStr = now.toLocaleString('vi-VN', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+
+    const vpsEntry = {
+      id: sessionData.id || Date.now().toString(36),
+      name: sessionData.name || `VPS #${list.length + 1} (${sessionData.ip})`,
+      ip: sessionData.ip,
+      link: `ms-rd:connect?server=${sessionData.ip}`,
+      user: sessionData.user || 'duyzoz',
+      pass: sessionData.pass || 'Admin@123456',
+      repo: sessionData.repo || 'vps-tailscale-windows',
+      date: dateStr,
+      created: sessionData.created || Date.now(),
+      durationSeconds: sessionData.durationSeconds || 20400
+    };
+
+    if(existingIdx >= 0){
+      list[existingIdx] = { ...list[existingIdx], ...vpsEntry };
+    } else {
+      list.unshift(vpsEntry);
+    }
+
+    saveVpsListMgmt(list);
+    if(window.renderVpsList) window.renderVpsList();
   }
-  let vpsListCdInterval=null;
-    function renderVpsList(){
-    const listEl=document.getElementById('vpsList');
-    if(!listEl)return;
-    const list=getVpsListMgmt();
-    if(list.length===0){
+  window.addOrUpdateVpsInList = addOrUpdateVpsInList;
+  window.addVpsToList = function(link, ip, token){
+    addOrUpdateVpsInList({ ip: ip, link: link, created: Date.now() });
+  };
+
+  function fmtCountdown(createdTs, durationSeconds = 20400){
+    const totalMs = durationSeconds * 1000;
+    const remain = Math.max(0, createdTs + totalMs - Date.now());
+    const h = Math.floor(remain / 3600000);
+    const m = Math.floor((remain % 3600000) / 60000);
+    const s = Math.floor((remain % 60000) / 1000);
+    return {
+      str: `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`,
+      urgent: remain < 300000,
+      expired: remain === 0
+    };
+  }
+
+  let vpsListCdInterval = null;
+  function renderVpsList(){
+    const listEl = document.getElementById('vpsList');
+    if(!listEl) return;
+    const list = getVpsListMgmt();
+    if(list.length === 0){
       const emptyMsg = (window.getI18nMsg ? window.getI18nMsg('vpsEmpty') : '') || 'Chưa có VPS nào được tạo';
-      listEl.innerHTML=`<div class="token-empty" id="vpsEmptyMsg">${emptyMsg}</div>`;
+      listEl.innerHTML = `<div class="token-empty" id="vpsEmptyMsg">${emptyMsg}</div>`;
       return;
     }
-    listEl.innerHTML=list.map(v=>{
-      const cd=fmtCountdown(v.created);
+    listEl.innerHTML = list.map(v => {
+      const cd = fmtCountdown(v.created, v.durationSeconds || 20400);
       const ipMatch = (v.link || '').match(/server=([^&]+)/) || (v.name || '').match(/100\.\d+\.\d+\.\d+/);
-      const ip = ipMatch ? ipMatch[1] : '100.86.124.90';
+      const ip = v.ip || (ipMatch ? ipMatch[1] : '100.86.124.90');
+      const pass = v.pass || 'Admin@123456';
+      const user = v.user || 'duyzoz';
       return `<div class="vps-item" data-id="${v.id}">
         <div class="vps-item-top">
           <div class="vps-item-title-wrap">
             <span class="vps-item-name">${v.name}</span>
             <span class="vps-item-ip-badge">${ip}</span>
           </div>
-          <div class="vps-item-cd ${cd.urgent?'urgent':''}" data-created="${v.created}">${cd.expired?'⛔ Hết hạn':cd.str}</div>
+          <div class="vps-item-cd ${cd.urgent ? 'urgent' : ''}" data-created="${v.created}" data-duration="${v.durationSeconds || 20400}">${cd.expired ? '⛔ Hết hạn' : cd.str}</div>
+        </div>
+        <div style="font-size:0.7rem;color:var(--sub);margin:3px 0 6px;display:flex;gap:12px">
+          <span>👤 User: <strong style="color:var(--txt)">${user}</strong></span>
+          <span>🔐 Pass: <strong style="color:var(--txt)">${pass}</strong></span>
         </div>
         <div class="vps-item-actions-row">
           <button class="vps-item-act-btn vps-copy-ip cyber-sound-btn" data-ip="${ip}" title="Sao chép IP">📋 Copy IP</button>
           <button class="vps-item-act-btn vps-copy-mstsc cyber-sound-btn" data-ip="${ip}" title="Sao chép lệnh mstsc /v:">💻 mstsc</button>
-          <button class="vps-item-act-btn vps-dl-rdp cyber-sound-btn" data-ip="${ip}" title="Tải file .rdp">📥 .rdp</button>
+          <button class="vps-item-act-btn vps-dl-rdp cyber-sound-btn" data-ip="${ip}" data-user="${user}" title="Tải file .rdp">📥 .rdp</button>
           <button class="vps-item-act-btn vps-del cyber-sound-btn" data-id="${v.id}" title="Xóa máy này" style="color:#f87171;margin-left:auto">🗑️ Xóa</button>
         </div>
       </div>`;
@@ -1288,6 +1367,16 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
         const id=b.getAttribute('data-id');
         const nl=getVpsListMgmt().filter(v=>v.id!==id);
         localStorage.setItem(LS_VPS_MGMT,JSON.stringify(nl));
+        // If the active session is this VPS, clear active session too
+        const activeRaw = localStorage.getItem('active_vps_session');
+        if(activeRaw){
+          try {
+            const act = JSON.parse(activeRaw);
+            if(act.id === id || (b.dataset.ip && act.ip === b.dataset.ip)){
+              if(window.clearActiveVpsSession) window.clearActiveVpsSession();
+            }
+          } catch(e){}
+        }
         renderVpsList();
       });
     });
@@ -1297,6 +1386,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       clearAllBtn.addEventListener('click', () => {
         if(confirm('Bạn có chắc muốn xóa tất cả danh sách VPS đã tạo?')){
           localStorage.removeItem(LS_VPS_MGMT);
+          if(window.clearActiveVpsSession) window.clearActiveVpsSession();
           renderVpsList();
           if(typeof addLog === 'function') addLog('[STARTUT] 🗑️ Đã xóa toàn bộ danh sách VPS đã lưu.', 'info');
         }
@@ -1308,8 +1398,9 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     vpsListCdInterval=setInterval(()=>{
       listEl.querySelectorAll('.vps-item-cd').forEach(el=>{
         const ts=parseInt(el.dataset.created);
+        const dur=parseInt(el.dataset.duration) || 20400;
         if(!ts)return;
-        const cd=fmtCountdown(ts);
+        const cd=fmtCountdown(ts, dur);
         el.textContent=cd.expired?'⛔ Hết hạn':cd.str;
         el.className='vps-item-cd'+(cd.urgent?' urgent':'');
       });
@@ -1319,8 +1410,11 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   window.renderVpsList = renderVpsList;
   renderVpsList();
 
-  /* Re-render when manage tab opened */
+  /* Re-render when manage tab opened & restore when VPS tab opened */
   document.getElementById('tabManage')?.addEventListener('click',()=>{renderTokenList();renderVpsList();});
+  document.getElementById('mobNavManage')?.addEventListener('click',()=>{renderTokenList();renderVpsList();});
+  document.getElementById('tabCreateVPS')?.addEventListener('click',()=>{if(window.restoreActiveVpsSession) window.restoreActiveVpsSession();});
+  document.getElementById('mobNavVps')?.addEventListener('click',()=>{if(window.restoreActiveVpsSession) window.restoreActiveVpsSession();});
 
   if(saved)addToTokenList(saved,'Default');
 })();
@@ -1568,31 +1662,188 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     }
   }
 
-  function applyVpsCredentials(ip, user = 'duyzoz', pass = null){
+  /* ── Unified Active VPS Session & Countdown Architecture ── */
+  let unifiedVpsInterval = null;
+  let hasAlarmed15mUnified = false;
+
+  function startUnifiedVpsCountdown(createdTs, totalDurationSeconds = 20400){
+    if(unifiedVpsInterval) clearInterval(unifiedVpsInterval);
+    hasAlarmed15mUnified = false;
+
+    const cdEl = document.getElementById('vpsCountdown');
+    const timerDisplay = document.getElementById('vpsCountdownTimer');
+    const fill = document.getElementById('vpsCountdownFill');
+    const rdpStatus = document.getElementById('rdpLiveStatus');
+    const rdpText = document.getElementById('rdpLiveText');
+    const card = document.getElementById('vpsCountdownCard');
+    if(card) card.style.display = 'block';
+
+    function tick(){
+      const elapsed = (Date.now() - createdTs) / 1000;
+      const remain = Math.max(0, totalDurationSeconds - elapsed);
+
+      if(remain <= 0){
+        if(cdEl) { cdEl.textContent = '00:00:00'; cdEl.className = 'vcd-timer urgent'; }
+        if(timerDisplay) timerDisplay.textContent = '⛔ HẾT HẠN';
+        if(fill) fill.style.width = '0%';
+        if(rdpStatus) rdpStatus.className = 'rdp-live-badge rdp-offline';
+        if(rdpText) rdpText.textContent = '⛔ ĐÃ TẮT';
+        clearInterval(unifiedVpsInterval);
+        unifiedVpsInterval = null;
+        if(typeof addLog === 'function') addLog('[STARTUT] ⛔ Phiên VPS đã kết thúc!', 'wait');
+        return;
+      }
+
+      const h = Math.floor(remain / 3600);
+      const m = Math.floor((remain % 3600) / 60);
+      const s = Math.floor(remain % 60);
+      const str = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+      if(cdEl){
+        cdEl.textContent = str;
+        cdEl.className = 'vcd-timer' + (remain < 300 ? ' urgent' : '');
+      }
+      if(timerDisplay) timerDisplay.textContent = str;
+      if(fill){
+        const pct = Math.min(100, Math.max(0, (remain / totalDurationSeconds) * 100));
+        fill.style.width = `${pct.toFixed(1)}%`;
+      }
+      if(rdpStatus) rdpStatus.className = 'rdp-live-badge rdp-live';
+      if(rdpText) rdpText.textContent = 'RDP LIVE';
+
+      // 15m remaining alarm (900s)
+      if(remain <= 900 && !hasAlarmed15mUnified){
+        hasAlarmed15mUnified = true;
+        if(typeof CyberSFX !== 'undefined' && CyberSFX.alert) CyberSFX.alert();
+        if(typeof addLog === 'function'){
+          addLog('[VPS] 🔔 Cảnh báo: Phiên VPS chỉ còn 15 phút! Hãy lưu lại dữ liệu của bạn.', 'wait');
+        }
+      }
+    }
+
+    tick();
+    unifiedVpsInterval = setInterval(tick, 1000);
+  }
+  window.startUnifiedVpsCountdown = startUnifiedVpsCountdown;
+  window.startPreciseDemoCountdown = startUnifiedVpsCountdown;
+
+  function saveActiveVpsSession(sessionData){
+    if(!sessionData || !sessionData.ip) return;
+    try {
+      localStorage.setItem('active_vps_session', JSON.stringify(sessionData));
+    } catch(e){}
+    if(window.addOrUpdateVpsInList){
+      window.addOrUpdateVpsInList(sessionData);
+    }
+  }
+  window.saveActiveVpsSession = saveActiveVpsSession;
+
+  function clearActiveVpsSession(){
+    try {
+      localStorage.removeItem('active_vps_session');
+    } catch(e){}
+    if(unifiedVpsInterval){
+      clearInterval(unifiedVpsInterval);
+      unifiedVpsInterval = null;
+    }
+    const readyBox = document.getElementById('vpsReadyBox');
+    const countdownCard = document.getElementById('vpsCountdownCard');
+    if(readyBox) readyBox.style.display = 'none';
+    if(countdownCard) countdownCard.style.display = 'none';
+  }
+  window.clearActiveVpsSession = clearActiveVpsSession;
+
+  function restoreActiveVpsSession(){
+    const raw = localStorage.getItem('active_vps_session');
+    if(!raw) return;
+    try {
+      const session = JSON.parse(raw);
+      if(!session || !session.ip || session.ip === 'Chưa nhận được IP') return;
+
+      const readyBox = document.getElementById('vpsReadyBox');
+      const countdownCard = document.getElementById('vpsCountdownCard');
+      const ipVal = document.getElementById('vpsIpVal');
+      const userVal = document.getElementById('vpsUserVal');
+      const passVal = document.getElementById('vpsPassVal');
+      const rdpStatus = document.getElementById('rdpLiveStatus');
+      const rdpText = document.getElementById('rdpLiveText');
+      const cdEl = document.getElementById('vpsCountdown');
+      const timerDisplay = document.getElementById('vpsCountdownTimer');
+      const fill = document.getElementById('vpsCountdownFill');
+
+      if(readyBox) readyBox.style.display = 'flex';
+      if(countdownCard) countdownCard.style.display = 'block';
+
+      if(ipVal) ipVal.textContent = session.ip;
+      if(userVal) userVal.textContent = session.user || 'duyzoz';
+      if(passVal){
+        passVal.textContent = session.pass || 'Admin@123456';
+        passVal.dataset.real = session.pass || 'Admin@123456';
+      }
+
+      const durSec = session.durationSeconds || 20400;
+      const elapsed = (Date.now() - (session.created || Date.now())) / 1000;
+      const remain = Math.max(0, durSec - elapsed);
+
+      if(remain > 0){
+        startUnifiedVpsCountdown(session.created, durSec);
+      } else {
+        if(cdEl) { cdEl.textContent = '00:00:00'; cdEl.className = 'vcd-timer urgent'; }
+        if(timerDisplay) timerDisplay.textContent = '⛔ HẾT HẠN';
+        if(fill) fill.style.width = '0%';
+        if(rdpStatus) rdpStatus.className = 'rdp-live-badge rdp-offline';
+        if(rdpText) rdpText.textContent = '⛔ ĐÃ TẮT';
+      }
+
+      if(window.addOrUpdateVpsInList){
+        window.addOrUpdateVpsInList(session);
+      }
+    } catch(e){
+      console.warn('Could not restore active VPS session:', e);
+    }
+  }
+  window.restoreActiveVpsSession = restoreActiveVpsSession;
+
+  function applyVpsCredentials(ip, user = 'duyzoz', pass = null, durationSeconds = null){
     setVpsShimmer(false);
     const ipVal = document.getElementById('vpsIpVal');
     const userVal = document.getElementById('vpsUserVal');
     const passVal = document.getElementById('vpsPassVal');
+    const readyBox = document.getElementById('vpsReadyBox');
+    const countdownCard = document.getElementById('vpsCountdownCard');
 
     const assignedIp = ip || 'Chưa nhận được IP';
     const assignedPass = pass || 'Admin@123456';
+    const assignedUser = user || 'duyzoz';
+    const durSec = durationSeconds || (typeof currentVpsSeconds !== 'undefined' ? currentVpsSeconds : 20400);
+
+    if(readyBox) readyBox.style.display = 'flex';
+    if(countdownCard) countdownCard.style.display = 'block';
 
     if(ipVal) ipVal.textContent = assignedIp;
-    if(userVal) userVal.textContent = user;
+    if(userVal) userVal.textContent = assignedUser;
     if(passVal){
       passVal.textContent = assignedPass;
       passVal.dataset.real = assignedPass;
     }
 
-    startPreciseDemoCountdown(typeof currentVpsSeconds !== 'undefined' ? currentVpsSeconds : 20400); // 5h40m = 20400s
+    const sessionData = {
+      id: 'vps_' + Date.now().toString(36),
+      name: `VPS Windows (${assignedIp})`,
+      ip: assignedIp,
+      user: assignedUser,
+      pass: assignedPass,
+      created: Date.now(),
+      durationSeconds: durSec,
+      repo: 'vps-tailscale-windows'
+    };
+
+    saveActiveVpsSession(sessionData);
+    startUnifiedVpsCountdown(sessionData.created, sessionData.durationSeconds);
+
     if(typeof CyberAudio !== 'undefined') if(typeof CyberAudio.deploy === 'function') CyberAudio.deploy(); else CyberAudio.success();
     if(typeof addLog === 'function'){
-      addLog(`[STARTUT] ✅ VPS SẴN SÀNG: IP=${assignedIp} | User=${user} | Password=${assignedPass}`, 'done');
-    }
-
-    // Save to list
-    if(typeof addVpsToList === 'function' && assignedIp.startsWith('100.')){
-      addVpsToList('ms-rd:connect?server=' + assignedIp, assignedIp, localStorage.getItem('github_token') || '');
+      addLog(`[STARTUT] ✅ VPS SẴN SÀNG: IP=${assignedIp} | User=${assignedUser} | Password=${assignedPass}`, 'done');
     }
   }
 
@@ -1662,42 +1913,25 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   }
 
   /* ── VPS list helpers ── */
-  const LS_VPS='vps_list';
-  function getVpsList(){try{return JSON.parse(localStorage.getItem(LS_VPS)||'[]');}catch{return[];}}
-  function saveVpsList(l){localStorage.setItem(LS_VPS,JSON.stringify(l));}
-  function nextVpsName(){
-    const l=getVpsList();
-    const nums=l.map(v=>{const m=v.name.match(/VPS #(\d+)/);return m?parseInt(m[1]):0;});
-    const max=nums.length?Math.max(...nums):0;
-    return `VPS #${max+1}`;
-  }
   function addVpsToList(vncLink,repoUrl,token){
-    const l=getVpsList();
-    const name=nextVpsName();
-    const now=new Date();
-    const dateStr=now.toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
-    l.push({id:Date.now().toString(36),name,link:vncLink,repo:repoUrl,date:dateStr,created:Date.now(),token:token.substring(0,10)+'***'});
-    saveVpsList(l);
-    renderVpsList();
+    const ipMatch = (vncLink || '').match(/server=([^&]+)/) || (repoUrl || '').match(/100\.\d+\.\d+\.\d+/);
+    const ip = ipMatch ? ipMatch[1] : (typeof repoUrl === 'string' && repoUrl.startsWith('100.') ? repoUrl : '100.86.124.90');
+    if(window.addOrUpdateVpsInList){
+      window.addOrUpdateVpsInList({
+        ip: ip,
+        link: vncLink,
+        user: 'duyzoz',
+        pass: 'Admin@123456',
+        repo: repoUrl || 'vps-tailscale-windows',
+        created: Date.now(),
+        durationSeconds: typeof currentVpsSeconds !== 'undefined' ? currentVpsSeconds : 20400
+      });
+    }
   }
 
   /* ── Countdown ── */
-  let vpsCountdownInterval=null;
   function startCountdown(createdTs){
-    if(vpsCountdownInterval)clearInterval(vpsCountdownInterval);
-    function update(){
-      const elapsed=Date.now()-createdTs;
-      const total=6*3600*1000;
-      const remain=Math.max(0,total-elapsed);
-      const h=Math.floor(remain/3600000);
-      const m=Math.floor((remain%3600000)/60000);
-      const s=Math.floor((remain%60000)/1000);
-      const str=`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-      if(countdownEl){countdownEl.textContent=str;countdownEl.className='vcd-timer'+(remain<300000?' urgent':'');}
-      if(remain===0)clearInterval(vpsCountdownInterval);
-    }
-    update();
-    vpsCountdownInterval=setInterval(update,1000);
+    startUnifiedVpsCountdown(createdTs, typeof currentVpsSeconds !== 'undefined' ? currentVpsSeconds : 20400);
   }
 
   async function pollVncLink(token,repoFull,actionsUrl){
@@ -4915,28 +5149,12 @@ Respond accurately with this ground truth knowledge:
   const demoBtn = document.getElementById('vpsDemoBtn');
   if(demoBtn){
     demoBtn.addEventListener('click', () => {
+      const sampleIp = '100.' + Math.floor(64 + Math.random()*60) + '.' + Math.floor(10 + Math.random()*200) + '.' + Math.floor(10 + Math.random()*200);
+      const samplePass = generateMilitaryPassword();
+      const dur = typeof currentVpsSeconds !== 'undefined' ? currentVpsSeconds : 20400;
+      applyVpsCredentials(sampleIp, 'duyzoz', samplePass, dur);
       const readyBox = document.getElementById('vpsReadyBox');
-      const ipVal = document.getElementById('vpsIpVal');
-      const userVal = document.getElementById('vpsUserVal');
-      const passVal = document.getElementById('vpsPassVal');
-      const rdpLink = document.getElementById('vpsRdpLink');
-
       if(readyBox){
-        readyBox.style.display = 'flex';
-        const sampleIp = '100.' + Math.floor(64 + Math.random()*60) + '.' + Math.floor(10 + Math.random()*200) + '.' + Math.floor(10 + Math.random()*200);
-        const samplePass = generateMilitaryPassword();
-
-        if(ipVal) ipVal.textContent = sampleIp;
-        if(userVal) userVal.textContent = 'duyzoz';
-        if(passVal){
-          passVal.textContent = samplePass;
-          passVal.dataset.real = samplePass;
-        }
-        if(rdpLink) rdpLink.href = 'ms-rd:connect?server=' + sampleIp;
-
-        startPreciseDemoCountdown(typeof currentVpsSeconds !== 'undefined' ? currentVpsSeconds : 20400); // 5h40m
-        if(typeof CyberAudio !== 'undefined') if(typeof CyberAudio.deploy === 'function') CyberAudio.deploy(); else CyberAudio.success();
-        if(typeof addLog === 'function') addLog(`[STARTUT] Khởi tạo phiên VPS Demo: IP=${sampleIp}, User=duyzoz`, 'done');
         readyBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     });
@@ -6867,4 +7085,17 @@ Respond accurately with this ground truth knowledge:
     });
   }
 
+})();
+
+// Wave 57: Global Auto-Restore for Active VPS Session & Manage List across F5
+(function initGlobalVpsAutoRestore(){
+  function restore(){
+    if(window.restoreActiveVpsSession) window.restoreActiveVpsSession();
+    if(window.renderVpsList) window.renderVpsList();
+  }
+  if(document.readyState === 'loading'){
+    window.addEventListener('DOMContentLoaded', () => setTimeout(restore, 100));
+  } else {
+    setTimeout(restore, 100);
+  }
 })();
