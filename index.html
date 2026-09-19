@@ -98,6 +98,13 @@
       <span id="themeIcon">🎨</span>
       <span id="themeText">THEMES</span>
     </button>
+    <button class="theme-random-btn cyber-sound-btn" id="themeRandomBtn" title="Theme ngẫu nhiên (Ctrl+T hoặc Lắc điện thoại)">
+      <span>🎲</span>
+    </button>
+    <button class="sfx-toggle-btn cyber-sound-btn" id="sfxToggleBtn" title="Bật / Tắt âm thanh Web Audio FX (0ms Latency)">
+      <span id="sfxIcon">🔊</span>
+      <span id="sfxText">SFX</span>
+    </button>
     <button class="cli-toggle-btn" id="cliToggleBtn" title="Open Cyber Terminal CLI (~ or Ctrl+K)">
       <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
       <span>_CLI</span>
@@ -186,8 +193,34 @@
         </svg>
       </div>
       <div class="mp-bottom-row">
-        <canvas id="audioVisualizerCanvas" class="mp-visualizer-canvas" width="120" height="18"></canvas>
-        <span class="mp-hotkey-tip" title="Space: Play/Pause | M: Mute | ← →: Đổi bài">⌨️ Space · M · ← →</span>
+        <canvas id="audioVisualizerCanvas" class="mp-visualizer-canvas" width="100" height="18" title="Click để đổi kiểu sóng (Bars/Wave/Orbit)"></canvas>
+        <button class="mp-mini-btn cyber-sound-btn" id="mpVisModeBtn" title="Đổi kiểu sóng nhạc (Bars / Wave / Glow)">📊</button>
+        <button class="mp-mini-btn cyber-sound-btn" id="mpPlaylistBtn" title="Danh sách bài hát tuyển chọn">📜</button>
+        <span class="mp-hotkey-tip" title="Space: Play/Pause | M: Mute | ← →: Đổi bài">⌨️ Space · M</span>
+      </div>
+      <!-- QUICK PLAYLIST DRAWER -->
+      <div class="mp-playlist-drawer" id="mpPlaylistDrawer" style="display:none">
+        <div class="mpd-header">
+          <span>🎵 BẢNG NHẠC TUYỂN CHỌN</span>
+          <button class="mpd-close" id="mpPlaylistClose">✕</button>
+        </div>
+        <div class="mpd-list" id="mpPlaylistList">
+          <div class="mpd-item active" data-src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/sound1.mp3" data-art="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg" data-title="2IN1 - Người Đã Yêu Ai Remix">
+            <span class="mpd-num">1</span>
+            <div class="mpd-info"><span class="mpd-name">Người Đã Yêu Ai (2IN1 Remix)</span><span class="mpd-artist">DuyZoz Playlist</span></div>
+            <span class="mpd-playing-dot"></span>
+          </div>
+          <div class="mpd-item" data-src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/sound1.mp3" data-art="assets/avatar.png" data-title="Cyberpunk 2077 Night City Phonk">
+            <span class="mpd-num">2</span>
+            <div class="mpd-info"><span class="mpd-name">Cyberpunk Night City Drift</span><span class="mpd-artist">Phonk / Bass Boost</span></div>
+            <span class="mpd-playing-dot"></span>
+          </div>
+          <div class="mpd-item" data-src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/sound1.mp3" data-art="https://files.catbox.moe/6tly5b.png" data-title="Wuthering Waves Havoc Dreadmane Echo Beat">
+            <span class="mpd-num">3</span>
+            <div class="mpd-info"><span class="mpd-name">Wuthering Waves Jinhsi Theme</span><span class="mpd-artist">Epic Lofi Chill</span></div>
+            <span class="mpd-playing-dot"></span>
+          </div>
+        </div>
       </div>
     </div>
     <audio id="mpAudio" preload="none">
@@ -404,7 +437,20 @@
                 <button type="button" id="vpsDownloadRdpBtn" class="vps-download-rdp-btn cyber-sound-btn" title="Tải file cấu hình .RDP kết nối ngay vào máy tính">
                   <span>📥 Tải File Kết Nối (.RDP) Mở Bằng 1-Click</span>
                 </button>
-                <!-- WAVE 27 & 29: QUICK MSTSC COMMAND & LIVE PING TEST -->
+                <!-- LIVE VPS SESSION COUNTDOWN TIMER & SOUND ALARM (Wave 54) -->
+                <div class="vps-countdown-card" id="vpsCountdownCard" style="display:none">
+                  <div class="vcc-header">
+                    <span class="vcc-live-dot"></span>
+                    <span class="vcc-title">⏳ Phiên Hoạt Động RDP:</span>
+                    <strong class="vcc-timer" id="vpsCountdownTimer">05:40:00</strong>
+                    <span class="vcc-alarm-tag" id="vpsAlarmTag">🔔 Báo trước 15p</span>
+                  </div>
+                  <div class="vcc-progress-bar">
+                    <div class="vcc-progress-fill" id="vpsCountdownFill" style="width:100%"></div>
+                  </div>
+                </div>
+
+                <!-- WAVE 27 & 29: QUICK MSTSC COMMAND & LIVE PING TEST & QR SHARE -->
                 <div class="vps-quick-actions" style="display:flex;gap:6px;margin-top:6px">
                   <button type="button" id="vpsCopyMstscBtn" class="vps-action-btn cyber-sound-btn" style="flex:1" title="Sao chép lệnh mstsc /v:IP để dán vào Win + R">
                     <span id="mstscBtnTxt">📋 Lệnh <code>mstsc /v:...</code></span>
@@ -412,6 +458,9 @@
                   <button type="button" id="vpsPingTestBtn" class="vps-action-btn cyber-sound-btn" style="width:auto;padding:0 10px" title="Kiểm tra độ trễ mạng tới node VPS Tailscale">
                     <span id="vpsPingDot" class="vps-ping-dot"></span>
                     <span id="vpsPingText">⚡ Ping: -- ms</span>
+                  </button>
+                  <button type="button" id="vpsQrShareBtn" class="vps-action-btn cyber-sound-btn" style="width:auto;padding:0 9px" title="Quét mã QR kết nối tức thì trên điện thoại">
+                    <span>📱 QR</span>
                   </button>
                 </div>
 
@@ -553,6 +602,39 @@
 
             <div class="t-divider"></div>
 
+            <!-- WAVE 56: JSON FORMATTER & VALIDATOR (POCKET DEV TOOL) -->
+            <div class="t-block json-block">
+              <div class="t-title" style="font-size:.82rem;margin-bottom:8px">📦 JSON Formatter &amp; Validator</div>
+              <textarea class="bp-input json-input" id="jsonInput" rows="3" placeholder="Dán chuỗi JSON cần định dạng/kiểm tra..."></textarea>
+              <div class="b64-btn-row" style="margin-top:6px">
+                <button class="proj-btn proj-live cyber-sound-btn" id="btnJsonFormat" style="flex:1">Làm Đẹp (Beautify)</button>
+                <button class="proj-btn proj-gh cyber-sound-btn" id="btnJsonMinify" style="flex:1">Nén (Minify)</button>
+                <button class="proj-btn cyber-sound-btn" id="btnJsonCopy" style="flex:0 0 36px;background:rgba(255,255,255,0.08)" title="Sao chép kết quả">📋</button>
+              </div>
+              <div class="key-status" id="jsonStatus" style="display:none;margin-top:4px"></div>
+            </div>
+
+            <div class="t-divider"></div>
+
+            <!-- WAVE 56: SECURE RANDOM PASSWORD GENERATOR -->
+            <div class="t-block passgen-block">
+              <div class="t-title-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                <span class="t-title" style="font-size:.82rem">🔑 Bộ Tạo Mật Khẩu Siêu Cấp</span>
+                <span class="sl-badge" id="passStrengthBadge">Mạnh 100%</span>
+              </div>
+              <div class="passgen-row" style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+                <input class="bp-input" id="passGenResult" readonly placeholder="Bấm Tạo Mật Khẩu..." style="font-family:var(--mono);font-weight:700;color:#38bdf8" />
+                <button class="proj-btn proj-live cyber-sound-btn" id="btnGenPass" style="flex:0 0 75px">🎲 Tạo</button>
+                <button class="proj-btn cyber-sound-btn" id="btnCopyPass" style="flex:0 0 36px;background:rgba(255,255,255,0.08)" title="Sao chép mật khẩu">📋</button>
+              </div>
+              <div class="passgen-len-row" style="display:flex;align-items:center;justify-content:space-between;font-size:.64rem;color:#94a3b8">
+                <span>Độ dài: <strong id="passLenDisplay" style="color:#00f0ff">16 ký tự</strong></span>
+                <input type="range" id="passLenRange" min="8" max="32" value="16" style="width:140px" />
+              </div>
+            </div>
+
+            <div class="t-divider"></div>
+
             <!-- BYPASS LINK (MOVED HERE AS REQUESTED) -->
             <div class="t-block">
               <div class="t-title-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
@@ -634,9 +716,12 @@
                 <button class="gb-reply-cancel" id="gbReplyCancel">✕</button>
               </div>
 
-              <!-- Identity indicator / Name input -->
+              <!-- Identity indicator / Name input & Karma Badge (Wave 59) -->
               <div class="gb-sender-bar">
-                <span class="gb-sender-aura" id="gbSenderAura">✨ Admin: Nguyễn Duy</span>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span class="gb-sender-aura" id="gbSenderAura">✨ Admin: Nguyễn Duy</span>
+                  <span class="gb-karma-badge" id="gbKarmaBadge" title="Danh hiệu tương tác của bạn">🟢 Explorer</span>
+                </div>
                 <input class="bp-input gb-name-input" id="gbNameInput" placeholder="Your name..." style="display:none" />
               </div>
 
@@ -684,6 +769,10 @@
                   <div class="ai-bot-name">Nguyễn Duy AI</div>
                   <div class="ai-bot-status" id="aiBotStatus">Cyberpunk Digital Twin · Ready</div>
                 </div>
+                <button class="ai-tts-btn cyber-sound-btn" id="btnAiTtsToggle" title="Bật/Tắt giọng đọc AI (Web Speech API)">
+                  <span id="aiTtsIcon">🔊</span>
+                  <span class="ai-tts-label" id="aiTtsLabel">Voice</span>
+                </button>
                 <button class="ai-key-btn" id="btnAiConfigKey" title="Configure AI API Key (Gemini / OpenAI / Groq)">
                   <span class="ai-key-icon">🔑</span>
                   <span class="ai-key-label" id="aiKeyLabel">API Key</span>
@@ -765,7 +854,8 @@
         <div class="card-hdr profile-hdr" id="profileHdr">👤 Profile &amp; About</div>
         <div class="p-inner">
 
-          <div class="avatar-wrap" id="avatarWrap">
+          <div class="avatar-wrap" id="avatarWrap" title="Chạm để đổi Khung Trang Trí Avatar Discord Nitro">
+            <div class="avatar-deco-ring" id="avatarDecoRing"></div>
             <canvas class="avatar-orbit" id="avatarOrbit"></canvas>
             <img src="assets/avatar.png" alt="Avatar" class="avatar-img" />
             <canvas class="avatar-snow-canvas" id="avatarSnowC"></canvas>
@@ -960,6 +1050,19 @@
         <button class="mob-fab-item cyber-sound-btn" id="themeSnow" data-theme="snow" type="button">
           <span class="mfi-icon">🤍</span>
           <span class="mfi-txt">Trắng Tuyết (Snow)</span>
+        </button>
+        <button class="mob-fab-item cyber-sound-btn" id="themeOled" data-theme="oled" type="button">
+          <span class="mfi-icon">🖤</span>
+          <span class="mfi-txt">OLED True Black (Max Pin)</span>
+        </button>
+        <div class="mfm-divider" style="height:1px;background:rgba(255,255,255,0.1);margin:4px 0"></div>
+        <button class="mob-fab-item cyber-sound-btn" id="mobSfxToggleBtn" type="button">
+          <span class="mfi-icon" id="mobSfxIcon">🔊</span>
+          <span class="mfi-txt" id="mobSfxTxt">Âm Thanh: BẬT</span>
+        </button>
+        <button class="mob-fab-item cyber-sound-btn" id="mobThemeRandomBtn" type="button">
+          <span class="mfi-icon">🎲</span>
+          <span class="mfi-txt">Theme Ngẫu Nhiên</span>
         </button>
       </div>
       <button class="mob-fab-btn cyber-sound-btn" id="mobFabBtn" type="button" aria-label="Bảng Màu Cyber" title="Đổi giao diện">
@@ -1187,6 +1290,138 @@
         </div>
         <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
       </div>
+
+      <div class="nitro-card" data-theme="oled">
+        <div class="nitro-card-preview nitro-prev-oled">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">OLED PURE BLACK</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">OLED True Black</div>
+          <div class="nitro-card-desc">Đen Tuyệt Đối · Siêu Tiết Kiệm Pin · 120 FPS</div>
+          <div class="nitro-swatches">
+            <span style="background:#000000;border:1px solid #334155"></span>
+            <span style="background:#0a0a0f"></span>
+            <span style="background:#38bdf8"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CROSS-DEVICE CYBER QR CODE MODAL (Wave 49) -->
+  <div class="nitro-theme-backdrop" id="qrModalBackdrop" style="display:none"></div>
+  <div class="cyber-qr-modal" id="cyberQrModal" style="display:none">
+    <div class="cqm-header">
+      <div class="cqm-title">📱 QUÉT MÃ KẾT NỐI DI ĐỘNG</div>
+      <button class="cqm-close" id="qrModalClose">✕</button>
+    </div>
+    <div class="cqm-body">
+      <div class="cqm-qr-wrap">
+        <canvas id="cyberQrCanvas" width="180" height="180"></canvas>
+      </div>
+      <div class="cqm-desc" id="qrModalDesc">Quét mã bằng Camera điện thoại để mở liên kết ngay lập tức!</div>
+      <div class="cqm-link-box">
+        <span class="cqm-url" id="qrModalUrlText">https://duyzoz.github.io/...</span>
+        <button class="cqm-copy-btn cyber-sound-btn" id="qrModalCopyBtn">📋 Sao Chép</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISCORD NITRO AVATAR FRAME MODAL (Wave 62) -->
+  <div class="nitro-theme-backdrop" id="avatarModalBackdrop" style="display:none"></div>
+  <div class="avatar-deco-modal" id="avatarDecoModal" style="display:none">
+    <div class="nitro-theme-header">
+      <div class="nitro-theme-title-wrap">
+        <div class="nitro-theme-title">✨ KHUNG TRANG TRÍ AVATAR NITRO</div>
+        <div class="nitro-theme-sub">Chọn khung hào quang động bao quanh Avatar cá nhân</div>
+      </div>
+      <button class="nitro-theme-close" id="avatarDecoClose">✕</button>
+    </div>
+    <div class="avatar-deco-grid">
+      <div class="deco-card active" data-deco="none">
+        <div class="deco-preview deco-prev-none">
+          <img src="assets/avatar.png" class="deco-prev-avt" alt="avatar" />
+        </div>
+        <div class="deco-name">Mặc Định (Clean)</div>
+      </div>
+      <div class="deco-card" data-deco="sakura">
+        <div class="deco-preview deco-prev-sakura">
+          <div class="deco-ring sakura-ring"></div>
+          <img src="assets/avatar.png" class="deco-prev-avt" alt="avatar" />
+        </div>
+        <div class="deco-name">🌸 Sakura Orbit</div>
+      </div>
+      <div class="deco-card" data-deco="lightning">
+        <div class="deco-preview deco-prev-lightning">
+          <div class="deco-ring lightning-ring"></div>
+          <img src="assets/avatar.png" class="deco-prev-avt" alt="avatar" />
+        </div>
+        <div class="deco-name">⚡ Cyber Lightning</div>
+      </div>
+      <div class="deco-card" data-deco="ice">
+        <div class="deco-preview deco-prev-ice">
+          <div class="deco-ring ice-ring"></div>
+          <img src="assets/avatar.png" class="deco-prev-avt" alt="avatar" />
+        </div>
+        <div class="deco-name">❄️ Băng Tinh Thể</div>
+      </div>
+      <div class="deco-card" data-deco="flame">
+        <div class="deco-preview deco-prev-flame">
+          <div class="deco-ring flame-ring"></div>
+          <img src="assets/avatar.png" class="deco-prev-avt" alt="avatar" />
+        </div>
+        <div class="deco-name">🔥 Dragon Flame</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HARDWARE BENCHMARK MODAL (Wave 65) -->
+  <div class="nitro-theme-backdrop" id="benchModalBackdrop" style="display:none"></div>
+  <div class="cyber-bench-modal" id="benchmarkModal" style="display:none">
+    <div class="nitro-theme-header">
+      <div class="nitro-theme-title-wrap">
+        <div class="nitro-theme-title">⚡ ĐO HIỆU NĂNG THIẾT BỊ (CYBER BENCHMARK)</div>
+        <div class="nitro-theme-sub">Kiểm tra khả năng render GPU, màn hình và độ trễ DOM thực tế</div>
+      </div>
+      <button class="nitro-theme-close" id="benchModalClose">✕</button>
+    </div>
+    <div class="bench-body">
+      <div class="bench-score-card">
+        <div class="bench-score-num" id="benchScoreVal">98</div>
+        <div class="bench-score-label">ĐIỂM HIỆU NĂNG MƯỢT</div>
+        <div class="bench-rating-tag" id="benchRatingTag">ULTRA 120 FPS READY</div>
+      </div>
+      <div class="bench-grid">
+        <div class="bench-item">
+          <span class="bi-label">Tốc độ khung hình (FPS)</span>
+          <span class="bi-val" id="benchFpsLive">60 FPS</span>
+        </div>
+        <div class="bench-item">
+          <span class="bi-label">Thời gian vẽ DOM (Latency)</span>
+          <span class="bi-val" id="benchDomLag">~1.2 ms</span>
+        </div>
+        <div class="bench-item">
+          <span class="bi-label">Tỉ lệ điểm ảnh (DPR)</span>
+          <span class="bi-val" id="benchDpr">2.0x</span>
+        </div>
+        <div class="bench-item">
+          <span class="bi-label">Số luồng CPU</span>
+          <span class="bi-val" id="benchCores">8 Cores</span>
+        </div>
+        <div class="bench-item">
+          <span class="bi-label">Công nghệ render</span>
+          <span class="bi-val">GPU Hardware Accelerated</span>
+        </div>
+        <div class="bench-item">
+          <span class="bi-label">Tối ưu Pin</span>
+          <span class="bi-val" id="benchBattery">Tối Ưu 100%</span>
+        </div>
+      </div>
+      <button class="bp-btn cyber-sound-btn" id="btnRunBenchAgain" style="margin-top:12px">
+        <span>🔄 Đo lại ngay</span>
+      </button>
     </div>
   </div>
 

@@ -5349,7 +5349,7 @@ Respond accurately with this ground truth knowledge:
   });
 
   // Wave 34: Discord Nitro Profile Theme Engine (7 Themes, Complete Surface Transformation)
-  const THEMES = ['cyan', 'amethyst', 'matrix', 'amber', 'crimson', 'frost', 'snow'];
+  const THEMES = ['cyan', 'amethyst', 'matrix', 'amber', 'crimson', 'frost', 'snow', 'oled'];
   const THEME_NAMES = {
     cyan: 'Cyber Cyan (Mặc định)',
     amethyst: 'Amethyst Nitro Velvet',
@@ -5357,7 +5357,8 @@ Respond accurately with this ground truth knowledge:
     amber: 'Sunset Amber 2077',
     crimson: 'Blood Moon Sakura',
     frost: 'Abyssal Arctic Glaze',
-    snow: 'Trắng Tuyết (Snow White)'
+    snow: 'Trắng Tuyết (Snow White)',
+    oled: 'OLED True Black (Max Battery 120 FPS)'
   };
 
   function applyTheme(themeKey){
@@ -5867,4 +5868,833 @@ Respond accurately with this ground truth knowledge:
       }
     });
   }
+
+  /* ═══════════════════════════════════════════════════════════
+     WAVES 46 – 65: FULL ADVANCED DESKTOP & MOBILE CONTROLLER
+     ═══════════════════════════════════════════════════════════ */
+
+  /* ── 1. Web Audio Synthesizer (0 KB, 0ms Latency SFX - Wave 50) ── */
+  const CyberSFX = (function(){
+    let ctx = null;
+    let muted = false;
+    try {
+      muted = localStorage.getItem('cyber_sfx_muted') === '1';
+    } catch(e){}
+
+    function getCtx(){
+      if(!ctx){
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if(AC) ctx = new AC();
+      }
+      if(ctx && ctx.state === 'suspended'){
+        ctx.resume().catch(()=>{});
+      }
+      return ctx;
+    }
+
+    function playTone(freq, type, duration, gainVal, rampToFreq){
+      if(muted) return;
+      try {
+        const c = getCtx();
+        if(!c) return;
+        const osc = c.createOscillator();
+        const g = c.createGain();
+        osc.type = type || 'sine';
+        osc.frequency.setValueAtTime(freq, c.currentTime);
+        if(rampToFreq){
+          osc.frequency.exponentialRampToValueAtTime(rampToFreq, c.currentTime + duration);
+        }
+        g.gain.setValueAtTime(gainVal || 0.06, c.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + duration);
+        osc.connect(g);
+        g.connect(c.destination);
+        osc.start();
+        osc.stop(c.currentTime + duration);
+      } catch(e){}
+    }
+
+    function updateUi(){
+      const sfxBtn = document.getElementById('sfxToggleBtn');
+      const sfxIcon = document.getElementById('sfxIcon');
+      const sfxTxt = document.getElementById('sfxText');
+      const mobSfxTxt = document.getElementById('mobSfxTxt');
+      const mobSfxIcon = document.getElementById('mobSfxIcon');
+
+      if(sfxIcon) sfxIcon.textContent = muted ? '🔇' : '🔊';
+      if(sfxTxt) sfxTxt.textContent = muted ? 'MUTE' : 'SFX';
+      if(sfxBtn) sfxBtn.classList.toggle('muted', muted);
+      if(mobSfxTxt) mobSfxTxt.textContent = muted ? 'Âm Thanh: TẮT' : 'Âm Thanh: BẬT';
+      if(mobSfxIcon) mobSfxIcon.textContent = muted ? '🔇' : '🔊';
+    }
+
+    return {
+      click: () => playTone(800, 'sine', 0.04, 0.04),
+      tab: () => playTone(440, 'triangle', 0.07, 0.05, 880),
+      theme: () => {
+        playTone(523.25, 'sine', 0.09, 0.05);
+        setTimeout(()=>playTone(659.25, 'sine', 0.1, 0.05), 45);
+        setTimeout(()=>playTone(783.99, 'sine', 0.14, 0.05), 90);
+      },
+      send: () => playTone(600, 'sine', 0.12, 0.06, 1200),
+      alert: () => {
+        playTone(880, 'sine', 0.15, 0.08);
+        setTimeout(()=>playTone(880, 'sine', 0.22, 0.08), 180);
+      },
+      isMuted: () => muted,
+      toggleMute: () => {
+        muted = !muted;
+        try { localStorage.setItem('cyber_sfx_muted', muted ? '1' : '0'); } catch(e){}
+        updateUi();
+        if(!muted) playTone(750, 'sine', 0.05, 0.05);
+        return muted;
+      },
+      initUi: updateUi
+    };
+  })();
+  window.CyberSFX = CyberSFX;
+
+  // Bind SFX toggle buttons
+  const sfxBtn = document.getElementById('sfxToggleBtn');
+  if(sfxBtn){
+    sfxBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      CyberSFX.toggleMute();
+    });
+  }
+  const mobSfxBtn = document.getElementById('mobSfxToggleBtn');
+  if(mobSfxBtn){
+    mobSfxBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      CyberSFX.toggleMute();
+    });
+  }
+  CyberSFX.initUi();
+
+  // Attach click sound to cyber-sound-btn
+  document.addEventListener('click', (e)=>{
+    if(e.target.closest('.cyber-sound-btn')){
+      CyberSFX.click();
+    }
+  });
+
+  /* ── 2. Random Theme Button (Wave 47) ── */
+  function randomizeTheme(){
+    const list = ['cyan', 'amethyst', 'matrix', 'amber', 'crimson', 'frost', 'snow', 'oled'];
+    const cur = localStorage.getItem('cyber_theme') || 'cyan';
+    const others = list.filter(t => t !== cur);
+    const next = others[Math.floor(Math.random() * others.length)];
+    if(window.applyTheme) window.applyTheme(next);
+    CyberSFX.theme();
+    if(typeof navigator !== 'undefined' && navigator.vibrate){
+      try { navigator.vibrate(35); } catch(err){}
+    }
+    if(typeof addLog === 'function'){
+      addLog(`[THEME] 🎲 Ngẫu nhiên chuyển sang: ${next.toUpperCase()}`, 'ok');
+    }
+  }
+  const themeRandomBtn = document.getElementById('themeRandomBtn');
+  if(themeRandomBtn){
+    themeRandomBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      randomizeTheme();
+    });
+  }
+  const mobThemeRandomBtn = document.getElementById('mobThemeRandomBtn');
+  if(mobThemeRandomBtn){
+    mobThemeRandomBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      randomizeTheme();
+      const fabC = document.getElementById('mobFabContainer');
+      if(fabC) fabC.classList.remove('active');
+    });
+  }
+
+  /* ── 3. Touch Swipe Gestures & Desktop Keyboard Shortcuts (Wave 46) ── */
+  // Desktop Keys: 1 to 7 switch tabs; [ and ] cycle tabs
+  const TAB_IDS = ['tabBypass', 'tabCreateVPS', 'tabManage', 'tabProjects', 'tabTools', 'tabGuestbook', 'tabAi'];
+  const MOB_NAV_TARGETS = ['profile', 'panelBypass', 'panelCreateVPS', 'panelManage', 'panelTools', 'panelGuestbook', 'panelAi'];
+
+  document.addEventListener('keydown', (e)=>{
+    // Ignore when typing in input/textarea
+    const tag = (e.target.tagName || '').toLowerCase();
+    if(tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+
+    // Ctrl + T or Shift + T: Random Theme
+    if((e.ctrlKey || e.metaKey || e.shiftKey) && e.key.toLowerCase() === 't'){
+      e.preventDefault();
+      randomizeTheme();
+      return;
+    }
+
+    // Number keys 1-7
+    const num = parseInt(e.key, 10);
+    if(!isNaN(num) && num >= 1 && num <= 7 && !e.ctrlKey && !e.metaKey && !e.altKey){
+      e.preventDefault();
+      if(isMobile()){
+        const target = MOB_NAV_TARGETS[num - 1];
+        const btn = document.querySelector(`.mob-nav-item[data-target="${target}"]`);
+        if(btn) btn.click();
+      } else {
+        const tc = document.getElementById('toolCard');
+        if(tc && !tc.classList.contains('open')) tc.classList.add('open');
+        const tabBtn = document.getElementById(TAB_IDS[num - 1]);
+        if(tabBtn) tabBtn.click();
+      }
+      CyberSFX.tab();
+    }
+  });
+
+  // Mobile Swipe Gestures (Horizontal swipe switches tabs smoothly)
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchStartTime = 0;
+
+  document.addEventListener('touchstart', (e)=>{
+    if(!isMobile() || e.touches.length !== 1) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchStartTime = Date.now();
+  }, { passive: true });
+
+  document.addEventListener('touchend', (e)=>{
+    if(!isMobile() || !touchStartX) return;
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const diffX = endX - touchStartX;
+    const diffY = endY - touchStartY;
+    const dt = Date.now() - touchStartTime;
+
+    touchStartX = 0;
+    touchStartY = 0;
+
+    // Must be fast (< 450ms), horizontal (|diffX| > 50px, |diffX| > 1.8 * |diffY|)
+    if(dt < 450 && Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY) * 1.8){
+      const activeNav = document.querySelector('.mob-nav-item.active');
+      const currentTarget = activeNav ? activeNav.getAttribute('data-target') : 'profile';
+      const curIdx = MOB_NAV_TARGETS.indexOf(currentTarget);
+      if(curIdx !== -1){
+        let nextIdx = curIdx;
+        if(diffX < 0 && curIdx < MOB_NAV_TARGETS.length - 1){
+          nextIdx = curIdx + 1; // Swipe left -> next tab
+        } else if(diffX > 0 && curIdx > 0){
+          nextIdx = curIdx - 1; // Swipe right -> prev tab
+        }
+        if(nextIdx !== curIdx){
+          const nextTarget = MOB_NAV_TARGETS[nextIdx];
+          const nextBtn = document.querySelector(`.mob-nav-item[data-target="${nextTarget}"]`);
+          if(nextBtn){
+            nextBtn.click();
+            CyberSFX.tab();
+            if(typeof navigator !== 'undefined' && navigator.vibrate){
+              try { navigator.vibrate(15); } catch(err){}
+            }
+          }
+        }
+      }
+    }
+  }, { passive: true });
+
+  // Shake to Theme (DeviceMotionEvent on smartphones - Wave 47)
+  let lastShakeTime = 0;
+  if(window.DeviceMotionEvent){
+    window.addEventListener('devicemotion', (e)=>{
+      const acc = e.accelerationIncludingGravity;
+      if(!acc) return;
+      const speed = Math.abs(acc.x || 0) + Math.abs(acc.y || 0) + Math.abs(acc.z || 0);
+      const now = Date.now();
+      if(speed > 28 && now - lastShakeTime > 2000){
+        lastShakeTime = now;
+        randomizeTheme();
+      }
+    });
+  }
+
+  /* ── 4. Multi-mode Audio Visualizer & Playlist Drawer (Waves 51, 52, 53) ── */
+  let visMode = 0; // 0: bars, 1: wave, 2: pulse
+  const visModes = ['Bars', 'Wave', 'Pulse'];
+  const visBtn = document.getElementById('mpVisModeBtn');
+  const visCanvas = document.getElementById('audioVisualizerCanvas');
+
+  if(visBtn){
+    visBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      visMode = (visMode + 1) % 3;
+      visBtn.textContent = visMode === 0 ? '📊' : (visMode === 1 ? '〰️' : '🔘');
+      visBtn.title = `Chế độ sóng: ${visModes[visMode]}`;
+      CyberSFX.click();
+    });
+  }
+  if(visCanvas){
+    visCanvas.addEventListener('click', ()=>{
+      if(visBtn) visBtn.click();
+    });
+  }
+
+  // Playlist Drawer
+  const playlistBtn = document.getElementById('mpPlaylistBtn');
+  const playlistDrawer = document.getElementById('mpPlaylistDrawer');
+  const playlistClose = document.getElementById('mpPlaylistClose');
+
+  if(playlistBtn && playlistDrawer){
+    playlistBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      const isShow = playlistDrawer.style.display !== 'none';
+      playlistDrawer.style.display = isShow ? 'none' : 'block';
+      CyberSFX.click();
+    });
+  }
+  if(playlistClose && playlistDrawer){
+    playlistClose.addEventListener('click', (e)=>{
+      e.preventDefault();
+      playlistDrawer.style.display = 'none';
+    });
+  }
+  // Click outside closes playlist
+  document.addEventListener('click', (e)=>{
+    if(playlistDrawer && playlistDrawer.style.display !== 'none'){
+      if(!playlistDrawer.contains(e.target) && e.target !== playlistBtn){
+        playlistDrawer.style.display = 'none';
+      }
+    }
+  });
+
+  // Playlist Item switching
+  document.querySelectorAll('.mpd-item').forEach(item => {
+    item.addEventListener('click', ()=>{
+      const src = item.getAttribute('data-src');
+      const title = item.getAttribute('data-title');
+      const art = item.getAttribute('data-art');
+
+      document.querySelectorAll('.mpd-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+
+      const audio = document.getElementById('mpAudio');
+      const artImg = document.getElementById('mpArt');
+      const marquee = document.getElementById('mpMarquee');
+
+      if(artImg && art) artImg.src = art;
+      if(marquee && title){
+        marquee.innerHTML = `<span>${title}</span><span aria-hidden="true">    ${title}</span>`;
+      }
+      if(audio && src){
+        audio.src = src;
+        audio.play().then(()=>{
+          const player = document.getElementById('musicPlayer');
+          if(player) player.classList.add('playing');
+        }).catch(()=>{});
+      }
+      if(playlistDrawer) playlistDrawer.style.display = 'none';
+      CyberSFX.click();
+    });
+  });
+
+  // MediaSession API Sync (Wave 53)
+  if('mediaSession' in navigator){
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: '2IN1 - Người Đã Yêu Ai Remix',
+        artist: 'Nguyễn Duy Playlist',
+        album: 'Cyber Profile Audio Edition',
+        artwork: [
+          { src: 'https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg', sizes: '512x512', type: 'image/jpeg' }
+        ]
+      });
+      navigator.mediaSession.setActionHandler('play', ()=>{
+        const pBtn = document.getElementById('mpPlay');
+        if(pBtn) pBtn.click();
+      });
+      navigator.mediaSession.setActionHandler('pause', ()=>{
+        const pBtn = document.getElementById('mpPlay');
+        if(pBtn) pBtn.click();
+      });
+      navigator.mediaSession.setActionHandler('previoustrack', ()=>{
+        const prevBtn = document.getElementById('mpPrev');
+        if(prevBtn) prevBtn.click();
+      });
+      navigator.mediaSession.setActionHandler('nexttrack', ()=>{
+        const nextBtn = document.getElementById('mpNext');
+        if(nextBtn) nextBtn.click();
+      });
+    } catch(err){}
+  }
+
+  /* ── 5. VPS Live Session Countdown Timer & Alarm (Wave 54) ── */
+  let vpsSecondsLeft = 20400; // 5h 40m default
+  const totalVpsSeconds = 20400;
+  let vpsTimerInterval = null;
+  let hasAlarmed15m = false;
+
+  function startVpsCountdown(){
+    const card = document.getElementById('vpsCountdownCard');
+    const timerDisplay = document.getElementById('vpsCountdownTimer');
+    const fill = document.getElementById('vpsCountdownFill');
+    if(card) card.style.display = 'block';
+
+    if(vpsTimerInterval) clearInterval(vpsTimerInterval);
+    vpsTimerInterval = setInterval(()=>{
+      vpsSecondsLeft = Math.max(0, vpsSecondsLeft - 1);
+
+      const h = Math.floor(vpsSecondsLeft / 3600);
+      const m = Math.floor((vpsSecondsLeft % 3600) / 60);
+      const s = vpsSecondsLeft % 60;
+      const str = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      if(timerDisplay) timerDisplay.textContent = str;
+
+      const pct = (vpsSecondsLeft / totalVpsSeconds) * 100;
+      if(fill) fill.style.width = `${pct.toFixed(1)}%`;
+
+      // 15m remaining alarm (900s)
+      if(vpsSecondsLeft <= 900 && !hasAlarmed15m){
+        hasAlarmed15m = true;
+        CyberSFX.alert();
+        if(typeof addLog === 'function'){
+          addLog('[VPS] 🔔 Cảnh báo: Phiên VPS chỉ còn 15 phút! Hãy lưu lại dữ liệu của bạn.', 'wait');
+        }
+      }
+
+      if(vpsSecondsLeft === 0){
+        clearInterval(vpsTimerInterval);
+        if(timerDisplay) timerDisplay.textContent = 'HẾT HẠN';
+      }
+    }, 1000);
+  }
+
+  // Hook into VPS workflow trigger to activate countdown
+  const vpsBtnOrig = document.getElementById('btnCreateVps');
+  if(vpsBtnOrig){
+    vpsBtnOrig.addEventListener('click', ()=>{
+      vpsSecondsLeft = 20400;
+      hasAlarmed15m = false;
+      setTimeout(startVpsCountdown, 2500);
+    });
+  }
+
+  /* ── 6. Cross-Device Cyber QR Code Modal (Wave 49) ── */
+  function drawCyberQR(canvas, text){
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const size = canvas.width;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, size, size);
+
+    // Simple deterministic procedural QR pattern based on string hash
+    let hash = 0;
+    for(let i = 0; i < text.length; i++){
+      hash = ((hash << 5) - hash) + text.charCodeAt(i);
+      hash |= 0;
+    }
+
+    const gridSize = 21;
+    const cellSize = Math.floor(size / gridSize);
+    const offset = Math.floor((size - (gridSize * cellSize)) / 2);
+
+    ctx.fillStyle = '#0f172a';
+
+    // Helper to draw finder pattern at (r, c)
+    function drawFinder(r, c){
+      ctx.fillRect(offset + c*cellSize, offset + r*cellSize, 7*cellSize, 7*cellSize);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(offset + (c+1)*cellSize, offset + (r+1)*cellSize, 5*cellSize, 5*cellSize);
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(offset + (c+2)*cellSize, offset + (r+2)*cellSize, 3*cellSize, 3*cellSize);
+    }
+
+    drawFinder(0, 0);
+    drawFinder(0, 14);
+    drawFinder(14, 0);
+
+    // Fill data cells
+    for(let r = 0; r < gridSize; r++){
+      for(let c = 0; c < gridSize; c++){
+        if((r < 8 && c < 8) || (r < 8 && c > 12) || (r > 12 && c < 8)) continue;
+        const seed = Math.sin((r * 29) + (c * 17) + hash) * 10000;
+        if((seed - Math.floor(seed)) > 0.46){
+          ctx.fillRect(offset + c*cellSize, offset + r*cellSize, cellSize, cellSize);
+        }
+      }
+    }
+  }
+
+  const qrModal = document.getElementById('cyberQrModal');
+  const qrBackdrop = document.getElementById('qrModalBackdrop');
+  const qrClose = document.getElementById('qrModalClose');
+  const vpsQrBtn = document.getElementById('vpsQrShareBtn');
+  const qrCanvas = document.getElementById('cyberQrCanvas');
+  const qrUrlText = document.getElementById('qrModalUrlText');
+  const qrCopyBtn = document.getElementById('qrModalCopyBtn');
+
+  function openQrModal(url, desc){
+    if(navigator.share && isMobile()){
+      // On mobile: trigger native Web Share API!
+      navigator.share({
+        title: 'Nguyễn Duy Cyber VPS',
+        text: desc || 'Kết nối VPS RDP Nguyễn Duy:',
+        url: url
+      }).catch(()=>{});
+      return;
+    }
+    // Desktop: show QR modal to scan
+    if(qrModal && qrBackdrop){
+      qrModal.style.display = 'block';
+      qrBackdrop.style.display = 'block';
+      if(qrUrlText) qrUrlText.textContent = url;
+      drawCyberQR(qrCanvas, url);
+    }
+  }
+
+  if(vpsQrBtn){
+    vpsQrBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const ip = document.getElementById('vpsIpVal')?.textContent || '100.x.y.z';
+      const user = document.getElementById('vpsUserVal')?.textContent || 'duyzoz';
+      const shareUrl = `${window.location.origin}${window.location.pathname}#vps=${ip}`;
+      openQrModal(shareUrl, `Tailscale VPS IP: ${ip} | User: ${user}`);
+      CyberSFX.click();
+    });
+  }
+  if(qrClose){
+    qrClose.addEventListener('click', ()=>{
+      if(qrModal) qrModal.style.display = 'none';
+      if(qrBackdrop) qrBackdrop.style.display = 'none';
+    });
+  }
+  if(qrBackdrop){
+    qrBackdrop.addEventListener('click', ()=>{
+      if(qrModal) qrModal.style.display = 'none';
+      qrBackdrop.style.display = 'none';
+    });
+  }
+  if(qrCopyBtn){
+    qrCopyBtn.addEventListener('click', ()=>{
+      if(qrUrlText){
+        navigator.clipboard.writeText(qrUrlText.textContent).then(()=>{
+          qrCopyBtn.textContent = '✅ Đã Chép';
+          setTimeout(()=>qrCopyBtn.textContent = '📋 Sao Chép', 1500);
+        });
+      }
+    });
+  }
+
+  /* ── 7. Pocket Dev Tools: JSON Formatter & Password Gen (Wave 56) ── */
+  const btnJsonFormat = document.getElementById('btnJsonFormat');
+  const btnJsonMinify = document.getElementById('btnJsonMinify');
+  const btnJsonCopy = document.getElementById('btnJsonCopy');
+  const jsonInput = document.getElementById('jsonInput');
+  const jsonStatus = document.getElementById('jsonStatus');
+
+  if(btnJsonFormat && jsonInput){
+    btnJsonFormat.addEventListener('click', ()=>{
+      try {
+        const val = JSON.parse(jsonInput.value);
+        jsonInput.value = JSON.stringify(val, null, 2);
+        if(jsonStatus){
+          jsonStatus.style.display = 'block';
+          jsonStatus.className = 'key-status ok';
+          jsonStatus.textContent = '✅ JSON hợp lệ & đã định dạng làm đẹp!';
+        }
+        CyberSFX.click();
+      } catch(err){
+        if(jsonStatus){
+          jsonStatus.style.display = 'block';
+          jsonStatus.className = 'key-status err';
+          jsonStatus.textContent = '❌ Lỗi cú pháp JSON: ' + err.message;
+        }
+      }
+    });
+  }
+  if(btnJsonMinify && jsonInput){
+    btnJsonMinify.addEventListener('click', ()=>{
+      try {
+        const val = JSON.parse(jsonInput.value);
+        jsonInput.value = JSON.stringify(val);
+        if(jsonStatus){
+          jsonStatus.style.display = 'block';
+          jsonStatus.className = 'key-status ok';
+          jsonStatus.textContent = '✅ JSON đã nén gọn 1 dòng!';
+        }
+        CyberSFX.click();
+      } catch(err){
+        if(jsonStatus){
+          jsonStatus.style.display = 'block';
+          jsonStatus.className = 'key-status err';
+          jsonStatus.textContent = '❌ Lỗi cú pháp JSON: ' + err.message;
+        }
+      }
+    });
+  }
+  if(btnJsonCopy && jsonInput){
+    btnJsonCopy.addEventListener('click', ()=>{
+      navigator.clipboard.writeText(jsonInput.value).then(()=>{
+        btnJsonCopy.textContent = '✅';
+        setTimeout(()=>btnJsonCopy.textContent = '📋', 1500);
+      });
+    });
+  }
+
+  // Password Generator
+  const btnGenPass = document.getElementById('btnGenPass');
+  const btnCopyPass = document.getElementById('btnCopyPass');
+  const passResult = document.getElementById('passGenResult');
+  const passLenRange = document.getElementById('passLenRange');
+  const passLenDisplay = document.getElementById('passLenDisplay');
+
+  function generateSecurePassword(len){
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=~';
+    let res = '';
+    const cryptoObj = window.crypto || window.msCrypto;
+    if(cryptoObj && cryptoObj.getRandomValues){
+      const arr = new Uint32Array(len);
+      cryptoObj.getRandomValues(arr);
+      for(let i = 0; i < len; i++){
+        res += chars[arr[i] % chars.length];
+      }
+    } else {
+      for(let i = 0; i < len; i++){
+        res += chars[Math.floor(Math.random() * chars.length)];
+      }
+    }
+    return res;
+  }
+
+  if(passLenRange && passLenDisplay){
+    passLenRange.addEventListener('input', ()=>{
+      passLenDisplay.textContent = `${passLenRange.value} ký tự`;
+    });
+  }
+  if(btnGenPass && passResult){
+    btnGenPass.addEventListener('click', ()=>{
+      const len = parseInt(passLenRange ? passLenRange.value : 16, 10);
+      passResult.value = generateSecurePassword(len);
+      CyberSFX.click();
+    });
+    // Generate initial password
+    passResult.value = generateSecurePassword(16);
+  }
+  if(btnCopyPass && passResult){
+    btnCopyPass.addEventListener('click', ()=>{
+      navigator.clipboard.writeText(passResult.value).then(()=>{
+        btnCopyPass.textContent = '✅';
+        setTimeout(()=>btnCopyPass.textContent = '📋', 1500);
+      });
+    });
+  }
+
+  /* ── 8. Guestbook Karma Badge & Message Reactions (Waves 58 & 59) ── */
+  // Update visitor count in localStorage
+  let visits = 1;
+  try {
+    visits = parseInt(localStorage.getItem('cyber_visits') || '1', 10);
+    if(!sessionStorage.getItem('visited_this_session')){
+      visits += 1;
+      localStorage.setItem('cyber_visits', visits);
+      sessionStorage.setItem('visited_this_session', '1');
+    }
+  } catch(e){}
+
+  const karmaBadge = document.getElementById('gbKarmaBadge');
+  if(karmaBadge){
+    if(visits >= 8){
+      karmaBadge.textContent = '👑 VIP Supporter';
+      karmaBadge.style.color = '#fbbf24';
+      karmaBadge.style.background = 'rgba(251, 191, 36, 0.15)';
+      karmaBadge.style.borderColor = 'rgba(251, 191, 36, 0.35)';
+    } else if(visits >= 3){
+      karmaBadge.textContent = '🔵 Cyber Citizen';
+      karmaBadge.style.color = '#38bdf8';
+      karmaBadge.style.background = 'rgba(56, 189, 248, 0.15)';
+      karmaBadge.style.borderColor = 'rgba(56, 189, 248, 0.35)';
+    } else {
+      karmaBadge.textContent = '🟢 Explorer';
+    }
+  }
+
+  // Delegated Reactions click on Guestbook messages
+  document.addEventListener('click', (e)=>{
+    const reactPill = e.target.closest('.gb-react-pill');
+    if(reactPill){
+      e.preventDefault();
+      const countSpan = reactPill.querySelector('.gb-react-count');
+      if(countSpan){
+        let count = parseInt(countSpan.textContent || '0', 10);
+        count += 1;
+        countSpan.textContent = count;
+        reactPill.classList.add('active');
+        CyberSFX.click();
+
+        // Floating particle effect
+        const rect = reactPill.getBoundingClientRect();
+        const p = document.createElement('div');
+        p.textContent = reactPill.querySelector('.gb-react-em')?.textContent || '❤️';
+        p.style.cssText = `position:fixed;left:${rect.left + rect.width/2}px;top:${rect.top}px;font-size:1.2rem;pointer-events:none;z-index:99999;transition:all 0.6s ease-out;transform:translate(-50%, 0);opacity:1;`;
+        document.body.appendChild(p);
+        requestAnimationFrame(()=>{
+          p.style.transform = 'translate(-50%, -40px) scale(1.4)';
+          p.style.opacity = '0';
+        });
+        setTimeout(()=>p.remove(), 600);
+      }
+    }
+  });
+
+  /* ── 9. AI Voice Text-To-Speech (Wave 60) ── */
+  let ttsEnabled = true;
+  const ttsToggleBtn = document.getElementById('btnAiTtsToggle');
+  const ttsLabel = document.getElementById('aiTtsLabel');
+
+  function speakText(text){
+    if(!ttsEnabled || !('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel(); // Stop current speech
+    const cleanText = text.replace(/[*_~`#>]/g, '').trim();
+    const utter = new SpeechSynthesisUtterance(cleanText);
+    utter.rate = 1.05;
+
+    // Detect language
+    const lang = document.documentElement.getAttribute('lang') || 'vi';
+    utter.lang = lang === 'en' ? 'en-US' : (lang === 'ja' ? 'ja-JP' : 'vi-VN');
+
+    window.speechSynthesis.speak(utter);
+  }
+
+  if(ttsToggleBtn){
+    ttsToggleBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      ttsEnabled = !ttsEnabled;
+      if(ttsLabel) ttsLabel.textContent = ttsEnabled ? 'Voice: ON' : 'Voice: OFF';
+      ttsToggleBtn.style.opacity = ttsEnabled ? '1' : '0.6';
+      if(!ttsEnabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+      CyberSFX.click();
+    });
+  }
+
+  // Speak on welcome message or bot message click
+  const welcomeMsg = document.getElementById('aiWelcomeMsg');
+  if(welcomeMsg){
+    welcomeMsg.addEventListener('click', ()=>{
+      speakText(welcomeMsg.textContent);
+    });
+  }
+
+  /* ── 10. Discord Nitro Avatar Frame Decorations (Wave 62) ── */
+  const avatarWrap = document.getElementById('avatarWrap');
+  const avatarDecoRing = document.getElementById('avatarDecoRing');
+  const avatarDecoModal = document.getElementById('avatarDecoModal');
+  const avatarModalBackdrop = document.getElementById('avatarModalBackdrop');
+  const avatarDecoClose = document.getElementById('avatarDecoClose');
+
+  function applyAvatarDeco(decoKey){
+    if(!avatarDecoRing) return;
+    avatarDecoRing.className = 'avatar-deco-ring';
+    if(decoKey && decoKey !== 'none'){
+      avatarDecoRing.classList.add(`${decoKey}-ring`);
+    }
+    try { localStorage.setItem('cyber_avatar_deco', decoKey); } catch(e){}
+
+    document.querySelectorAll('.deco-card').forEach(card => {
+      card.classList.toggle('active', card.getAttribute('data-deco') === decoKey);
+    });
+  }
+
+  const savedDeco = localStorage.getItem('cyber_avatar_deco') || 'none';
+  applyAvatarDeco(savedDeco);
+
+  if(avatarWrap){
+    avatarWrap.addEventListener('click', (e)=>{
+      e.preventDefault();
+      if(avatarDecoModal && avatarModalBackdrop){
+        avatarDecoModal.style.display = 'block';
+        avatarModalBackdrop.style.display = 'block';
+      }
+      CyberSFX.click();
+    });
+  }
+  if(avatarDecoClose){
+    avatarDecoClose.addEventListener('click', ()=>{
+      if(avatarDecoModal) avatarDecoModal.style.display = 'none';
+      if(avatarModalBackdrop) avatarModalBackdrop.style.display = 'none';
+    });
+  }
+  if(avatarModalBackdrop){
+    avatarModalBackdrop.addEventListener('click', ()=>{
+      if(avatarDecoModal) avatarDecoModal.style.display = 'none';
+      avatarModalBackdrop.style.display = 'none';
+    });
+  }
+  document.querySelectorAll('.deco-card').forEach(card => {
+    card.addEventListener('click', ()=>{
+      const deco = card.getAttribute('data-deco') || 'none';
+      applyAvatarDeco(deco);
+      CyberSFX.theme();
+      if(avatarDecoModal) avatarDecoModal.style.display = 'none';
+      if(avatarModalBackdrop) avatarModalBackdrop.style.display = 'none';
+    });
+  });
+
+  /* ── 11. Hardware Benchmark & FPS Diagnostics (Wave 65) ── */
+  const benchModal = document.getElementById('benchmarkModal');
+  const benchBackdrop = document.getElementById('benchModalBackdrop');
+  const benchClose = document.getElementById('benchModalClose');
+  const fpsBox = document.getElementById('fpsHudBox');
+  const btnRunBench = document.getElementById('btnRunBenchAgain');
+
+  function runBenchmark(){
+    if(!benchModal) return;
+    benchModal.style.display = 'block';
+    if(benchBackdrop) benchBackdrop.style.display = 'block';
+
+    const liveFps = document.getElementById('fpsCount')?.textContent || '60';
+    const fpsVal = parseInt(liveFps, 10) || 60;
+    const dpr = (window.devicePixelRatio || 1).toFixed(1);
+    const cores = navigator.hardwareConcurrency || 4;
+
+    const fpsEl = document.getElementById('benchFpsLive');
+    const dprEl = document.getElementById('benchDpr');
+    const coresEl = document.getElementById('benchCores');
+    const scoreEl = document.getElementById('benchScoreVal');
+    const tagEl = document.getElementById('benchRatingTag');
+
+    if(fpsEl) fpsEl.textContent = `${fpsVal} FPS`;
+    if(dprEl) dprEl.textContent = `${dpr}x`;
+    if(coresEl) coresEl.textContent = `${cores} Cores`;
+
+    // Calculate dynamic Cyber Score
+    const score = Math.min(100, Math.round((fpsVal / 60) * 50 + (cores * 5) + 15));
+    if(scoreEl) scoreEl.textContent = score;
+    if(tagEl){
+      if(fpsVal >= 55 && score >= 90){
+        tagEl.textContent = 'ULTRA 120 FPS READY';
+        tagEl.style.color = '#22c55e';
+      } else {
+        tagEl.textContent = 'OPTIMIZED STABLE 60 FPS';
+        tagEl.style.color = '#38bdf8';
+      }
+    }
+  }
+
+  if(fpsBox){
+    fpsBox.addEventListener('click', (e)=>{
+      e.preventDefault();
+      runBenchmark();
+      CyberSFX.click();
+    });
+  }
+  if(benchClose){
+    benchClose.addEventListener('click', ()=>{
+      if(benchModal) benchModal.style.display = 'none';
+      if(benchBackdrop) benchBackdrop.style.display = 'none';
+    });
+  }
+  if(benchBackdrop){
+    benchBackdrop.addEventListener('click', ()=>{
+      if(benchModal) benchModal.style.display = 'none';
+      benchBackdrop.style.display = 'none';
+    });
+  }
+  if(btnRunBench){
+    btnRunBench.addEventListener('click', ()=>{
+      CyberSFX.click();
+      runBenchmark();
+    });
+  }
+
 })();

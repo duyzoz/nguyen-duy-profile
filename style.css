@@ -7205,3 +7205,671 @@ html[data-theme="snow"] .tool-card-mob-close {
     border-color: #00f0ff !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   WAVES 46 – 65: FULL SUITE ADVANCED DESKTOP & MOBILE SYNCHRONIZATION
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── HUD Buttons: Random Theme & SFX Toggle ── */
+.theme-random-btn,
+.sfx-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10, 9, 24, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.35));
+  border-radius: 12px;
+  padding: 6px 11px;
+  color: var(--theme-accent, #00f0ff);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 12px var(--theme-glow, rgba(0, 240, 255, 0.15));
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+.theme-random-btn:hover,
+.sfx-toggle-btn:hover {
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.15));
+  border-color: var(--theme-accent, #00f0ff);
+  transform: scale(1.06);
+}
+.sfx-toggle-btn.muted {
+  opacity: 0.6;
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #94a3b8;
+}
+
+/* Snow theme overrides for new HUD buttons */
+html[data-theme="snow"] .theme-random-btn,
+html[data-theme="snow"] .sfx-toggle-btn {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(148, 163, 184, 0.55) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+}
+
+/* ── Music Player: Mini Controls & Playlist Drawer ── */
+.mp-mini-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: var(--txt);
+  font-size: 0.72rem;
+  padding: 2px 6px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.mp-mini-btn:hover {
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.2));
+  border-color: var(--theme-accent, #00f0ff);
+  color: var(--theme-accent, #00f0ff);
+  transform: scale(1.08);
+}
+.mp-playlist-drawer {
+  position: absolute;
+  bottom: 48px;
+  right: 12px;
+  width: 270px;
+  background: rgba(10, 15, 30, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.35));
+  border-radius: 14px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 20px var(--theme-glow);
+  padding: 10px;
+  z-index: 100;
+  animation: nitroModalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mpd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--theme-accent, #00f0ff);
+  letter-spacing: 0.04em;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 6px;
+}
+.mpd-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+.mpd-close:hover { color: #fff; }
+.mpd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.mpd-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.mpd-item:hover {
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.12));
+  border-color: var(--theme-accent, #00f0ff);
+  transform: translateX(3px);
+}
+.mpd-item.active {
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.2));
+  border-color: var(--theme-accent, #00f0ff);
+}
+.mpd-num {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--theme-accent, #00f0ff);
+  font-weight: 800;
+}
+.mpd-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+.mpd-name {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--txt);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mpd-artist {
+  font-size: 0.52rem;
+  color: #94a3b8;
+}
+.mpd-playing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--theme-accent, #00f0ff);
+  box-shadow: 0 0 8px var(--theme-accent, #00f0ff);
+  display: none;
+}
+.mpd-item.active .mpd-playing-dot { display: block; animation: pulse 1s infinite; }
+
+/* ── VPS Live Session Countdown Card (Wave 54) ── */
+.vps-countdown-card {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(0, 240, 255, 0.06);
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.3));
+  border-radius: 10px;
+  animation: fslide 0.3s ease;
+}
+.vcc-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.66rem;
+  margin-bottom: 5px;
+}
+.vcc-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: pulse 1.2s infinite;
+}
+.vcc-title { color: #94a3b8; }
+.vcc-timer {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--theme-accent, #00f0ff);
+  letter-spacing: 0.05em;
+  margin-left: auto;
+}
+.vcc-alarm-tag {
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.vcc-progress-bar {
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.vcc-progress-fill {
+  height: 100%;
+  background: var(--theme-accent-gradient, linear-gradient(90deg, #00f0ff, #7c3aed));
+  transition: width 1s linear;
+}
+
+/* ── Pocket Dev Tools: JSON Formatter & Password Gen (Wave 56) ── */
+.json-input {
+  resize: vertical;
+  min-height: 54px;
+  font-family: var(--mono) !important;
+  font-size: 0.62rem !important;
+  line-height: 1.4;
+}
+.passgen-row .bp-input {
+  letter-spacing: 0.08em;
+}
+.passgen-len-row input[type="range"] {
+  accent-color: var(--theme-accent, #00f0ff);
+  cursor: pointer;
+}
+
+/* ── Guestbook Karma Badge & Message Reactions (Waves 58 & 59) ── */
+.gb-karma-badge {
+  font-size: 0.52rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  letter-spacing: 0.03em;
+}
+.gb-msg-reactions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.gb-react-pill {
+  font-size: 0.56rem;
+  padding: 1px 6px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--txt);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.15s ease;
+}
+.gb-react-pill:hover,
+.gb-react-pill.active {
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.18));
+  border-color: var(--theme-accent, #00f0ff);
+  color: var(--theme-accent, #00f0ff);
+  transform: scale(1.08);
+}
+.gb-reaction-trigger {
+  opacity: 0;
+  font-size: 0.62rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: opacity 0.15s ease;
+}
+.gb-msg:hover .gb-reaction-trigger {
+  opacity: 0.8;
+}
+.gb-reaction-popover {
+  position: absolute;
+  top: -26px;
+  right: 10px;
+  display: flex;
+  gap: 3px;
+  background: rgba(10, 15, 30, 0.98);
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.35));
+  border-radius: 99px;
+  padding: 2px 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  z-index: 20;
+  animation: popoverFadeIn 0.15s ease-out;
+}
+.gb-react-emoji {
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: transform 0.12s ease;
+}
+.gb-react-emoji:hover { transform: scale(1.3); }
+
+/* ── AI Assistant Text-To-Speech (Wave 60) ── */
+.ai-tts-btn {
+  background: rgba(0, 212, 255, 0.08);
+  border: 1px solid rgba(0, 212, 255, 0.28);
+  border-radius: 6px;
+  color: var(--theme-accent, #38bdf8);
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ai-tts-btn:hover {
+  background: rgba(0, 212, 255, 0.22);
+  color: #fff;
+  transform: scale(1.05);
+}
+.ai-speak-bubble-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: var(--txt);
+  font-size: 0.55rem;
+  cursor: pointer;
+  margin-left: 6px;
+  vertical-align: middle;
+  transition: all 0.15s;
+}
+.ai-speak-bubble-btn:hover {
+  background: var(--theme-accent, #00f0ff);
+  color: #000;
+  transform: scale(1.15);
+}
+
+/* ── Discord Nitro Avatar Frame Decorations (Wave 62) ── */
+.avatar-wrap {
+  position: relative;
+  cursor: pointer;
+}
+.avatar-deco-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  transition: all 0.3s ease;
+}
+.avatar-deco-ring.sakura-ring {
+  border: 2px dashed #f472b6;
+  box-shadow: 0 0 14px rgba(244, 114, 182, 0.6), inset 0 0 8px rgba(244, 114, 182, 0.3);
+  animation: ringSpin 8s linear infinite;
+}
+.avatar-deco-ring.lightning-ring {
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 16px #38bdf8, 0 0 30px #0284c7;
+  animation: lightningPulse 1.5s ease-in-out infinite alternate;
+}
+.avatar-deco-ring.ice-ring {
+  border: 2.5px solid #a5f3fc;
+  box-shadow: 0 0 14px #a5f3fc, inset 0 0 10px #38bdf8;
+  animation: ringSpinReverse 12s linear infinite;
+}
+.avatar-deco-ring.flame-ring {
+  border: 2.5px solid #f97316;
+  box-shadow: 0 0 18px #f97316, 0 0 32px #ef4444;
+  animation: flamePulse 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes ringSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes ringSpinReverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+@keyframes lightningPulse {
+  0% { opacity: 0.7; transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1.03); }
+}
+@keyframes flamePulse {
+  0% { filter: hue-rotate(0deg); transform: scale(0.99); }
+  100% { filter: hue-rotate(25deg); transform: scale(1.04); }
+}
+
+.avatar-deco-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, 94vw);
+  background: linear-gradient(150deg, rgba(16, 14, 34, 0.98) 0%, rgba(8, 7, 20, 0.99) 100%);
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.4));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.95), 0 0 40px var(--theme-glow);
+  border-radius: 20px;
+  padding: 22px;
+  z-index: 100002;
+  box-sizing: border-box;
+  animation: nitroModalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.avatar-deco-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.deco-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.deco-card:hover {
+  border-color: var(--theme-accent, #00f0ff);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+.deco-card.active {
+  border-color: var(--theme-accent, #00f0ff);
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.12));
+  box-shadow: 0 0 16px var(--theme-glow);
+}
+.deco-preview {
+  width: 52px;
+  height: 52px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.deco-prev-avt {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.deco-preview .deco-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+}
+.deco-name {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--txt);
+  text-align: center;
+}
+
+/* ── Cross-Device Cyber QR Code Modal (Wave 49) ── */
+.cyber-qr-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(340px, 92vw);
+  background: linear-gradient(150deg, rgba(14, 18, 36, 0.98) 0%, rgba(8, 10, 24, 0.99) 100%);
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.45));
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95), 0 0 35px var(--theme-glow);
+  padding: 20px;
+  z-index: 100002;
+  box-sizing: border-box;
+  text-align: center;
+  animation: nitroModalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cqm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.cqm-title {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: var(--theme-accent, #00f0ff);
+  letter-spacing: 0.04em;
+}
+.cqm-close {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #cbd5e1;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cqm-close:hover { background: rgba(239, 68, 68, 0.3); color: #fff; }
+.cqm-qr-wrap {
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+.cqm-qr-wrap canvas { display: block; }
+.cqm-desc {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.cqm-link-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+.cqm-url {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: #38bdf8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  text-align: left;
+}
+.cqm-copy-btn {
+  background: var(--theme-badge-bg, rgba(0, 240, 255, 0.15));
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.3));
+  border-radius: 6px;
+  color: var(--theme-accent, #00f0ff);
+  font-size: 0.6rem;
+  padding: 3px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cqm-copy-btn:hover { background: var(--theme-accent, #00f0ff); color: #000; }
+
+/* ── Hardware Benchmark Modal (Wave 65) ── */
+.cyber-bench-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(480px, 94vw);
+  background: linear-gradient(150deg, rgba(16, 14, 34, 0.98) 0%, rgba(8, 7, 20, 0.99) 100%);
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.4));
+  border-radius: 20px;
+  padding: 22px;
+  z-index: 100002;
+  box-sizing: border-box;
+  animation: nitroModalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bench-score-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.08) 0%, rgba(124, 58, 237, 0.08) 100%);
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.25));
+  margin-bottom: 14px;
+}
+.bench-score-num {
+  font-family: var(--mono);
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--theme-accent, #00f0ff);
+  text-shadow: 0 0 20px var(--theme-glow);
+  line-height: 1;
+}
+.bench-score-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+.bench-rating-tag {
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: rgba(34, 197, 94, 0.18);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+}
+.bench-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.bench-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+.bi-label {
+  font-size: 0.56rem;
+  color: #94a3b8;
+}
+.bi-val {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--txt);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SMARTPHONE MOBILE OPTIMIZATION: ZERO OVERLAPPING & BOTTOM SHEETS
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Modals slide up gracefully as bottom sheets */
+  .avatar-deco-modal,
+  .cyber-bench-modal,
+  .cyber-qr-modal {
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    border-bottom: none !important;
+    max-height: 82vh !important;
+    overflow-y: auto !important;
+    padding-bottom: 24px !important;
+    animation: slideUpSheet 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  @keyframes slideUpSheet {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .mp-playlist-drawer {
+    right: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    border-radius: 14px 14px 0 0 !important;
+    bottom: 0 !important;
+    z-index: 10000 !important;
+  }
+
+  /* Bench grid single column on small phones */
+  .bench-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
