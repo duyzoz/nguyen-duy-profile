@@ -385,13 +385,7 @@ a{text-decoration:none;}
   border-radius:12px;
 }
 .mp-art-glow{
-  position:absolute;
-  inset:-2px;
-  border-radius:13px;
-  background:linear-gradient(135deg,rgba(124,111,255,.35),rgba(0,212,255,.35));
-  opacity:.4;
-  z-index:0;
-  transition:opacity .3s;
+  display: none !important;
 }
 .mp-art{
   width:100%;
@@ -1576,7 +1570,7 @@ body.perf-mode .tool-card{
   .gb-bottom-bar {
     flex-shrink: 0 !important;
     padding-top: 4px !important;
-    background: rgba(10, 15, 30, 0.98) !important;
+    background: var(--theme-inner-bg, rgba(10, 15, 30, 0.98)) !important;
     position: relative !important;
     z-index: 10 !important;
   }
@@ -2826,8 +2820,8 @@ body.perf-mode .mp-eq-bars { display: none !important; }
   flex-direction: column;
   gap: 6px;
   position: relative;
-  background: rgba(10, 15, 30, 0.7);
-  border-top: 1px solid rgba(255,255,255,0.08);
+  background: var(--theme-inner-bg, rgba(10, 15, 30, 0.7));
+  border-top: 1px solid var(--theme-border, rgba(255,255,255,0.08));
   padding-top: 8px;
 }
 .gb-sender-bar {
@@ -5439,7 +5433,11 @@ html[data-theme="snow"] {
   box-shadow: 0 0 14px var(--theme-glow, rgba(0, 240, 255, 0.4)) !important;
 }
 
-/* ════ SNOW WHITE THEME: HIGH CONTRAST DEEP SLATE / BLACK TYPOGRAPHY ════ */
+/* ═══════════════════════════════════════════════════════════
+   SNOW WHITE THEME: LUXURY FROSTED WHITE & HIGH CONTRAST
+   ═══════════════════════════════════════════════════════════ */
+
+/* 1. Base Typography & Surfaces */
 html[data-theme="snow"] body,
 html[data-theme="snow"] .profile-card,
 html[data-theme="snow"] .tool-card,
@@ -5449,100 +5447,562 @@ html[data-theme="snow"] .vps-card,
 html[data-theme="snow"] .proj-card,
 html[data-theme="snow"] .gb-card,
 html[data-theme="snow"] .tc-panel,
-html[data-theme="snow"] .tc-tabs,
-html[data-theme="snow"] .startut-full-log,
 html[data-theme="snow"] .card-hdr,
-html[data-theme="snow"] .p-tagline,
-html[data-theme="snow"] .p-bio-tag,
-html[data-theme="snow"] .mp-marquee span,
-html[data-theme="snow"] .mp-time,
-html[data-theme="snow"] .vps-card-title,
-html[data-theme="snow"] .proj-name,
-html[data-theme="snow"] .gb-title,
-html[data-theme="snow"] .sb-stat-label,
-html[data-theme="snow"] .sb-stat-val,
-html[data-theme="snow"] .donate-txt,
-html[data-theme="snow"] .view-counter span,
-html[data-theme="snow"] .le-txt,
-html[data-theme="snow"] .le-time,
-html[data-theme="snow"] .vps-label,
-html[data-theme="snow"] .gb-author,
-html[data-theme="snow"] .gb-text,
-html[data-theme="snow"] .dev-tool-title,
-html[data-theme="snow"] .dev-tool-desc,
-html[data-theme="snow"] .sl-cat-title,
-html[data-theme="snow"] .sl-items span,
-html[data-theme="snow"] .fps-hud-val,
-html[data-theme="snow"] .fps-hud-tag,
-html[data-theme="snow"] .lang-btn,
-html[data-theme="snow"] .perf-toggle-btn,
-html[data-theme="snow"] .theme-toggle-btn,
-html[data-theme="snow"] .cli-toggle-btn,
-html[data-theme="snow"] .mob-nav-item,
-html[data-theme="snow"] .mob-nav-label,
 html[data-theme="snow"] .t-title,
 html[data-theme="snow"] .t-sub,
-html[data-theme="snow"] .ts-step-body span,
-html[data-theme="snow"] .vps-guide-tip,
-html[data-theme="snow"] .token-empty,
-html[data-theme="snow"] .vps-status-title,
-html[data-theme="snow"] .vps-status-msg,
-html[data-theme="snow"] .proj-desc,
-html[data-theme="snow"] .gb-empty {
+html[data-theme="snow"] .donate-txt,
+html[data-theme="snow"] .view-counter,
+html[data-theme="snow"] .view-counter span {
   color: #0f172a !important;
 }
 
+html[data-theme="snow"] .card-hdr {
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.95)) !important;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.85) !important;
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+html[data-theme="snow"] .p-divider,
+html[data-theme="snow"] .t-divider {
+  background: rgba(203, 213, 225, 0.8) !important;
+}
+
+/* 2. Top-Left HUD (FPS Counter, Region Switcher, Lag Toggle, Themes & CLI) */
+html[data-theme="snow"] .fps-hud-box,
+html[data-theme="snow"] .lang-switch-box,
+html[data-theme="snow"] .lang-switch-wrap,
+html[data-theme="snow"] .perf-toggle-btn,
+html[data-theme="snow"] .theme-toggle-btn,
+html[data-theme="snow"] .cli-toggle-btn {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(148, 163, 184, 0.55) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .fps-hud-val {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .fps-hud-val small {
+  color: #475569 !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="snow"] .fps-hud-tag {
+  background: rgba(15, 23, 42, 0.07) !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(15, 23, 42, 0.16) !important;
+}
+
+html[data-theme="snow"] .lang-region-badge {
+  background: rgba(15, 23, 42, 0.06) !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+}
+
+html[data-theme="snow"] .lang-btn {
+  color: #475569 !important;
+  background: transparent !important;
+}
+
+html[data-theme="snow"] .lang-btn:hover {
+  color: #0f172a !important;
+  background: rgba(15, 23, 42, 0.06) !important;
+}
+
+html[data-theme="snow"] .lang-btn.active {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+html[data-theme="snow"] .perf-toggle-btn svg,
+html[data-theme="snow"] .cli-toggle-btn svg {
+  stroke: #0f172a !important;
+}
+
+html[data-theme="snow"] #perfToggleText,
+html[data-theme="snow"] #themeText,
+html[data-theme="snow"] .cli-toggle-btn span {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+/* 3. Global Chat & Guestbook (Lưu Bút) */
+html[data-theme="snow"] .gb-relay-bar {
+  border-bottom: 1px solid rgba(203, 213, 225, 0.85) !important;
+}
+
+html[data-theme="snow"] .gb-relay-title {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+html[data-theme="snow"] .gb-relay-badge {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .gb-relay-badge span {
+  color: #16a34a !important;
+}
+
+html[data-theme="snow"] .gb-chat-list {
+  scrollbar-color: rgba(15, 23, 42, 0.25) transparent !important;
+}
+
+html[data-theme="snow"] .gb-chat-list::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.25) !important;
+}
+
+html[data-theme="snow"] .gb-msg {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(203, 213, 225, 0.9) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .gb-msg:hover {
+  background: #ffffff !important;
+  border-color: rgba(100, 116, 139, 0.5) !important;
+}
+
+html[data-theme="snow"] .gb-msg.admin-msg {
+  background: rgba(254, 242, 242, 0.95) !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+  border-left: 3.5px solid #ef4444 !important;
+}
+
+html[data-theme="snow"] .gb-msg-name {
+  color: #1e293b !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="snow"] .gb-msg-name.admin-name {
+  color: #dc2626 !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="snow"] .gb-msg-text {
+  color: #0f172a !important;
+  font-weight: 500 !important;
+}
+
+html[data-theme="snow"] .gb-msg-time {
+  color: #64748b !important;
+}
+
+html[data-theme="snow"] .gb-msg-role.role-user {
+  color: #475569 !important;
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+}
+
+html[data-theme="snow"] .gb-msg-reply-ref {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border-left: 2px solid #0f172a !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .gb-msg-reply-btn {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .gb-msg-reply-btn:hover {
+  background: rgba(15, 23, 42, 0.12) !important;
+  color: #000000 !important;
+}
+
+html[data-theme="snow"] .gb-reply-bar {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border-left: 3px solid #0f172a !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .gb-reply-cancel {
+  color: #64748b !important;
+}
+
+html[data-theme="snow"] .gb-reply-cancel:hover {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .gb-bottom-bar {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border-top: 1px solid rgba(203, 213, 225, 0.9) !important;
+}
+
+html[data-theme="snow"] .gb-sender-aura {
+  color: #dc2626 !important;
+  font-weight: 800 !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="snow"] .gb-name-input {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1.5px solid rgba(148, 163, 184, 0.6) !important;
+}
+
+html[data-theme="snow"] .gb-msg-area {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1.5px solid rgba(148, 163, 184, 0.6) !important;
+}
+
+html[data-theme="snow"] .gb-emoji-btn {
+  background: #ffffff !important;
+  border: 1.5px solid rgba(148, 163, 184, 0.5) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .gb-emoji-btn:hover {
+  background: rgba(15, 23, 42, 0.08) !important;
+}
+
+html[data-theme="snow"] .gb-send-btn {
+  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+  color: #ffffff !important;
+  border: 1px solid #0f172a !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2) !important;
+}
+
+html[data-theme="snow"] .gb-emoji-popover {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(148, 163, 184, 0.5) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+html[data-theme="snow"] .gb-em {
+  background: rgba(15, 23, 42, 0.04) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+html[data-theme="snow"] .gb-em:hover {
+  background: rgba(15, 23, 42, 0.12) !important;
+}
+
+/* 4. Cyber AI Chat Assistant */
+html[data-theme="snow"] .ai-chat-wrap {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(148, 163, 184, 0.45) !important;
+}
+
+html[data-theme="snow"] .ai-header-bar {
+  border-bottom: 1px solid rgba(203, 213, 225, 0.8) !important;
+}
+
+html[data-theme="snow"] .ai-bot-avatar {
+  background: rgba(15, 23, 42, 0.08) !important;
+  border-color: rgba(15, 23, 42, 0.2) !important;
+}
+
+html[data-theme="snow"] .ai-bot-name {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+html[data-theme="snow"] .ai-bot-status {
+  color: #475569 !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="snow"] .ai-key-btn {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .ai-key-label {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .ai-key-modal {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(148, 163, 184, 0.6) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18) !important;
+}
+
+html[data-theme="snow"] .ai-key-modal-title {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .ai-key-modal-desc {
+  color: #334155 !important;
+}
+
+html[data-theme="snow"] .ai-key-status {
+  color: #475569 !important;
+}
+
+html[data-theme="snow"] .ai-messages {
+  scrollbar-color: rgba(15, 23, 42, 0.25) transparent !important;
+}
+
+html[data-theme="snow"] .ai-messages::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.25) !important;
+}
+
+html[data-theme="snow"] .ai-msg.bot {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border: 1.5px solid rgba(203, 213, 225, 0.9) !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+html[data-theme="snow"] .ai-msg.bot * {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .ai-msg.user {
+  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+html[data-theme="snow"] .ai-bottom-bar {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border-top: 1px solid rgba(203, 213, 225, 0.8) !important;
+}
+
+html[data-theme="snow"] .ai-chip {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="snow"] .ai-chip:hover {
+  background: rgba(15, 23, 42, 0.12) !important;
+  color: #000000 !important;
+}
+
+html[data-theme="snow"] .ai-input {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1.5px solid rgba(148, 163, 184, 0.6) !important;
+}
+
+html[data-theme="snow"] .ai-input-row .proj-btn {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border: 1px solid #0f172a !important;
+}
+
+/* 5. Profile Card Sub-Blocks */
 html[data-theme="snow"] .p-name {
   background: linear-gradient(135deg, #0f172a 0%, #334155 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
 
-html[data-theme="snow"] .p-bio-tag {
-  background: rgba(15, 23, 42, 0.07) !important;
-  border-color: rgba(15, 23, 42, 0.18) !important;
+html[data-theme="snow"] .typing-wrap {
   color: #0f172a !important;
 }
 
-html[data-theme="snow"] .vps-dur-pill {
+html[data-theme="snow"] .typing-cur {
+  background: #0f172a !important;
+}
+
+html[data-theme="snow"] .tags .tag {
   background: rgba(15, 23, 42, 0.05) !important;
-  border-color: rgba(15, 23, 42, 0.16) !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
   color: #334155 !important;
 }
 
-html[data-theme="snow"] .vps-dur-pill.active {
+html[data-theme="snow"] .tags .tag:hover {
   background: #0f172a !important;
   color: #ffffff !important;
-  border-color: #0f172a !important;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.3) !important;
 }
 
-html[data-theme="snow"] .tc-tab {
-  color: #475569 !important;
-  border-color: rgba(15, 23, 42, 0.12) !important;
-  background: rgba(15, 23, 42, 0.03) !important;
+html[data-theme="snow"] .wuwa-game-card {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(148, 163, 184, 0.45) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
 }
 
-html[data-theme="snow"] .tc-tab.active {
-  background: #0f172a !important;
-  color: #ffffff !important;
-  border-color: #0f172a !important;
-  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.3) !important;
+html[data-theme="snow"] .wuwa-banner {
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.98) 0%, rgba(241, 245, 249, 0.98) 100%) !important;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.6) !important;
 }
 
-html[data-theme="snow"] .tc-tab.active::after {
-  background: #0f172a !important;
-  box-shadow: 0 0 6px rgba(15, 23, 42, 0.4) !important;
-}
-
-html[data-theme="snow"] .tc-tab:hover {
+html[data-theme="snow"] .wuwa-pill-badge {
   background: rgba(15, 23, 42, 0.08) !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+}
+
+html[data-theme="snow"] .wuwa-pill-badge.hl {
+  background: rgba(15, 23, 42, 0.12) !important;
+  color: #0f172a !important;
+  border-color: rgba(15, 23, 42, 0.25) !important;
+}
+
+html[data-theme="snow"] .wuwa-game-title {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+html[data-theme="snow"] .wuwa-union-level {
+  color: #334155 !important;
+}
+
+html[data-theme="snow"] .wuwa-union-level strong {
   color: #0f172a !important;
 }
 
-html[data-theme="snow"] .mp-btn.mp-play {
-  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+html[data-theme="snow"] .wuwa-stats-link {
+  color: #0284c7 !important;
+}
+
+html[data-theme="snow"] .wuwa-char-img {
+  border-color: rgba(148, 163, 184, 0.45) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
+html[data-theme="snow"] .wuwa-playing-box {
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+html[data-theme="snow"] .wuwa-playing-hdr {
+  border-bottom: 1px solid rgba(203, 213, 225, 0.6) !important;
+  color: #475569 !important;
+}
+
+html[data-theme="snow"] .wuwa-playing-label {
+  color: #475569 !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="snow"] .wuwa-playing-dots {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="snow"] .wuwa-name {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="snow"] .wuwa-detail {
+  color: #334155 !important;
+}
+
+html[data-theme="snow"] .wuwa-state {
+  color: #475569 !important;
+}
+
+html[data-theme="snow"] .wuwa-elapsed {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="snow"] .wuwa-selfbot-footer {
+  border-top: 1px solid rgba(203, 213, 225, 0.6) !important;
+  background: rgba(248, 250, 252, 0.95) !important;
+}
+
+html[data-theme="snow"] .wuwa-selfbot-txt {
+  color: #16a34a !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="snow"] .wuwa-uid-label {
+  color: #475569 !important;
+}
+
+html[data-theme="snow"] .wuwa-uid-val {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  background: rgba(15, 23, 42, 0.06) !important;
+}
+
+html[data-theme="snow"] .wuwa-uid-copy {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .bio-box {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+html[data-theme="snow"] .bio-p,
+html[data-theme="snow"] .bio-t {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="snow"] .bio-cursor {
+  background: #0f172a !important;
+}
+
+html[data-theme="snow"] .stack-title {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="snow"] .soc-btn {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .soc-btn:hover {
+  background: #0f172a !important;
   color: #ffffff !important;
+}
+
+html[data-theme="snow"] .donate-row {
+  border-color: rgba(203, 213, 225, 0.8) !important;
+}
+
+html[data-theme="snow"] .donate-txt {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .donate-btn {
+  background: #0f172a !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="snow"] .view-counter {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .view-eye {
+  stroke: #0f172a !important;
+}
+
+/* 6. Music Player Vinyl & Controls */
+html[data-theme="snow"] .mp-vinyl-disc {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22) !important;
+  border: 1px solid rgba(203, 213, 225, 0.6) !important;
+}
+
+html[data-theme="snow"] .music-player.playing .mp-vinyl-disc {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28) !important;
+}
+
+html[data-theme="snow"] .mp-vinyl-label {
+  border-color: #0f172a !important;
+  box-shadow: 0 0 6px rgba(15, 23, 42, 0.25) !important;
+}
+
+html[data-theme="snow"] .mp-track,
+html[data-theme="snow"] .mp-vol-slider {
+  background: rgba(15, 23, 42, 0.12) !important;
+}
+
+html[data-theme="snow"] .mp-fill,
+html[data-theme="snow"] .mp-eq-bar {
+  background: #0f172a !important;
 }
 
 html[data-theme="snow"] .mp-btn {
@@ -5551,62 +6011,127 @@ html[data-theme="snow"] .mp-btn {
 
 html[data-theme="snow"] .mp-btn:hover {
   color: #0f172a !important;
+  background: rgba(15, 23, 42, 0.06) !important;
+}
+
+html[data-theme="snow"] .mp-btn.mp-play {
+  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25) !important;
 }
 
 html[data-theme="snow"] .mp-badge-tag {
-  background: rgba(15, 23, 42, 0.08) !important;
+  background: rgba(15, 23, 42, 0.06) !important;
   color: #0f172a !important;
-  border-color: rgba(15, 23, 42, 0.2) !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
 }
 
 html[data-theme="snow"] .mp-badge-dot {
   background: #0f172a !important;
-  box-shadow: 0 0 6px rgba(15, 23, 42, 0.6) !important;
 }
 
-html[data-theme="snow"] .mp-vinyl-label {
-  border-color: #0f172a !important;
-  box-shadow: 0 0 8px rgba(15, 23, 42, 0.3) !important;
+html[data-theme="snow"] .mp-modal-close {
+  color: #0f172a !important;
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
 }
 
-html[data-theme="snow"] .startut-full-log,
-html[data-theme="snow"] .log-win {
-  background: rgba(241, 245, 249, 0.95) !important;
-  border-color: rgba(148, 163, 184, 0.45) !important;
+html[data-theme="snow"] .mp-hotkey-tip {
+  color: #64748b !important;
+}
+
+html[data-theme="snow"] .mp-vol-icon {
+  stroke: #334155 !important;
+}
+
+html[data-theme="snow"] .mp-time,
+html[data-theme="snow"] .mp-marquee span {
   color: #0f172a !important;
 }
 
-html[data-theme="snow"] .le {
-  color: #1e293b !important;
+/* 7. Tool Card Tabs & Taskbar */
+html[data-theme="snow"] .tc-tabs {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.8) !important;
 }
 
-html[data-theme="snow"] .vps-select,
-html[data-theme="snow"] .vps-input,
-html[data-theme="snow"] .gb-input,
-html[data-theme="snow"] .bp-input,
-html[data-theme="snow"] .sb-input {
-  background: rgba(255, 255, 255, 0.95) !important;
-  color: #0f172a !important;
-  border-color: rgba(148, 163, 184, 0.5) !important;
+html[data-theme="snow"] .tc-tab {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  color: #475569 !important;
 }
 
-html[data-theme="snow"] .vps-select option {
+html[data-theme="snow"] .tc-tab:hover {
   background: #ffffff !important;
+  border-color: #0f172a !important;
   color: #0f172a !important;
 }
 
-html[data-theme="snow"] .vps-btn,
-html[data-theme="snow"] .sb-btn,
-html[data-theme="snow"] .gb-btn,
-html[data-theme="snow"] .bp-btn {
-  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+html[data-theme="snow"] .tc-tab.active {
+  background: #0f172a !important;
+  border: 1px solid #0f172a !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25) !important;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.3) !important;
+}
+
+html[data-theme="snow"] .tc-tab.active::after {
+  background: #0f172a !important;
+  box-shadow: 0 0 6px rgba(15, 23, 42, 0.4) !important;
+}
+
+/* 8. Projects, VPS, Dev Tools & Mini Game */
+html[data-theme="snow"] .proj-card {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(203, 213, 225, 0.85) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+}
+
+html[data-theme="snow"] .proj-badge {
+  background: rgba(15, 23, 42, 0.08) !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(15, 23, 42, 0.16) !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="snow"] .proj-stars {
+  color: #b45309 !important;
+}
+
+html[data-theme="snow"] .proj-name {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="snow"] .proj-desc {
+  color: #334155 !important;
+}
+
+html[data-theme="snow"] .proj-tags span {
+  background: rgba(15, 23, 42, 0.06) !important;
+  color: #334155 !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+}
+
+html[data-theme="snow"] .proj-btn.proj-gh {
+  background: rgba(15, 23, 42, 0.06) !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(15, 23, 42, 0.18) !important;
+}
+
+html[data-theme="snow"] .proj-btn.proj-live {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border: 1px solid #0f172a !important;
+}
+
+html[data-theme="snow"] .ts-steps-card {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
 }
 
 html[data-theme="snow"] .ts-step-item {
-  background: rgba(15, 23, 42, 0.04) !important;
-  border-color: rgba(15, 23, 42, 0.1) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
 }
 
 html[data-theme="snow"] .ts-step-num {
@@ -5614,29 +6139,57 @@ html[data-theme="snow"] .ts-step-num {
   color: #ffffff !important;
 }
 
-html[data-theme="snow"] .ts-link-btn {
-  background: rgba(15, 23, 42, 0.08) !important;
+html[data-theme="snow"] .ts-step-body span {
+  color: #334155 !important;
+}
+
+html[data-theme="snow"] .ts-step-body span strong {
   color: #0f172a !important;
-  border-color: rgba(15, 23, 42, 0.2) !important;
 }
 
-html[data-theme="snow"] .vps-specs-badge {
-  background: rgba(15, 23, 42, 0.04) !important;
-  border-color: rgba(15, 23, 42, 0.12) !important;
+html[data-theme="snow"] .ts-link-btn {
+  background: rgba(15, 23, 42, 0.06) !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(15, 23, 42, 0.18) !important;
 }
 
-html[data-theme="snow"] .vsb-item {
-  color: #1e293b !important;
-  border-color: rgba(15, 23, 42, 0.15) !important;
+html[data-theme="snow"] .vps-label {
+  color: #0f172a !important;
+  font-weight: 600 !important;
 }
 
-html[data-theme="snow"] .vps-ready-header {
-  border-bottom-color: rgba(15, 23, 42, 0.12) !important;
+html[data-theme="snow"] .bp-input,
+html[data-theme="snow"] .vps-input {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1.5px solid rgba(148, 163, 184, 0.6) !important;
+}
+
+html[data-theme="snow"] .bp-btn,
+html[data-theme="snow"] .vps-btn {
+  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="snow"] .vps-dur-pill {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.16) !important;
+  color: #334155 !important;
+}
+
+html[data-theme="snow"] .vps-dur-pill.active {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #0f172a !important;
+}
+
+html[data-theme="snow"] #vpsDurValDisplay {
+  color: #0f172a !important;
 }
 
 html[data-theme="snow"] .vps-cred-card {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border-color: rgba(148, 163, 184, 0.45) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
 }
 
 html[data-theme="snow"] .cred-label {
@@ -5644,62 +6197,258 @@ html[data-theme="snow"] .cred-label {
 }
 
 html[data-theme="snow"] .cred-val {
-  color: #0f172a !important;
   background: rgba(15, 23, 42, 0.06) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .cred-copy-icon-btn,
+html[data-theme="snow"] .cred-eye-btn {
+  color: #0f172a !important;
 }
 
 html[data-theme="snow"] .vps-download-rdp-btn {
   background: rgba(15, 23, 42, 0.07) !important;
-  border-color: rgba(15, 23, 42, 0.2) !important;
+  border: 1px solid rgba(15, 23, 42, 0.2) !important;
   color: #0f172a !important;
+}
+
+html[data-theme="snow"] .vps-download-rdp-btn:hover {
+  background: #0f172a !important;
+  color: #ffffff !important;
 }
 
 html[data-theme="snow"] .vps-action-btn {
   background: rgba(15, 23, 42, 0.06) !important;
-  border-color: rgba(15, 23, 42, 0.18) !important;
+  border: 1px solid rgba(15, 23, 42, 0.18) !important;
   color: #0f172a !important;
+}
+
+html[data-theme="snow"] .vps-action-btn:hover {
+  background: rgba(15, 23, 42, 0.12) !important;
 }
 
 html[data-theme="snow"] .vps-guide-tip {
   background: rgba(15, 23, 42, 0.05) !important;
-  border-color: rgba(15, 23, 42, 0.15) !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
   color: #334155 !important;
 }
 
-html[data-theme="snow"] .soc-btn {
-  background: rgba(15, 23, 42, 0.06) !important;
-  border-color: rgba(15, 23, 42, 0.15) !important;
+html[data-theme="snow"] .vps-status-box {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+}
+
+html[data-theme="snow"] .vps-status-title,
+html[data-theme="snow"] .vps-status-msg {
   color: #0f172a !important;
 }
 
-html[data-theme="snow"] .soc-btn:hover {
-  background: rgba(15, 23, 42, 0.12) !important;
-  color: #000000 !important;
+html[data-theme="snow"] .token-empty {
+  color: #64748b !important;
 }
 
-html[data-theme="snow"] .wuwa-card,
-html[data-theme="snow"] .discord-card {
+html[data-theme="snow"] .startut-full-log,
+html[data-theme="snow"] .log-win {
+  background: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+}
+
+html[data-theme="snow"] .log-win-hdr {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.8) !important;
+}
+
+html[data-theme="snow"] .lw-title {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .lw-clear {
+  color: #64748b !important;
+}
+
+html[data-theme="snow"] .le {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .le.cyan {
+  color: #0284c7 !important;
+}
+
+html[data-theme="snow"] .le.dim {
+  color: #64748b !important;
+}
+
+html[data-theme="snow"] .startut-reset-card {
+  background: rgba(254, 242, 242, 0.6) !important;
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
+}
+
+html[data-theme="snow"] .startut-reset-btn {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="snow"] .ping-item {
   background: rgba(15, 23, 42, 0.04) !important;
-  border-color: rgba(15, 23, 42, 0.12) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
 }
 
-html[data-theme="snow"] .wuwa-card *,
-html[data-theme="snow"] .discord-card * {
+html[data-theme="snow"] .ping-host {
+  color: #334155 !important;
+}
+
+html[data-theme="snow"] .ping-val {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="snow"] .b64-result {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
   color: #0f172a !important;
 }
 
+html[data-theme="snow"] .sl-badge {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .sl-panel {
+  background: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .sl-header {
+  border-bottom: 1px solid rgba(203, 213, 225, 0.8) !important;
+}
+
+html[data-theme="snow"] .sl-title,
+html[data-theme="snow"] .sl-close {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .sl-cat {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+}
+
+html[data-theme="snow"] .sl-cat-title {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .sl-items span {
+  color: #334155 !important;
+}
+
+html[data-theme="snow"] .bypass-result-box {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+}
+
+html[data-theme="snow"] .brb-label {
+  color: #16a34a !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="snow"] .brb-link {
+  color: #0284c7 !important;
+}
+
+html[data-theme="snow"] .brb-copy,
+html[data-theme="snow"] .brb-open {
+  background: rgba(15, 23, 42, 0.06) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .gfn-server-list {
+  background: rgba(15, 23, 42, 0.03) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+}
+
+html[data-theme="snow"] .gfn-ftab {
+  background: rgba(15, 23, 42, 0.05) !important;
+  color: #475569 !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+}
+
+html[data-theme="snow"] .gfn-ftab.active {
+  background: #0f172a !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="snow"] .gfn-refresh-btn {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .echo-game-wrap {
+  background: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+}
+
+html[data-theme="snow"] .echo-game-header {
+  border-bottom: 1px solid rgba(203, 213, 225, 0.8) !important;
+}
+
+html[data-theme="snow"] .echo-game-title {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme="snow"] .echo-game-stats {
+  color: #334155 !important;
+}
+
+html[data-theme="snow"] .echo-ctrl-btn {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+/* 9. Mobile Navigation Dock & Headers */
 html[data-theme="snow"] .mobile-nav-dock {
-  background: rgba(255, 255, 255, 0.97) !important;
-  border-top-color: rgba(100, 116, 139, 0.3) !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-top: 1px solid rgba(203, 213, 225, 0.8) !important;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+html[data-theme="snow"] .mob-nav-item {
+  color: #64748b !important;
 }
 
 html[data-theme="snow"] .mob-nav-item.active {
   color: #0f172a !important;
 }
 
+html[data-theme="snow"] .mob-nav-item.active .mob-nav-label {
+  color: #0f172a !important;
+  text-shadow: none !important;
+}
+
 html[data-theme="snow"] .mob-nav-item.active::before {
   background: #0f172a !important;
-  box-shadow: 0 0 8px rgba(15, 23, 42, 0.5) !important;
+  box-shadow: 0 0 6px rgba(15, 23, 42, 0.4) !important;
+}
+
+html[data-theme="snow"] .tool-card-mob-hdr {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.8) !important;
+}
+
+html[data-theme="snow"] .tool-card-mob-handle {
+  background: #94a3b8 !important;
+}
+
+html[data-theme="snow"] .tool-card-mob-title {
+  color: #0f172a !important;
+}
+
+html[data-theme="snow"] .tool-card-mob-close {
+  color: #0f172a !important;
+  background: rgba(15, 23, 42, 0.06) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════
