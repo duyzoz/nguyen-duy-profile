@@ -1993,26 +1993,18 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   if(!btn) return;
 
   function apply(active){
-    const card = document.getElementById('profileCard');
-    const scene = document.getElementById('scene');
-    const toolCard = document.getElementById('toolCard');
     if(active){
       document.body.classList.add('perf-mode');
       btn.classList.add('active');
       if(btnText) btnText.textContent = '🎬 Bật lại Video';
       btn.title = "Đang xem ảnh nền Background.png (Mượt tuyệt đối). Bấm để bật lại Video.";
-      // Keep 3D card tilt & parallax active when video is paused
-      /* Video paused for performance without freezing card motion */
-      /* Chờ hiệu ứng mờ 0.6s hoàn tất mới pause video để chuyển cảnh mượt mà */
-      setTimeout(()=>{
-        if(document.body.classList.contains('perf-mode') && video) video.pause();
-      }, 600);
+      if(video) video.pause();
     } else {
-      if(video) video.play().catch(()=>{});
       document.body.classList.remove('perf-mode');
       btn.classList.remove('active');
       if(btnText) btnText.textContent = '⚡ Tắt Video (Fix Lag)';
       btn.title = "Tắt video nền để máy mượt tuyệt đối.";
+      if(video) video.play().catch(()=>{});
     }
   }
 
@@ -4668,82 +4660,19 @@ Respond accurately with this ground truth knowledge:
   /* ════════════════════════════════════════════════════════════
      WAVE 14, 15, 16: ULTRA CYBERPUNK SOUND & 120 FPS TURBO ENGINE
      ════════════════════════════════════════════════════════════ */
-  // Wave 16: 0kb Native Web Audio API Sound Synthesizer
+  // Wave 16: Zero-overhead neutralized audio engine (SFX disabled)
   const CyberAudio = {
     ctx: null,
-    muted: localStorage.getItem('cyber_sfx_muted') === '1',
-    init(){
-      if(!this.ctx && (window.AudioContext || window.webkitAudioContext)){
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if(this.ctx && this.ctx.state === 'suspended'){
-        this.ctx.resume().catch(()=>{});
-      }
-    },
-    toggleMute(){
-      this.muted = !this.muted;
-      localStorage.setItem('cyber_sfx_muted', this.muted ? '1' : '0');
-      const icon = document.getElementById('sfxIcon');
-      const text = document.getElementById('sfxText');
-      const btn = document.getElementById('sfxToggleBtn');
-      if(icon) icon.textContent = this.muted ? '🔇' : '🔊';
-      if(text) text.textContent = this.muted ? 'MUTE' : 'SFX';
-      if(btn) btn.classList.toggle('muted', this.muted);
-      if(!this.muted) this.beep(880, 'sine', 0.08, 0.05);
-    },
-    beep(freq = 880, type = 'sine', dur = 0.08, gainVal = 0.05){
-      if(this.muted) return;
-      try {
-        this.init();
-        if(!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + dur);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + dur);
-      } catch(e){}
-    },
-    click(){ 
-      if(this.muted) return;
-      const now = (typeof performance !== 'undefined') ? performance.now() : Date.now();
-      if(this._lastClick && now - this._lastClick < 150) return;
-      this._lastClick = now;
-      this.beep(1200, 'square', 0.025, 0.03); 
-    },
-    copy(){
-      if(this.muted) return;
-      this.beep(587.33, 'triangle', 0.05, 0.04);
-      setTimeout(() => this.beep(880, 'sine', 0.1, 0.05), 50);
-    },
-    deploy(){
-      if(this.muted) return;
-      try {
-        this.init();
-        if(!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(350, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1400, this.ctx.currentTime + 0.25);
-        gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.28);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.28);
-      } catch(e){}
-    },
-    success(){
-      if(this.muted) return;
-      this.beep(587.33, 'triangle', 0.06, 0.04);
-      setTimeout(() => this.beep(880, 'sine', 0.12, 0.05), 60);
-    }
+    muted: true,
+    init(){},
+    toggleMute(){},
+    beep(){},
+    click(){},
+    copy(){},
+    deploy(){},
+    success(){}
   };
+  window.CyberAudio = CyberAudio;
 
   // Wave 21: Unified zero-latency pointerdown sound engine below (Prevents double audio)
 
@@ -5419,43 +5348,106 @@ Respond accurately with this ground truth knowledge:
     }
   });
 
-  // Wave 34: Cyber Theme Matrix Quick Swapper
-  const THEMES = ['cyan', 'matrix', 'amber', 'synthwave'];
+  // Wave 34: Discord Nitro Profile Theme Engine (6 Themes, Complete Surface Transformation)
+  const THEMES = ['cyan', 'amethyst', 'matrix', 'amber', 'crimson', 'frost'];
   const THEME_NAMES = {
     cyan: 'Cyber Cyan (Mặc định)',
-    matrix: 'Matrix Hacker Green',
-    amber: 'Cyberpunk 2077 Amber',
-    synthwave: 'Synthwave Retro Pink'
+    amethyst: 'Amethyst Nitro Velvet',
+    matrix: 'Matrix Hacker Emerald',
+    amber: 'Sunset Amber 2077',
+    crimson: 'Blood Moon Sakura',
+    frost: 'Abyssal Arctic Glaze'
   };
 
   function applyTheme(themeKey){
+    if(!THEMES.includes(themeKey)) themeKey = 'cyan';
     if(themeKey === 'cyan'){
       document.documentElement.removeAttribute('data-theme');
     } else {
       document.documentElement.setAttribute('data-theme', themeKey);
     }
-    localStorage.setItem('cyber_theme', themeKey);
+    try {
+      localStorage.setItem('cyber_theme', themeKey);
+      localStorage.setItem('nd_theme', themeKey);
+    } catch(e){}
+
+    // Update active state in desktop modal
+    document.querySelectorAll('.nitro-card').forEach(card => {
+      const match = card.getAttribute('data-theme') === themeKey;
+      card.classList.toggle('active', match);
+    });
+
+    // Update active state in mobile FAB menu
+    document.querySelectorAll('#mobFabMenu .mob-fab-item').forEach(item => {
+      const match = item.getAttribute('data-theme') === themeKey;
+      item.classList.toggle('active', match);
+    });
+
+    const text = document.getElementById('themeText');
+    if(text) text.textContent = themeKey.toUpperCase();
   }
+  window.applyTheme = applyTheme;
 
-  // Load saved theme
-  const savedTheme = localStorage.getItem('cyber_theme') || 'cyan';
-  if(savedTheme !== 'cyan') applyTheme(savedTheme);
+  // Load saved theme immediately
+  const savedTheme = localStorage.getItem('cyber_theme') || localStorage.getItem('nd_theme') || 'cyan';
+  applyTheme(savedTheme);
 
+  // Desktop Nitro Modal Controls
   const themeBtn = document.getElementById('themeToggleBtn');
-  if(themeBtn){
-    themeBtn.addEventListener('click', () => {
-      const cur = localStorage.getItem('cyber_theme') || 'cyan';
-      const nextIdx = (THEMES.indexOf(cur) + 1) % THEMES.length;
-      const nextTheme = THEMES[nextIdx];
-      applyTheme(nextTheme);
-      const text = document.getElementById('themeText');
-      if(text) text.textContent = nextTheme.toUpperCase();
-      if(typeof CyberAudio !== 'undefined') CyberAudio.click();
-      if(typeof addLog === 'function'){
-        addLog(`[THEME] 🎨 Đã chuyển sang giao diện: ${THEME_NAMES[nextTheme]}`, 'ok');
-      }
+  const themeModal = document.getElementById('themeModal');
+  const themeBackdrop = document.getElementById('themeModalBackdrop');
+  const themeCloseBtn = document.getElementById('themeModalClose');
+
+  function openThemeModal(){
+    if(themeModal) themeModal.style.display = 'block';
+    if(themeBackdrop) themeBackdrop.style.display = 'block';
+    const cur = localStorage.getItem('cyber_theme') || 'cyan';
+    document.querySelectorAll('.nitro-card').forEach(card => {
+      card.classList.toggle('active', card.getAttribute('data-theme') === cur);
     });
   }
+
+  function closeThemeModal(){
+    if(themeModal) themeModal.style.display = 'none';
+    if(themeBackdrop) themeBackdrop.style.display = 'none';
+  }
+
+  if(themeBtn){
+    themeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openThemeModal();
+    });
+  }
+
+  if(themeCloseBtn){
+    themeCloseBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeThemeModal();
+    });
+  }
+
+  if(themeBackdrop){
+    themeBackdrop.addEventListener('click', closeThemeModal);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && themeModal && themeModal.style.display !== 'none'){
+      closeThemeModal();
+    }
+  });
+
+  // Clicking theme preview cards inside Nitro Modal
+  document.querySelectorAll('.nitro-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const selected = card.getAttribute('data-theme') || 'cyan';
+      applyTheme(selected);
+      if(typeof addLog === 'function'){
+        addLog(`[THEME] ✨ Đã kích hoạt Nitro Profile Theme: ${THEME_NAMES[selected]}`, 'ok');
+      }
+    });
+  });
 
 /* ═══════════════════════════════════════════════════════════
    WAVES 35 - 40: SMARTPHONE INTERACTION & GESTURE ENGINE
@@ -5854,22 +5846,16 @@ Respond accurately with this ground truth knowledge:
         e.preventDefault();
         e.stopPropagation();
         const theme = btn.getAttribute('data-theme') || 'cyan';
-        if (theme === 'cyan' || theme === 'default') {
-          document.documentElement.removeAttribute('data-theme');
-        } else {
-          document.documentElement.setAttribute('data-theme', theme);
+        if (typeof window.applyTheme === 'function') {
+          window.applyTheme(theme);
         }
-        try {
-          localStorage.setItem('cyber_theme', theme);
-          localStorage.setItem('nd_theme', theme);
-        } catch(err){}
-        const themeText = document.getElementById('themeText');
-        if (themeText) themeText.textContent = theme.toUpperCase();
         fabContainer.classList.remove('active');
         if (typeof navigator !== 'undefined' && navigator.vibrate) {
           try { navigator.vibrate(12); } catch(err){}
         }
-        if (window.CyberAudio && window.CyberAudio.click) window.CyberAudio.click();
+        if (typeof addLog === 'function'){
+          addLog(`[THEME] ✨ Đã kích hoạt Nitro Profile Theme: ${theme.toUpperCase()}`, 'ok');
+        }
       });
     });
 

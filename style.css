@@ -8,6 +8,18 @@
   --font:'Space Grotesk',sans-serif;
   --mono:'JetBrains Mono',monospace;
   --cw:320px;
+
+  /* ── 6 DISCORD NITRO THEME ENGINE DEFAULTS (Cyber Cyan) ── */
+  --theme-card-bg: linear-gradient(145deg, rgba(8, 16, 32, 0.96) 0%, rgba(12, 28, 52, 0.96) 50%, rgba(6, 20, 40, 0.96) 100%);
+  --theme-deck-bg: linear-gradient(135deg, rgba(9, 18, 36, 0.97) 0%, rgba(5, 12, 24, 0.98) 100%);
+  --theme-block-bg: rgba(12, 26, 50, 0.72);
+  --theme-inner-bg: rgba(6, 15, 30, 0.8);
+  --theme-border: rgba(0, 240, 255, 0.38);
+  --theme-glow: rgba(0, 240, 255, 0.24);
+  --theme-accent: #00f0ff;
+  --theme-accent-sec: #7c6fff;
+  --theme-accent-gradient: linear-gradient(135deg, #00f0ff, #7c6fff);
+  --theme-badge-bg: rgba(0, 240, 255, 0.12);
 }
 
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -122,29 +134,29 @@ a{text-decoration:none;}
 /* ══ LIQUID GLASS SHARED CARDS ══ */
 .tool-card,.profile-card{
   width:var(--cw);
-  background:linear-gradient(135deg,rgba(16,14,34,.9) 0%,rgba(8,7,20,.95) 100%);
+  background: var(--theme-card-bg) !important;
   backdrop-filter:blur(6px);
   -webkit-backdrop-filter:blur(6px);
-  border:1px solid rgba(255,255,255,.12);
+  border:1px solid var(--theme-border) !important;
   border-radius:var(--r);
-  box-shadow:0 12px 36px rgba(0,0,0,.65), 0 0 18px rgba(124,111,255,.1), inset 0 1px 0 rgba(255,255,255,.15);
+  box-shadow:0 12px 36px rgba(0,0,0,.65), 0 0 22px var(--theme-glow), inset 0 1px 0 rgba(255,255,255,.15) !important;
   overflow:hidden;flex-shrink:0;
   transform:translateZ(0);
-  transition:border-color .3s,box-shadow .3s;
+  transition:border-color .3s,box-shadow .3s,background .4s ease;
 }
 .profile-card{
   transform-style:preserve-3d;
   will-change:transform;
 }
 .tool-card:hover,.profile-card:hover{
-  border-color:rgba(0,212,255,.35);
-  box-shadow:0 18px 48px rgba(0,0,0,.8), 0 0 28px rgba(0,212,255,.22), inset 0 1px 0 rgba(255,255,255,.25);
+  border-color:var(--theme-accent) !important;
+  box-shadow:0 18px 48px rgba(0,0,0,.8), 0 0 30px var(--theme-glow), inset 0 1px 0 rgba(255,255,255,.25) !important;
 }
 
 /* ══ CARD HEADER ══ */
 .card-hdr{width:100%;padding:10px 0;text-align:center;font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
-.tool-hdr{color:var(--a1);background:rgba(124,111,255,.12);}
-.profile-hdr{color:var(--a3);background:rgba(0,212,255,.09);border-bottom-color:rgba(0,212,255,.14);}
+.tool-hdr{color:var(--theme-accent) !important;background:var(--theme-badge-bg) !important;border-bottom-color:var(--theme-border) !important;}
+.profile-hdr{color:var(--theme-accent) !important;background:var(--theme-badge-bg) !important;border-bottom-color:var(--theme-border) !important;}
 
 /* ══ TOOL CARD (Smooth High-Speed Peek) ══ */
 .tool-card{
@@ -627,6 +639,7 @@ a{text-decoration:none;}
 
 /* ══ ULTRA-PERFORMANCE MODE (Chuyển cảnh mượt sang Background.png) ══ */
 body.perf-mode #bgVideo{
+  display:none !important;
   opacity:0 !important;
   pointer-events:none;
 }
@@ -640,7 +653,6 @@ body.perf-mode .fps-hud-box,
 body.perf-mode .perf-toggle-btn{
   backdrop-filter:none !important;
   -webkit-backdrop-filter:none !important;
-  background:rgba(11,9,24,.97) !important;
 }
 body.perf-mode #snowCanvas,
 body.perf-mode #dustCanvas,
@@ -4250,31 +4262,28 @@ body.turbo-120-active .profile-card {
 }
 
 
-/* ══ WAVES 25-29: SFX TOGGLE, DURATION PILLS, SPECS BADGE & QUICK COMMAND ══ */
-.sfx-toggle-btn {
+/* ══ THEME TOGGLE BUTTON & DURATION PILLS ══ */
+.theme-toggle-btn {
   display: flex !important;
   align-items: center !important;
-  gap: 4px !important;
+  gap: 5px !important;
   height: 28px !important;
-  padding: 0 8px !important;
+  padding: 0 10px !important;
   border-radius: 6px !important;
-  background: rgba(10, 15, 30, 0.8) !important;
-  border: 1px solid rgba(0, 240, 255, 0.3) !important;
-  color: #00f0ff !important;
+  background: var(--theme-block-bg, rgba(10, 15, 30, 0.8)) !important;
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.35)) !important;
+  color: var(--theme-accent, #00f0ff) !important;
   font-size: 0.68rem !important;
   font-weight: 700 !important;
   cursor: pointer !important;
   transition: all .2s ease !important;
+  box-shadow: 0 0 10px var(--theme-glow, rgba(0, 240, 255, 0.2)) !important;
 }
-.sfx-toggle-btn:hover {
-  background: rgba(0, 240, 255, 0.15) !important;
-  border-color: #00f0ff !important;
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3) !important;
-}
-.sfx-toggle-btn.muted {
-  border-color: rgba(239, 68, 68, 0.4) !important;
-  color: #f87171 !important;
-  background: rgba(239, 68, 68, 0.1) !important;
+.theme-toggle-btn:hover {
+  background: rgba(0, 240, 255, 0.2) !important;
+  border-color: var(--theme-accent, #00f0ff) !important;
+  box-shadow: 0 0 14px var(--theme-glow, rgba(0, 240, 255, 0.4)) !important;
+  transform: translateY(-1px) !important;
 }
 
 /* VPS Duration Pills (Wave 28) */
@@ -5030,12 +5039,15 @@ body.mob-sheet-open {
   justify-content: center;
   background: #000;
 }
-.mp-vinyl-label .mp-art {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  display: block;
+.mp-vinyl-label .mp-art,
+#mpArt {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 28px !important;
+  max-height: 28px !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  display: block !important;
 }
 .mp-vinyl-spindle {
   position: absolute;
@@ -5061,14 +5073,15 @@ body.mob-sheet-open {
 /* ── 2. DESKTOP CHASSIS ENHANCEMENTS ── */
 .music-player {
   width: 345px !important;
-  background: linear-gradient(135deg, rgba(14, 12, 34, 0.94) 0%, rgba(7, 6, 20, 0.98) 100%) !important;
-  backdrop-filter: blur(24px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
-  border: 1px solid rgba(0, 240, 255, 0.38) !important;
+  background: var(--theme-deck-bg, linear-gradient(135deg, rgba(9, 18, 36, 0.97) 0%, rgba(5, 12, 24, 0.98) 100%)) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.38)) !important;
   border-radius: 20px !important;
   padding: 12px 16px !important;
-  box-shadow: 0 16px 44px rgba(0,0,0,0.85), 0 0 25px rgba(0,240,255,0.18), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+  box-shadow: 0 16px 44px rgba(0,0,0,0.85), 0 0 25px var(--theme-glow, rgba(0,240,255,0.18)), inset 0 1px 0 rgba(255,255,255,0.15) !important;
   gap: 14px !important;
+  transition: border-color .3s, box-shadow .3s, background .4s ease, opacity .65s ease !important;
 }
 .mp-header-row {
   display: flex;
@@ -5080,7 +5093,7 @@ body.mob-sheet-open {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.55rem;
   font-weight: 700;
-  color: #00f0ff;
+  color: var(--theme-accent, #00f0ff);
   letter-spacing: 0.08em;
   display: flex;
   align-items: center;
@@ -5090,8 +5103,8 @@ body.mob-sheet-open {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #00f0ff;
-  box-shadow: 0 0 6px #00f0ff;
+  background: var(--theme-accent, #00f0ff);
+  box-shadow: 0 0 8px var(--theme-accent, #00f0ff);
 }
 .mp-modal-close {
   display: none !important;
@@ -5105,15 +5118,15 @@ body.mob-sheet-open {
   width: 36px !important;
   height: 36px !important;
   border-radius: 50% !important;
-  background: linear-gradient(135deg, #00f0ff, #7c6fff) !important;
+  background: var(--theme-accent-gradient, linear-gradient(135deg, #00f0ff, #7c6fff)) !important;
   border: 1px solid rgba(255, 255, 255, 0.4) !important;
   color: #050510 !important;
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.55) !important;
+  box-shadow: 0 0 16px var(--theme-glow, rgba(0, 240, 255, 0.55)) !important;
   transition: transform 0.15s ease, box-shadow 0.15s ease !important;
 }
 .mp-btn.mp-play:hover {
   transform: scale(1.1) !important;
-  box-shadow: 0 0 22px rgba(0, 240, 255, 0.8) !important;
+  box-shadow: 0 0 24px var(--theme-glow, rgba(0, 240, 255, 0.8)) !important;
 }
 .mp-btn.mp-play:active {
   transform: scale(0.95) !important;
@@ -5124,11 +5137,11 @@ body.mob-sheet-open {
   border: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 .mp-fill {
-  background: linear-gradient(90deg, #00f0ff, #a855f7) !important;
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.5) !important;
+  background: var(--theme-accent-gradient, linear-gradient(90deg, #00f0ff, #a855f7)) !important;
+  box-shadow: 0 0 10px var(--theme-glow, rgba(0, 240, 255, 0.5)) !important;
 }
 .mp-vol-slider {
-  accent-color: #00f0ff;
+  accent-color: var(--theme-accent, #00f0ff);
 }
 
 /* ── 3. CHAT LATENCY OPTIMIZATION & INSTANT FEEDBACK ── */
@@ -5153,99 +5166,440 @@ body.mob-sheet-open {
 }
 .gb-send-btn.sent-pulse {
   transform: scale(0.92) !important;
-  background: #00f0ff !important;
+  background: var(--theme-accent, #00f0ff) !important;
   color: #000 !important;
-  box-shadow: 0 0 14px #00f0ff !important;
+  box-shadow: 0 0 14px var(--theme-accent, #00f0ff) !important;
 }
 
-
-
 /* ═══════════════════════════════════════════════════════════
-   FULL THEME ENGINE: COMPREHENSIVE VISUAL TRANSFORMATION
+   DISCORD NITRO PROFILE THEMES: FULL CARD SURFACE TRANSFORMATION
    ═══════════════════════════════════════════════════════════ */
+
+/* 1. Cyber Cyan (Default Nitro) */
+html[data-theme="cyan"],
+:root {
+  --theme-card-bg: linear-gradient(145deg, rgba(8, 16, 32, 0.96) 0%, rgba(12, 28, 52, 0.96) 50%, rgba(6, 20, 40, 0.96) 100%);
+  --theme-deck-bg: linear-gradient(135deg, rgba(9, 18, 36, 0.97) 0%, rgba(5, 12, 24, 0.98) 100%);
+  --theme-block-bg: rgba(12, 26, 50, 0.72);
+  --theme-inner-bg: rgba(6, 15, 30, 0.8);
+  --theme-border: rgba(0, 240, 255, 0.38);
+  --theme-glow: rgba(0, 240, 255, 0.24);
+  --theme-accent: #00f0ff;
+  --theme-accent-sec: #7c6fff;
+  --theme-accent-gradient: linear-gradient(135deg, #00f0ff, #7c6fff);
+  --theme-badge-bg: rgba(0, 240, 255, 0.12);
+  --a1: #7c6fff !important;
+  --a2: #ff6b9d !important;
+  --a3: #00f0ff !important;
+  --a4: #ffe066 !important;
+}
+
+/* 2. Amethyst Velvet (Tokyo Nitro Purple) */
+html[data-theme="amethyst"] {
+  --theme-card-bg: linear-gradient(145deg, rgba(28, 12, 48, 0.96) 0%, rgba(52, 20, 84, 0.96) 50%, rgba(24, 10, 42, 0.96) 100%);
+  --theme-deck-bg: linear-gradient(135deg, rgba(32, 14, 56, 0.97) 0%, rgba(18, 8, 32, 0.98) 100%);
+  --theme-block-bg: rgba(42, 18, 72, 0.72);
+  --theme-inner-bg: rgba(22, 9, 38, 0.8);
+  --theme-border: rgba(192, 132, 252, 0.45);
+  --theme-glow: rgba(192, 132, 252, 0.28);
+  --theme-accent: #c084fc;
+  --theme-accent-sec: #e879f9;
+  --theme-accent-gradient: linear-gradient(135deg, #c084fc, #ec4899);
+  --theme-badge-bg: rgba(192, 132, 252, 0.14);
+  --a1: #c084fc !important;
+  --a2: #ec4899 !important;
+  --a3: #e879f9 !important;
+  --a4: #f472b6 !important;
+}
+
+/* 3. Matrix Emerald (Hacker Terminal) */
 html[data-theme="matrix"] {
-  --a1: #00ff66 !important;
+  --theme-card-bg: linear-gradient(145deg, rgba(4, 26, 14, 0.97) 0%, rgba(8, 48, 24, 0.97) 50%, rgba(3, 20, 10, 0.97) 100%);
+  --theme-deck-bg: linear-gradient(135deg, rgba(6, 32, 18, 0.98) 0%, rgba(2, 16, 8, 0.99) 100%);
+  --theme-block-bg: rgba(8, 42, 22, 0.72);
+  --theme-inner-bg: rgba(4, 20, 10, 0.82);
+  --theme-border: rgba(34, 197, 94, 0.45);
+  --theme-glow: rgba(34, 197, 94, 0.28);
+  --theme-accent: #22c55e;
+  --theme-accent-sec: #10b981;
+  --theme-accent-gradient: linear-gradient(135deg, #22c55e, #14b8a6);
+  --theme-badge-bg: rgba(34, 197, 94, 0.14);
+  --a1: #22c55e !important;
   --a2: #059669 !important;
   --a3: #34d399 !important;
   --a4: #6ee7b7 !important;
 }
-html[data-theme="matrix"] .profile-card,
-html[data-theme="matrix"] .tool-card,
-html[data-theme="matrix"] .music-player {
-  border-color: rgba(0, 255, 102, 0.4) !important;
-  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 255, 102, 0.25) !important;
-}
-html[data-theme="matrix"] .mob-nav-item.active,
-html[data-theme="matrix"] .mob-nav-item.active .mob-nav-label {
-  color: #00ff66 !important;
-  text-shadow: 0 0 12px rgba(0, 255, 102, 0.7) !important;
-}
-html[data-theme="matrix"] .mob-nav-item.active::before {
-  background: #00ff66 !important;
-  box-shadow: 0 0 10px #00ff66 !important;
-}
-html[data-theme="matrix"] .mp-vinyl-label {
-  border-color: #00ff66 !important;
-  box-shadow: 0 0 10px rgba(0, 255, 102, 0.6) !important;
-}
 
+/* 4. Sunset Amber 2077 (Cyberpunk Gold) */
 html[data-theme="amber"] {
+  --theme-card-bg: linear-gradient(145deg, rgba(36, 18, 4, 0.96) 0%, rgba(62, 32, 8, 0.96) 50%, rgba(30, 14, 3, 0.96) 100%);
+  --theme-deck-bg: linear-gradient(135deg, rgba(42, 22, 6, 0.97) 0%, rgba(22, 11, 2, 0.98) 100%);
+  --theme-block-bg: rgba(56, 28, 6, 0.72);
+  --theme-inner-bg: rgba(28, 14, 3, 0.8);
+  --theme-border: rgba(245, 158, 11, 0.48);
+  --theme-glow: rgba(245, 158, 11, 0.28);
+  --theme-accent: #fbbf24;
+  --theme-accent-sec: #f97316;
+  --theme-accent-gradient: linear-gradient(135deg, #fbbf24, #f97316);
+  --theme-badge-bg: rgba(245, 158, 11, 0.14);
   --a1: #f59e0b !important;
   --a2: #d97706 !important;
   --a3: #fbbf24 !important;
   --a4: #fef08a !important;
 }
-html[data-theme="amber"] .profile-card,
-html[data-theme="amber"] .tool-card,
-html[data-theme="amber"] .music-player {
-  border-color: rgba(245, 158, 11, 0.45) !important;
-  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.8), 0 0 24px rgba(245, 158, 11, 0.25) !important;
-}
-html[data-theme="amber"] .mob-nav-item.active,
-html[data-theme="amber"] .mob-nav-item.active .mob-nav-label {
-  color: #fbbf24 !important;
-  text-shadow: 0 0 12px rgba(251, 191, 36, 0.7) !important;
-}
-html[data-theme="amber"] .mob-nav-item.active::before {
-  background: #fbbf24 !important;
-  box-shadow: 0 0 10px #fbbf24 !important;
-}
-html[data-theme="amber"] .mp-vinyl-label {
-  border-color: #fbbf24 !important;
-  box-shadow: 0 0 10px rgba(251, 191, 36, 0.6) !important;
-}
 
-html[data-theme="synthwave"] {
-  --a1: #ec4899 !important;
-  --a2: #8b5cf6 !important;
+/* 5. Blood Moon Sakura (Crimson Ruby) */
+html[data-theme="crimson"] {
+  --theme-card-bg: linear-gradient(145deg, rgba(38, 8, 18, 0.96) 0%, rgba(68, 14, 32, 0.96) 50%, rgba(32, 6, 14, 0.96) 100%);
+  --theme-deck-bg: linear-gradient(135deg, rgba(46, 10, 22, 0.97) 0%, rgba(24, 5, 12, 0.98) 100%);
+  --theme-block-bg: rgba(58, 14, 28, 0.72);
+  --theme-inner-bg: rgba(30, 6, 14, 0.8);
+  --theme-border: rgba(244, 63, 94, 0.48);
+  --theme-glow: rgba(244, 63, 94, 0.3);
+  --theme-accent: #fb7185;
+  --theme-accent-sec: #f43f5e;
+  --theme-accent-gradient: linear-gradient(135deg, #fb7185, #e11d48);
+  --theme-badge-bg: rgba(244, 63, 94, 0.15);
+  --a1: #fb7185 !important;
+  --a2: #e11d48 !important;
   --a3: #f43f5e !important;
-  --a4: #a855f7 !important;
-}
-html[data-theme="synthwave"] .profile-card,
-html[data-theme="synthwave"] .tool-card,
-html[data-theme="synthwave"] .music-player {
-  border-color: rgba(236, 72, 153, 0.45) !important;
-  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.8), 0 0 24px rgba(236, 72, 153, 0.25) !important;
-}
-html[data-theme="synthwave"] .mob-nav-item.active,
-html[data-theme="synthwave"] .mob-nav-item.active .mob-nav-label {
-  color: #ec4899 !important;
-  text-shadow: 0 0 12px rgba(236, 72, 153, 0.7) !important;
-}
-html[data-theme="synthwave"] .mob-nav-item.active::before {
-  background: #ec4899 !important;
-  box-shadow: 0 0 10px #ec4899 !important;
-}
-html[data-theme="synthwave"] .mp-vinyl-label {
-  border-color: #ec4899 !important;
-  box-shadow: 0 0 10px rgba(236, 72, 153, 0.6) !important;
+  --a4: #fda4af !important;
 }
 
+/* 6. Abyssal Arctic (Frost Glaze) */
+html[data-theme="frost"] {
+  --theme-card-bg: linear-gradient(145deg, rgba(6, 26, 42, 0.96) 0%, rgba(12, 46, 70, 0.96) 50%, rgba(5, 22, 34, 0.96) 100%);
+  --theme-deck-bg: linear-gradient(135deg, rgba(8, 30, 50, 0.97) 0%, rgba(4, 16, 26, 0.98) 100%);
+  --theme-block-bg: rgba(12, 42, 64, 0.72);
+  --theme-inner-bg: rgba(6, 20, 32, 0.8);
+  --theme-border: rgba(56, 189, 248, 0.48);
+  --theme-glow: rgba(56, 189, 248, 0.3);
+  --theme-accent: #38bdf8;
+  --theme-accent-sec: #67e8f9;
+  --theme-accent-gradient: linear-gradient(135deg, #38bdf8, #a5f3fc);
+  --theme-badge-bg: rgba(56, 189, 248, 0.15);
+  --a1: #38bdf8 !important;
+  --a2: #0284c7 !important;
+  --a3: #7dd3fc !important;
+  --a4: #e0f2fe !important;
+}
+
+/* Universal Theme Surface Application */
+.t-block,
+.ts-steps-card,
+.vps-card,
+.proj-card,
+.gb-card,
+.ai-chat-wrap {
+  background: var(--theme-block-bg) !important;
+  border-color: var(--theme-border) !important;
+  transition: background .35s ease, border-color .3s ease !important;
+}
+.startut-full-log,
+.log-win {
+  background: var(--theme-inner-bg) !important;
+  border-color: var(--theme-border) !important;
+}
+.mob-nav-item.active,
+.mob-nav-item.active .mob-nav-label {
+  color: var(--theme-accent) !important;
+  text-shadow: 0 0 12px var(--theme-glow) !important;
+}
+.mob-nav-item.active::before {
+  background: var(--theme-accent) !important;
+  box-shadow: 0 0 10px var(--theme-accent) !important;
+}
+.mp-vinyl-label {
+  border-color: var(--theme-accent) !important;
+  box-shadow: 0 0 10px var(--theme-glow) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DISCORD NITRO THEME MODAL STYLING (LUXURY DESKTOP & MOBILE)
+   ═══════════════════════════════════════════════════════════ */
+.nitro-theme-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 3, 10, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 100000;
+  animation: nitroFadeIn 0.2s ease forwards;
+}
+.nitro-theme-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(680px, 94vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  background: linear-gradient(150deg, rgba(16, 14, 34, 0.98) 0%, rgba(8, 7, 20, 0.99) 100%);
+  border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.4));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.95), 0 0 40px var(--theme-glow, rgba(0, 240, 255, 0.25)), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  border-radius: 22px;
+  padding: 24px;
+  z-index: 100001;
+  animation: nitroModalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-sizing: border-box;
+}
+
+@keyframes nitroFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes nitroModalPop {
+  0% { opacity: 0; transform: translate(-50%, -46%) scale(0.96); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.nitro-theme-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.nitro-theme-title-wrap {
+  flex: 1;
+}
+.nitro-theme-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nitro-icon {
+  font-size: 1.15rem;
+}
+.nitro-theme-sub {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+.nitro-theme-close {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #cbd5e1;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.nitro-theme-close:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ffffff;
+  border-color: #ef4444;
+  transform: rotate(90deg);
+}
+
+.nitro-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.nitro-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+.nitro-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6);
+}
+.nitro-card.active {
+  border-color: var(--theme-accent, #00f0ff);
+  box-shadow: 0 0 20px var(--theme-glow, rgba(0, 240, 255, 0.4)), inset 0 0 14px rgba(0, 240, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nitro-card-preview {
+  height: 64px;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.4);
+}
+.nitro-prev-cyan {
+  background: linear-gradient(135deg, #081020 0%, #0c1c34 50%, #061428 100%);
+  border: 1px solid rgba(0, 240, 255, 0.5);
+}
+.nitro-prev-amethyst {
+  background: linear-gradient(135deg, #1c0c30 0%, #341454 50%, #180a2a 100%);
+  border: 1px solid rgba(192, 132, 252, 0.5);
+}
+.nitro-prev-matrix {
+  background: linear-gradient(135deg, #041a0e 0%, #083018 50%, #03140a 100%);
+  border: 1px solid rgba(34, 197, 94, 0.5);
+}
+.nitro-prev-amber {
+  background: linear-gradient(135deg, #241204 0%, #3e2008 50%, #1e0e03 100%);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+}
+.nitro-prev-crimson {
+  background: linear-gradient(135deg, #260812 0%, #440e20 50%, #20060e 100%);
+  border: 1px solid rgba(244, 63, 94, 0.5);
+}
+.nitro-prev-frost {
+  background: linear-gradient(135deg, #061a2a 0%, #0c2e46 50%, #051622 100%);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+}
+
+.nitro-mini-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: url('assets/avatar.png') center/cover;
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+.nitro-mini-badge {
+  align-self: flex-end;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.nitro-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.nitro-card-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+.nitro-card-desc {
+  font-size: 0.62rem;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+.nitro-swatches {
+  display: flex;
+  gap: 5px;
+  margin-top: 4px;
+}
+.nitro-swatches span {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: inline-block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.nitro-active-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 800;
+  text-align: center;
+  padding: 4px;
+  border-radius: 6px;
+  background: var(--theme-accent, #00f0ff);
+  color: #050510;
+  letter-spacing: 0.05em;
+  display: none;
+}
+.nitro-card.active .nitro-active-tag {
+  display: block;
+}
+
+
+/* Hide Mobile Navigation & Mobile Theme FAB on Desktop screens */
+.mobile-nav-dock,
+.mob-fab-container {
+  display: none !important;
+}
 
 /* ═══════════════════════════════════════════════════════════
    MOBILE SMARTPHONE REFACTOR (PERFECT PROFILE FIT, PEAK VINYL)
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 767px) {
+  /* Mobile Navigation Dock */
+  .mobile-nav-dock {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: calc(52px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    background: rgba(10, 8, 22, 0.96) !important;
+    border-top: 1px solid var(--theme-border, rgba(0, 240, 255, 0.25)) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    z-index: 99990 !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+  }
+  .mob-nav-item {
+    flex: 1 !important;
+    height: 100% !important;
+    background: none !important;
+    border: none !important;
+    color: #94a3b8 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    cursor: pointer !important;
+    position: relative !important;
+    transition: color 0.2s ease !important;
+  }
+  .mob-nav-icon {
+    font-size: 1.05rem !important;
+  }
+  .mob-nav-label {
+    font-family: var(--mono, monospace) !important;
+    font-size: 0.54rem !important;
+    font-weight: 600 !important;
+  }
+  .mob-nav-item.active {
+    color: var(--theme-accent, #00f0ff) !important;
+  }
+  .mob-nav-item.active::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    width: 24px !important;
+    height: 2px !important;
+    background: var(--theme-accent, #00f0ff) !important;
+    box-shadow: 0 0 8px var(--theme-accent, #00f0ff) !important;
+    border-radius: 99px !important;
+  }
+
   /* 1. HIDE TOP MINI TABS COMPLETELY ON MOBILE (User only uses bottom 7-item dock!) */
   .tc-tabs,
   .tool-card .tc-tabs {
@@ -5340,49 +5694,57 @@ html[data-theme="synthwave"] .mp-vinyl-label {
     display: none !important;
   }
 
-  /* 4. WHEN VINYL CLICKED: POP OUT ROUNDED RECTANGLE DECK IN EXACT CENTER OF SCREEN (CHÍNH GIỮA) */
+  /* 4. WHEN VINYL CLICKED: POP OUT ROUNDED RECTANGLE DECK IN EXACT CENTER OF SCREEN (CHÍNH GIỮA) - ULTRA SMOOTH GPU */
   .music-player.mp-open {
     position: fixed !important;
     top: 50% !important;
     left: 50% !important;
-    transform: translate(-50%, -50%) !important;
+    transform: translate3d(-50%, -50%, 0) !important;
+    -webkit-transform: translate3d(-50%, -50%, 0) !important;
     width: min(315px, 86vw) !important;
     height: auto !important;
     max-height: 85vh !important;
     border-radius: 20px !important;
     padding: 14px 16px !important;
-    background: rgba(12, 10, 26, 0.98) !important;
+    background: var(--theme-deck-bg, rgba(12, 10, 26, 0.98)) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    border: 1px solid rgba(0, 240, 255, 0.45) !important;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95), 0 0 30px rgba(0, 240, 255, 0.25) !important;
+    border: 1px solid var(--theme-border, rgba(0, 240, 255, 0.45)) !important;
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.88), 0 0 20px var(--theme-glow, rgba(0, 240, 255, 0.25)) !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 9px !important;
     z-index: 999999 !important;
-    animation: mpCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    will-change: transform, opacity !important;
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
+    animation: mpCenterIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
   }
   @keyframes mpCenterIn {
     0% {
       opacity: 0;
-      transform: translate(-50%, -42%) scale(0.95);
+      transform: translate3d(-50%, -44%, 0);
+      -webkit-transform: translate3d(-50%, -44%, 0);
     }
     100% {
       opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+      transform: translate3d(-50%, -50%, 0);
+      -webkit-transform: translate3d(-50%, -50%, 0);
     }
   }
   .music-player.mp-closing {
-    animation: mpCenterOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    animation: mpCenterOut 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
   }
   @keyframes mpCenterOut {
     0% {
       opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+      transform: translate3d(-50%, -50%, 0);
+      -webkit-transform: translate3d(-50%, -50%, 0);
     }
     100% {
       opacity: 0;
-      transform: translate(-50%, -44%) scale(0.95);
+      transform: translate3d(-50%, -46%, 0);
+      -webkit-transform: translate3d(-50%, -46%, 0);
     }
   }
   .music-player.mp-open .mp-vinyl-wrap {
@@ -5479,10 +5841,10 @@ html[data-theme="synthwave"] .mp-vinyl-label {
     max-height: 100% !important;
     padding: 6px 10px !important;
     border-radius: 16px !important;
-    background: rgba(10, 8, 22, 0.94) !important;
+    background: var(--theme-card-bg) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    border: 1px solid rgba(124, 111, 255, 0.3) !important;
+    border: 1px solid var(--theme-border) !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;

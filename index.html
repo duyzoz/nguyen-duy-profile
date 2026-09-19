@@ -94,13 +94,9 @@
       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
       <span id="perfToggleText">⚡ Disable Video (Fix Lag)</span>
     </button>
-        <button class="sfx-toggle-btn cyber-sound-btn" id="sfxToggleBtn" title="Bật/Tắt hiệu ứng âm thanh Cyber">
-      <span id="sfxIcon">🔊</span>
-      <span id="sfxText">SFX</span>
-    </button>
-        <button class="sfx-toggle-btn cyber-sound-btn" id="themeToggleBtn" title="Chuyển đổi theme Cyber: Cyan / Matrix / Amber / Synthwave">
+        <button class="theme-toggle-btn cyber-sound-btn" id="themeToggleBtn" title="Chọn Giao Diện Discord Nitro cho Profile, Tiện Ích & Music">
       <span id="themeIcon">🎨</span>
-      <span id="themeText">THEME</span>
+      <span id="themeText">THEMES</span>
     </button>
     <button class="cli-toggle-btn" id="cliToggleBtn" title="Open Cyber Terminal CLI (~ or Ctrl+K)">
       <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
@@ -899,8 +895,9 @@
       </div>
 
     </div>
+  </div>
 
-    <!-- MOBILE CYBER NAVIGATION DOCK (Thumb-friendly 6-item bar) -->
+  <!-- MOBILE CYBER NAVIGATION DOCK (Thumb-friendly 6-item bar) -->
     <nav class="mobile-nav-dock" id="mobileNavDock" aria-label="Mobile Navigation">
       <button class="mob-nav-item active cyber-sound-btn" id="mobNavProfile" data-target="profile" aria-label="Hồ Sơ">
         <span class="mob-nav-icon">👤</span>
@@ -935,22 +932,30 @@
     <!-- MOBILE THEME PALETTE FAB & MENU -->
     <div class="mob-fab-container" id="mobFabContainer">
       <div class="mob-fab-menu" id="mobFabMenu">
-        <div class="mfm-header">🎨 BẢNG MÀU CYBER</div>
+        <div class="mfm-header">✨ PROFILE THEMES</div>
         <button class="mob-fab-item cyber-sound-btn" id="themeCyan" data-theme="cyan" type="button">
           <span class="mfi-icon">💎</span>
-          <span class="mfi-txt">Cyan Neon (Gốc)</span>
+          <span class="mfi-txt">Cyber Cyan</span>
+        </button>
+        <button class="mob-fab-item cyber-sound-btn" id="themeAmethyst" data-theme="amethyst" type="button">
+          <span class="mfi-icon">🟣</span>
+          <span class="mfi-txt">Amethyst Velvet</span>
         </button>
         <button class="mob-fab-item cyber-sound-btn" id="themeMatrix" data-theme="matrix" type="button">
           <span class="mfi-icon">🟢</span>
-          <span class="mfi-txt">Matrix Hacker</span>
+          <span class="mfi-txt">Matrix Emerald</span>
         </button>
         <button class="mob-fab-item cyber-sound-btn" id="themeAmber" data-theme="amber" type="button">
           <span class="mfi-icon">🟡</span>
-          <span class="mfi-txt">Cyber Amber 2077</span>
+          <span class="mfi-txt">Sunset Amber</span>
         </button>
-        <button class="mob-fab-item cyber-sound-btn" id="themeSynthwave" data-theme="synthwave" type="button">
-          <span class="mfi-icon">🟣</span>
-          <span class="mfi-txt">Synthwave Neon</span>
+        <button class="mob-fab-item cyber-sound-btn" id="themeCrimson" data-theme="crimson" type="button">
+          <span class="mfi-icon">🔴</span>
+          <span class="mfi-txt">Blood Moon</span>
+        </button>
+        <button class="mob-fab-item cyber-sound-btn" id="themeFrost" data-theme="frost" type="button">
+          <span class="mfi-icon">❄️</span>
+          <span class="mfi-txt">Arctic Frost</span>
         </button>
       </div>
       <button class="mob-fab-btn cyber-sound-btn" id="mobFabBtn" type="button" aria-label="Bảng Màu Cyber" title="Đổi giao diện">
@@ -1044,6 +1049,122 @@
       <div class="cli-input-wrap">
         <span class="cli-prompt">root@duyzoz:~#</span>
         <input class="cli-input" id="cliInput" type="text" autocomplete="off" spellcheck="false" placeholder="Enter command (e.g. help, wuwa, music, theme, matrix, ping)..." />
+      </div>
+    </div>
+  </div>
+
+  <!-- DISCORD NITRO PROFILE THEMES MODAL -->
+  <div class="nitro-theme-backdrop" id="themeModalBackdrop" style="display:none"></div>
+  <div class="nitro-theme-modal" id="themeModal" style="display:none">
+    <div class="nitro-theme-header">
+      <div class="nitro-theme-title-wrap">
+        <div class="nitro-theme-title"><span class="nitro-icon">✨</span> GIAO DIỆN PROFILE NITRO</div>
+        <div class="nitro-theme-sub">Biến đổi toàn diện màu nền Profile Card, Tiện Ích &amp; Music Player chuẩn Discord Nitro</div>
+      </div>
+      <button class="nitro-theme-close" id="themeModalClose" type="button" aria-label="Đóng bảng theme">✕</button>
+    </div>
+    <div class="nitro-theme-grid">
+      <!-- 6 DISCORD NITRO PROFILE THEMES -->
+      <div class="nitro-card active" data-theme="cyan">
+        <div class="nitro-card-preview nitro-prev-cyan">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">CYBER CYAN</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Cyber Cyan</div>
+          <div class="nitro-card-desc">Gốc Cyberpunk · Xanh Neon Điện Quang</div>
+          <div class="nitro-swatches">
+            <span style="background:#00f0ff"></span>
+            <span style="background:#7c6fff"></span>
+            <span style="background:#081020"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+
+      <div class="nitro-card" data-theme="amethyst">
+        <div class="nitro-card-preview nitro-prev-amethyst">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">AMETHYST NITRO</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Amethyst Velvet</div>
+          <div class="nitro-card-desc">Tokyo Nitro · Tím Hoàng Gia Quyến Rũ</div>
+          <div class="nitro-swatches">
+            <span style="background:#c084fc"></span>
+            <span style="background:#e879f9"></span>
+            <span style="background:#1a0a2e"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+
+      <div class="nitro-card" data-theme="matrix">
+        <div class="nitro-card-preview nitro-prev-matrix">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">HACKER MATRIX</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Matrix Emerald</div>
+          <div class="nitro-card-desc">Hacker Terminal · Xanh Ngọc Lục Bảo</div>
+          <div class="nitro-swatches">
+            <span style="background:#22c55e"></span>
+            <span style="background:#10b981"></span>
+            <span style="background:#041a0e"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+
+      <div class="nitro-card" data-theme="amber">
+        <div class="nitro-card-preview nitro-prev-amber">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">SUNSET 2077</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Sunset Amber</div>
+          <div class="nitro-card-desc">Night City · Vàng Hổ Phách Hoàng Hôn</div>
+          <div class="nitro-swatches">
+            <span style="background:#fbbf24"></span>
+            <span style="background:#f97316"></span>
+            <span style="background:#221204"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+
+      <div class="nitro-card" data-theme="crimson">
+        <div class="nitro-card-preview nitro-prev-crimson">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">BLOOD MOON</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Blood Moon Sakura</div>
+          <div class="nitro-card-desc">Nguyệt Thực Đỏ · Rượu Vang Ruby Neon</div>
+          <div class="nitro-swatches">
+            <span style="background:#fb7185"></span>
+            <span style="background:#e11d48"></span>
+            <span style="background:#240810"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+
+      <div class="nitro-card" data-theme="frost">
+        <div class="nitro-card-preview nitro-prev-frost">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">ARCTIC FROST</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Abyssal Arctic</div>
+          <div class="nitro-card-desc">Băng Giá Cực Quang · Tinh Thể Tuyết Sáng</div>
+          <div class="nitro-swatches">
+            <span style="background:#38bdf8"></span>
+            <span style="background:#a5f3fc"></span>
+            <span style="background:#061826"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
       </div>
     </div>
   </div>
