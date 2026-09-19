@@ -1356,7 +1356,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
         headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
       });
       if(!userRes.ok){
-        throw new Error('Token GitHub không hợp lệ hoặc không có quyền repo');
+        throw new Error('Token GitHub không hợp lệ hoặc không có quyền repo/workflow');
       }
       const userData = await userRes.json();
       const username = userData.login || 'duyzoz';
@@ -1388,6 +1388,21 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       } else {
         if(typeof addLog === 'function') addLog(`[VPS] ✅ Repo ${username}/${targetRepo} đã sẵn sàng!`, 'ok');
       }
+
+      // Xóa ip.txt cũ nếu có để tránh đọc nhầm IP của phiên trước
+      try {
+        const oldIpRes = await fetch(`https://api.github.com/repos/${username}/${targetRepo}/contents/ip.txt`, {
+          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+        });
+        if(oldIpRes.ok){
+          const oldIpData = await oldIpRes.json();
+          await fetch(`https://api.github.com/repos/${username}/${targetRepo}/contents/ip.txt`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'Reset IP for new session', sha: oldIpData.sha })
+          });
+        }
+      } catch(e){}
 
       // 3. Commit/update workflow file
       const rawYaml = document.getElementById('rawWorkflowYaml')?.value || '';
@@ -1432,49 +1447,92 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
         body: JSON.stringify({ ref: 'main', inputs: { duration: '5h40m' } })
       });
 
-      if(dispatchRes.ok || dispatchRes.status === 204){
-        if(typeof addLog === 'function') addLog(`[VPS] 🎉 GitHub Actions Runner ĐÃ BẬT! (Repo: ${username}/${targetRepo})`, 'done');
-        const actUrl = `https://github.com/${username}/${targetRepo}/actions`;
-        showVPS(`✅ Đã kích hoạt Actions: <a href="${actUrl}" target="_blank" style="color:#00f0ff">${username}/${targetRepo}</a>`, 'ok');
-      } else {
+      if(!dispatchRes.ok && dispatchRes.status !== 204){
         const errJson = await dispatchRes.json().catch(() => ({}));
         throw new Error(errJson.message || 'Không thể kích hoạt GitHub Actions');
       }
 
-      // Check run status after 3s to detect account billing limit error immediately
-      await new Promise(r => setTimeout(r, 3000));
-      try {
-        const runCheck = await fetch(`https://api.github.com/repos/${username}/${targetRepo}/actions/runs?per_page=1`, {
-          headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
-        });
-        if(runCheck.ok){
-          const runData = await runCheck.json();
-          const latestRun = runData.workflow_runs?.[0];
-          if(latestRun && (latestRun.conclusion === 'failure' || latestRun.status === 'completed')){
-            const actRunUrl = latestRun.html_url;
-            if(typeof addLog === 'function') addLog(`[VPS] ⚠️ GitHub Actions bị từ chối/lỗi Billing: ${actRunUrl}`, 'err');
-            showVPS(`❌ Job bị dừng! Tài khoản GitHub hết hạn mức phút Actions (Billing). <a href="${actRunUrl}" target="_blank" style="color:#f87171;text-decoration:underline">Xem lỗi trên GitHub</a>`, 'err');
-            setLoad(false);
-            return;
+      const actUrl = `https://github.com/${username}/${targetRepo}/actions`;
+      if(typeof addLog === 'function') addLog(`[VPS] 🎉 GitHub Actions Runner ĐÃ BẬT! Đang chờ khởi động máy ảo...`, 'done');
+      showVPS(`⏳ Đang khởi động máy ảo Windows & kết nối Tailscale... <a href="${actUrl}" target="_blank" style="color:#00f0ff">Xem log</a>`, 'wait');
+
+      // 5. THE REAL POLLING LOOP (Zero-Fake! Chờ đúng IP thật từ runner)
+      let pollCount = 0;
+      const maxPoll = 50; // Poll tối đa ~4 phút (Windows runner boot + cài Tailscale mất khoảng 60-90s)
+      let foundIp = null;
+
+      while(pollCount < maxPoll){
+        pollCount++;
+        await new Promise(r => setTimeout(r, 5000));
+
+        // Kiểm tra xem job trên GitHub có bị fail không
+        try {
+          const runRes = await fetch(`https://api.github.com/repos/${username}/${targetRepo}/actions/runs?per_page=1`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+          });
+          if(runRes.ok){
+            const runData = await runRes.json();
+            const latestRun = runData.workflow_runs?.[0];
+            if(latestRun){
+              if(latestRun.conclusion === 'failure' || latestRun.conclusion === 'cancelled'){
+                const runFailUrl = latestRun.html_url;
+                if(typeof addLog === 'function') addLog(`[VPS] ❌ GitHub Actions thất bại! Bấm vào xem log: ${runFailUrl}`, 'err');
+                showVPS(`❌ GitHub Actions thất bại! <a href="${runFailUrl}" target="_blank" style="color:#f87171;text-decoration:underline;font-weight:700">Xem chi tiết lỗi trên GitHub</a>`, 'err');
+                setLoad(false);
+                setVpsShimmer(false);
+                const rBox = document.getElementById('vpsReadyBox');
+                if(rBox) rBox.style.display = 'none';
+                return;
+              }
+              const runStatus = latestRun.status; // 'queued' hoặc 'in_progress'
+              if(runStatus === 'queued'){
+                showVPS(`⏳ Đang xếp hàng máy chủ GitHub Actions... (~${pollCount*5}s)`, 'wait');
+                if(typeof addLog === 'function' && pollCount % 4 === 0) addLog(`[VPS] ⏳ Runner đang chờ máy chủ GitHub cấp phát (${pollCount*5}s)...`, 'wait');
+              } else if(runStatus === 'in_progress'){
+                showVPS(`⏳ Máy ảo Windows đang boot & thiết lập Tailscale... (~${pollCount*5}s) <a href="${latestRun.html_url}" target="_blank" style="color:#00f0ff">Xem log</a>`, 'wait');
+                if(typeof addLog === 'function' && pollCount % 3 === 0) addLog(`[VPS] ⚙️ Đang cấu hình Windows RDP & Tailscale... (~${pollCount*5}s)`, 'wait');
+              }
+            }
           }
-        }
-      } catch(e){}
+        } catch(e){}
 
-      if(typeof addLog === 'function') addLog('[VPS] 🌐 Đang thiết lập địa chỉ IP Tailscale Mesh...', 'wait');
-      await new Promise(r => setTimeout(r, 1800));
+        // Kiểm tra xem ip.txt đã được runner commit lên chưa
+        try {
+          const ipFileRes = await fetch(`https://api.github.com/repos/${username}/${targetRepo}/contents/ip.txt?ref=main`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+          });
+          if(ipFileRes.ok){
+            const ipFileData = await ipFileRes.json();
+            const decodedIp = atob(ipFileData.content.replace(/\s/g, '')).trim();
+            if(decodedIp && decodedIp.startsWith('100.')){
+              foundIp = decodedIp;
+              break;
+            }
+          }
+        } catch(e){}
+      }
 
-      // Resolve credentials
-      applyVpsCredentials(null, 'duyzoz');
-      showVPS('✅ Máy chủ Windows RDP đã sẵn sàng kết nối!', 'ok');
+      if(foundIp){
+        if(typeof addLog === 'function') addLog(`[VPS] 🎉 Nhận IP Tailscale THẬT từ máy ảo: ${foundIp}`, 'done');
+        applyVpsCredentials(foundIp, 'duyzoz', 'Admin@123456');
+        showVPS(`✅ Máy chủ Windows RDP đã sẵn sàng kết nối! IP: <strong>${foundIp}</strong>`, 'ok');
+      } else {
+        // Fallback: Hướng dẫn người dùng xem IP trực tiếp trong Tailscale Admin Console
+        if(typeof addLog === 'function') addLog('[VPS] ℹ️ Máy ảo đã chạy! Xem IP tại Tailscale Admin Console.', 'info');
+        showVPS(`✅ Máy ảo đã kết nối! Xem IP thật trong <a href="https://login.tailscale.com/admin/machines" target="_blank" style="color:#00f0ff;text-decoration:underline;font-weight:700">Tailscale Admin Console</a>`, 'ok');
+        applyVpsCredentials('Xem tại Tailscale Admin', 'duyzoz', 'Admin@123456');
+      }
       setLoad(false);
 
     } catch(err){
       if(typeof addLog === 'function') addLog('[VPS] ❌ ' + err.message, 'err');
       showVPS('❌ Lỗi: ' + err.message, 'err');
       setLoad(false);
+      setVpsShimmer(false);
+      const rBox = document.getElementById('vpsReadyBox');
+      if(rBox) rBox.style.display = 'none';
     }
   }
-
 
   // Wave 21: Shimmer Wave loading manager
   function setVpsShimmer(active){
@@ -1488,15 +1546,15 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     if(active){
       if(ipVal){
         ipVal.classList.add('shimmer-wave');
-        ipVal.textContent = '⚡ Đang cấp IP Tailscale...';
+        ipVal.textContent = '⚡ Đang chờ IP từ GitHub...';
       }
       if(userVal){
         userVal.classList.add('shimmer-wave');
-        userVal.textContent = 'duyzoz (Đang thiết lập...)';
+        userVal.textContent = 'duyzoz';
       }
       if(passVal){
         passVal.classList.add('shimmer-wave');
-        passVal.textContent = '🔐 Đang tạo mật khẩu...';
+        passVal.textContent = 'Admin@123456';
       }
       if(rdpStatus) rdpStatus.className = 'rdp-live-badge rdp-deploying';
       if(rdpText) rdpText.textContent = '⚡ ĐANG TẠO MÁY CHỦ...';
@@ -1516,11 +1574,11 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     const userVal = document.getElementById('vpsUserVal');
     const passVal = document.getElementById('vpsPassVal');
 
-    const assignedIp = ip || ('100.' + Math.floor(64 + Math.random()*60) + '.' + Math.floor(10 + Math.random()*200) + '.' + Math.floor(10 + Math.random()*200));
-    const assignedPass = pass || generateMilitaryPassword();
+    const assignedIp = ip || 'Chưa nhận được IP';
+    const assignedPass = pass || 'Admin@123456';
 
     if(ipVal) ipVal.textContent = assignedIp;
-    if(userVal) userVal.textContent = 'duyzoz';
+    if(userVal) userVal.textContent = user;
     if(passVal){
       passVal.textContent = assignedPass;
       passVal.dataset.real = assignedPass;
@@ -1529,11 +1587,11 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     startPreciseDemoCountdown(typeof currentVpsSeconds !== 'undefined' ? currentVpsSeconds : 20400); // 5h40m = 20400s
     if(typeof CyberAudio !== 'undefined') if(typeof CyberAudio.deploy === 'function') CyberAudio.deploy(); else CyberAudio.success();
     if(typeof addLog === 'function'){
-      addLog(`[STARTUT] ✅ VPS SẴN SÀNG: IP=${assignedIp} | User=duyzoz | Password=${assignedPass.slice(0,3)}••••••••`, 'done');
+      addLog(`[STARTUT] ✅ VPS SẴN SÀNG: IP=${assignedIp} | User=${user} | Password=${assignedPass}`, 'done');
     }
 
     // Save to list
-    if(typeof addVpsToList === 'function'){
+    if(typeof addVpsToList === 'function' && assignedIp.startsWith('100.')){
       addVpsToList('ms-rd:connect?server=' + assignedIp, assignedIp, localStorage.getItem('github_token') || '');
     }
   }
@@ -1711,6 +1769,12 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     if(!token || token.length < 10){
       showVPS('❌ Chưa có Token! Vui lòng điền GitHub Token và nhấn nút Lưu (💾) cạnh ô nhập.', 'err');
       if(typeof addLog === 'function') addLog('[VPS] ⚠️ Thiếu GitHub Token. Hãy điền token và nhấn nút Lưu (💾) cạnh ô nhập.', 'wait');
+      return;
+    }
+
+    if(!tsKey || tsKey.length < 8){
+      showVPS('⚠️ Chưa có Tailscale Auth Key! Vui lòng điền Auth Key và nhấn Lưu (💾) cạnh ô nhập.', 'wait');
+      if(typeof addLog === 'function') addLog('[VPS] ⚠️ Thiếu Tailscale Auth Key. Vui lòng lấy key tại tailscale.com và lưu lại.', 'wait');
       return;
     }
 

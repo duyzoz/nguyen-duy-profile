@@ -1449,14 +1449,17 @@ on:
         - '3h' 
         - '5h40m'
 
+permissions:
+  contents: write
+
 jobs:
   Premium-RDP-Setup:
     runs-on: windows-latest
     timeout-minutes: 340
     
     steps:
-      - name: 🎯 KHỞI ĐỘNG HỆ THỐNG
-        run: Write-Host "🤖 AI STV PREMIUM RDP SERVER" -ForegroundColor Yellow
+      - name: 🎯 CHECKOUT
+        uses: actions/checkout@v4
 
       - name: 🔧 CẤU HÌNH HỆ THỐNG
         run: |
@@ -1467,13 +1470,9 @@ jobs:
 
       - name: 👤 TẠO TÀI KHOẢN PREMIUM
         run: |
-          $pw = "DuyZoz@" + (Get-Random -Minimum 100000 -Maximum 999999)
-          $sec = ConvertTo-SecureString $pw -AsPlainText -Force
-          New-LocalUser -Name "duyzoz" -Password $sec -AccountNeverExpires
-          Add-LocalGroupMember -Group "Administrators" -Member "duyzoz"
-          Add-LocalGroupMember -Group "Remote Desktop Users" -Member "duyzoz"
-          echo "RDP_PASS=$pw" >> $env:GITHUB_ENV
-          echo "$pw" > $env:TEMP\rdp_password.txt
+          net user duyzoz Admin@123456 /add /expires:never
+          net localgroup administrators duyzoz /add
+          net localgroup "Remote Desktop Users" duyzoz /add
 
       - name: 🌐 THIẾT LẬP MẠNG TAILSCALE
         env:
@@ -1481,10 +1480,18 @@ jobs:
         run: |
           Invoke-WebRequest -Uri "https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi" -OutFile "$env:TEMP\tailscale.msi"
           Start-Process msiexec.exe -ArgumentList "/i", "`"$env:TEMP\tailscale.msi`"", "/quiet", "/norestart" -Wait
-          Start-Sleep -Seconds 10
+          Start-Sleep -Seconds 8
           & "$env:ProgramFiles\Tailscale\tailscale.exe" up --authkey=$env:TAILSCALE_AUTH_KEY --hostname=vps-premium-$env:GITHUB_RUN_ID --reset
           $ip = & "$env:ProgramFiles\Tailscale\tailscale.exe" ip -4
+          Write-Host "=========================================="
           Write-Host "TAILSCALE IP: $ip"
+          Write-Host "=========================================="
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          Set-Content -Path ip.txt -Value $ip
+          git add ip.txt
+          git commit -m "VPS_READY: $ip"
+          git push origin main
 
       - name: ⏳ DUY TRÌ PHIÊN LÀM VIỆC
         run: Start-Sleep -Seconds 20400</textarea>
