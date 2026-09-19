@@ -1570,15 +1570,9 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
             if(latestRun){
               if(latestRun.conclusion === 'failure' || latestRun.conclusion === 'cancelled'){
                 const runFailUrl = latestRun.html_url;
-                if(typeof addLog === 'function') addLog(`[VPS] ❌ GitHub Actions thất bại! Bấm vào xem log: ${runFailUrl}`, 'err');
-                showVPS(`❌ GitHub Actions thất bại! <a href="${runFailUrl}" target="_blank" style="color:#f87171;text-decoration:underline;font-weight:700">Xem chi tiết lỗi trên GitHub</a>`, 'err');
-                setLoad(false);
-                setVpsShimmer(false);
-                const rBox = document.getElementById('vpsReadyBox');
-                if(rBox) rBox.style.display = 'none';
-                return;
+                throw new Error(`GitHub Actions thất bại tại bước thiết lập máy ảo. <a href="${runFailUrl}" target="_blank" style="color:#f87171;text-decoration:underline;font-weight:700">Xem log lỗi GitHub</a>`);
               }
-              const runStatus = latestRun.status; // 'queued' hoặc 'in_progress'
+              const runStatus = latestRun.status;
               if(runStatus === 'queued'){
                 showVPS(`⏳ Đang xếp hàng máy chủ GitHub Actions... (~${pollCount*5}s)`, 'wait');
                 if(typeof addLog === 'function' && pollCount % 4 === 0) addLog(`[VPS] ⏳ Runner đang chờ máy chủ GitHub cấp phát (${pollCount*5}s)...`, 'wait');
@@ -1588,7 +1582,9 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
               }
             }
           }
-        } catch(e){}
+        } catch(e){
+          if(e.message && e.message.includes('GitHub Actions thất bại')) throw e;
+        }
 
         // Kiểm tra xem ip.txt đã được runner commit lên chưa
         try {
@@ -1597,34 +1593,39 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
           });
           if(ipFileRes.ok){
             const ipFileData = await ipFileRes.json();
-            const decodedIp = atob(ipFileData.content.replace(/\s/g, '')).trim();
-            if(decodedIp && decodedIp.startsWith('100.')){
-              foundIp = decodedIp;
+            const decodedContent = atob(ipFileData.content.replace(/\s/g, '')).trim();
+            if(decodedContent && decodedContent.startsWith('100.')){
+              foundIp = decodedContent;
               break;
+            } else if(decodedContent && decodedContent.startsWith('ERROR:')){
+              const errTxt = decodedContent.replace('ERROR:', '').trim();
+              throw new Error(`Tailscale bị lỗi từ máy ảo: ${errTxt}`);
             }
           }
-        } catch(e){}
+        } catch(e){
+          if(e.message && (e.message.includes('báo lỗi') || e.message.includes('Tailscale bị lỗi'))) throw e;
+        }
       }
 
-      if(foundIp){
+      if(foundIp && foundIp.startsWith('100.')){
         if(typeof addLog === 'function') addLog(`[VPS] 🎉 Nhận IP Tailscale THẬT từ máy ảo: ${foundIp}`, 'done');
         applyVpsCredentials(foundIp, 'duyzoz', 'Admin@123456');
         showVPS(`✅ Máy chủ Windows RDP đã sẵn sàng kết nối! IP: <strong>${foundIp}</strong>`, 'ok');
       } else {
-        // Fallback: Hướng dẫn người dùng xem IP trực tiếp trong Tailscale Admin Console
-        if(typeof addLog === 'function') addLog('[VPS] ℹ️ Máy ảo đã chạy! Xem IP tại Tailscale Admin Console.', 'info');
-        showVPS(`✅ Máy ảo đã kết nối! Xem IP thật trong <a href="https://login.tailscale.com/admin/machines" target="_blank" style="color:#00f0ff;text-decoration:underline;font-weight:700">Tailscale Admin Console</a>`, 'ok');
-        applyVpsCredentials('Xem tại Tailscale Admin', 'duyzoz', 'Admin@123456');
+        throw new Error('Hết thời gian chờ (Timeout): Không nhận được IP Tailscale hợp lệ (100.x.y.z). Máy ảo không thể kết nối mạng do Auth Key không hợp lệ hoặc đã hết hạn.');
       }
       setLoad(false);
 
     } catch(err){
       if(typeof addLog === 'function') addLog('[VPS] ❌ ' + err.message, 'err');
-      showVPS('❌ Lỗi: ' + err.message, 'err');
+      showVPS('❌ Lỗi khởi tạo: ' + err.message, 'err');
       setLoad(false);
       setVpsShimmer(false);
       const rBox = document.getElementById('vpsReadyBox');
       if(rBox) rBox.style.display = 'none';
+      const cdCard = document.getElementById('vpsCountdownCard');
+      if(cdCard) cdCard.style.display = 'none';
+      if(typeof clearActiveVpsSession === 'function') clearActiveVpsSession();
     }
   }
 
@@ -2009,6 +2010,14 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     if(!tsKey || tsKey.length < 8){
       showVPS('⚠️ Chưa có Tailscale Auth Key! Vui lòng điền Auth Key và nhấn Lưu (💾) cạnh ô nhập.', 'wait');
       if(typeof addLog === 'function') addLog('[VPS] ⚠️ Thiếu Tailscale Auth Key. Vui lòng lấy key tại tailscale.com và lưu lại.', 'wait');
+      return;
+    }
+
+    if(!tsKey.startsWith('tskey-auth-')){
+      showVPS('❌ Tailscale Auth Key không đúng định dạng! Auth Key kết nối máy tính bắt buộc phải bắt đầu bằng <code>tskey-auth-</code>.<br><span style="font-size:0.75rem;color:#fca5a5">Key bạn nhập là API Key (loại quản trị) hoặc bị thiếu tiền tố. <a href="https://login.tailscale.com/admin/settings/keys" target="_blank" style="color:#00f0ff;text-decoration:underline;font-weight:700">Bấm vào đây để lấy Auth Key (chọn Reusable)</a></span>', 'err');
+      if(typeof addLog === 'function') addLog('[VPS] ❌ Auth Key sai loại! Phải bắt đầu bằng "tskey-auth-". Không dùng API key.', 'err');
+      const warn = document.getElementById('tsKeyFormatWarn');
+      if(warn) warn.style.display = 'block';
       return;
     }
 
@@ -5223,15 +5232,37 @@ Respond accurately with this ground truth knowledge:
     return `Tailscale Key #${max + 1}`;
   }
 
-  // Save Tailscale key button
+  // Save Tailscale key button & Real-time validation
   const saveTsKeyBtn = document.getElementById('saveTsKeyBtn');
   const vpsTailscaleKeyInput = document.getElementById('vpsTailscaleKey');
+  const tsKeyWarnEl = document.getElementById('tsKeyFormatWarn');
+
+  if(vpsTailscaleKeyInput){
+    vpsTailscaleKeyInput.addEventListener('input', () => {
+      const val = vpsTailscaleKeyInput.value.trim();
+      if(val && val.length > 5 && !val.startsWith('tskey-auth-')){
+        if(tsKeyWarnEl) tsKeyWarnEl.style.display = 'block';
+      } else {
+        if(tsKeyWarnEl) tsKeyWarnEl.style.display = 'none';
+      }
+    });
+  }
+
   if(saveTsKeyBtn && vpsTailscaleKeyInput){
     saveTsKeyBtn.addEventListener('click', () => {
       const val = vpsTailscaleKeyInput.value.trim();
       if(!val){
         if(typeof addLog === 'function') addLog('[STARTUT] ⚠️ Vui lòng nhập Tailscale Auth Key!', 'wait');
         return;
+      }
+      if(!val.startsWith('tskey-auth-')){
+        if(tsKeyWarnEl) tsKeyWarnEl.style.display = 'block';
+        if(typeof showVPS === 'function'){
+          showVPS('❌ Tailscale Auth Key phải bắt đầu bằng <code>tskey-auth-</code> (chọn Reusable tại Tailscale Admin). Key bạn nhập là API Key!', 'err');
+        }
+        if(typeof addLog === 'function') addLog('[STARTUT] ⚠️ Cảnh báo: Key này không bắt đầu bằng "tskey-auth-". Backend Tailscale sẽ báo invalid key!', 'err');
+      } else {
+        if(tsKeyWarnEl) tsKeyWarnEl.style.display = 'none';
       }
       const list = getTsKeysList();
       const autoLabel = nextTsKeyName();

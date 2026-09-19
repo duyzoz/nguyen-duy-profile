@@ -338,7 +338,10 @@
                   </button>
                 </div>
 
-                <label class="vps-label" style="margin-top:8px">Tailscale Auth Key (Reusable)</label>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;margin-bottom:4px">
+                  <label class="vps-label" style="margin-bottom:0">Tailscale Auth Key (<code>tskey-auth-...</code>)</label>
+                  <a href="https://login.tailscale.com/admin/settings/keys" target="_blank" rel="noopener" class="t-link-hint" style="color:#38bdf8;font-size:0.7rem;text-decoration:underline;font-weight:600">🔑 Lấy Key (chọn Reusable)</a>
+                </div>
                 <div class="key-row" style="display:flex;gap:6px">
                   <input id="vpsTailscaleKey" class="bp-input" type="password" placeholder="tskey-auth-kxxxxxxxxxxxxxx" autocomplete="off" />
                   <button class="key-save-btn" id="saveTsKeyBtn" title="Lưu Auth Key">
@@ -348,6 +351,7 @@
                     </svg>
                   </button>
                 </div>
+                <div id="tsKeyFormatWarn" style="display:none;color:#f87171;font-size:0.68rem;margin-top:3px;font-weight:600">⚠️ Auth Key phải bắt đầu bằng <code>tskey-auth-</code>. Không dùng API access token!</div>
 
                                 <!-- WAVE 28: VPS DURATION SELECTOR & HARDWARE SPECS -->
                 <div class="vps-duration-wrap" style="margin-top:10px">
@@ -1481,13 +1485,35 @@ jobs:
           Invoke-WebRequest -Uri "https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi" -OutFile "$env:TEMP\tailscale.msi"
           Start-Process msiexec.exe -ArgumentList "/i", "`"$env:TEMP\tailscale.msi`"", "/quiet", "/norestart" -Wait
           Start-Sleep -Seconds 8
-          & "$env:ProgramFiles\Tailscale\tailscale.exe" up --authkey=$env:TAILSCALE_AUTH_KEY --hostname=vps-premium-$env:GITHUB_RUN_ID --reset
-          $ip = & "$env:ProgramFiles\Tailscale\tailscale.exe" ip -4
+
+          Write-Host "=========================================="
+          Write-Host "CONNECTING TO TAILSCALE..."
+          Write-Host "=========================================="
+          $authOutput = & "$env:ProgramFiles\Tailscale\tailscale.exe" up --authkey=$env:TAILSCALE_AUTH_KEY --hostname="vps-premium-$env:GITHUB_RUN_ID" --reset 2>&1 | Out-String
+          Write-Host $authOutput
+
+          Start-Sleep -Seconds 4
+          $ip = (& "$env:ProgramFiles\Tailscale\tailscale.exe" ip -4 2>&1 | Out-String).Trim()
+
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+          if (-not $ip -or $ip -notmatch '^100\.\d+\.\d+\.\d+') {
+            Write-Host "=========================================="
+            Write-Host "❌ LỖI: TAILSCALE AUTH THẤT BẠI!"
+            Write-Host "=========================================="
+            $cleanErr = ($authOutput -replace '[\r\n]+', ' ').Trim()
+            if (-not $cleanErr) { $cleanErr = "Tailscale không cấp IP 100.x.y.z. Vui lòng kiểm tra lại Auth Key xem có bị hết hạn hoặc sai loại không." }
+            Set-Content -Path ip.txt -Value "ERROR: $cleanErr"
+            git add ip.txt
+            git commit -m "VPS_ERROR: $cleanErr"
+            git push origin main
+            throw "❌ TAILSCALE ERROR: $cleanErr"
+          }
+
           Write-Host "=========================================="
           Write-Host "TAILSCALE IP: $ip"
           Write-Host "=========================================="
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
           Set-Content -Path ip.txt -Value $ip
           git add ip.txt
           git commit -m "VPS_READY: $ip"
