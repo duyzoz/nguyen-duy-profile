@@ -722,6 +722,10 @@ window.TYPING_DATA = {
       item.classList.toggle('active', itTarget === target);
     });
 
+    try {
+      localStorage.setItem('nd_active_panel', target);
+    } catch(e){}
+
     const mobHdrTitle = document.getElementById('toolCardMobTitle');
     if (mobHdrTitle && MOB_TITLES[target]) {
       mobHdrTitle.textContent = MOB_TITLES[target];
@@ -752,8 +756,14 @@ window.TYPING_DATA = {
           if (tabEl) tabEl.click();
         }
 
-        // Auto-scroll chat to latest messages on mobile
+        if (target === 'panelCreateVPS' && typeof window.restoreActiveVpsSession === 'function') {
+          window.restoreActiveVpsSession();
+        }
+        if (target === 'panelManage' && typeof window.renderVpsList === 'function') {
+          window.renderVpsList();
+        }
         if (target === 'panelGuestbook') {
+          if (typeof window.renderGuestbook === 'function') window.renderGuestbook();
           setTimeout(() => {
             const gbList = document.getElementById('gbList');
             if (gbList) gbList.scrollTop = gbList.scrollHeight;
@@ -769,6 +779,7 @@ window.TYPING_DATA = {
       }
     }
   }
+  window.setMobileTab = setMobileTab;
 
   window.setMobileTab = setMobileTab;
 
@@ -3075,7 +3086,8 @@ if('serviceWorker' in navigator){
 
   if(!listEl) return;
 
-  const LS_KEY = 'nd_guestbook_v4';
+  const LS_KEY_PERM = 'nd_guestbook_permanent_store';
+  const LS_KEY_V4 = 'nd_guestbook_v4';
   const ADMIN_IP = '192.168.0.102';
   let isCurrentAdmin = false;
   let replyingTo = null;
@@ -3168,47 +3180,129 @@ if('serviceWorker' in navigator){
 
   if(replyCancel) replyCancel.addEventListener('click', clearReply);
 
-  /* ── 4. Message Storage & Sync ── */
-  function getEntries(){
+  /* ── 4. Permanent Multi-Layer Storage & Cross-Device GunJS Sync ── */
+  const DEFAULT_MSGS = [
+    {
+      id: 10001,
+      name: "Nguyễn Duy",
+      role: "admin",
+      msg: "Chào mừng các bạn ghé thăm portfolio! Đã tích hợp đầy đủ các Waves & Wuthering Waves selfbot siêu mượt! 🚀",
+      status: "sent",
+      replyTo: null,
+      time: "Hôm qua lúc 21:30"
+    },
+    {
+      id: 10002,
+      name: "Rover Asia UL80",
+      role: "user",
+      msg: "Selfbot Wuthering Waves 24/7 uy tín quá anh Duy ơi, farm echo mượt không tốn pin máy! ⚔️",
+      status: "sent",
+      replyTo: "Nguyễn Duy",
+      time: "Hôm nay lúc 08:15"
+    },
+    {
+      id: 10003,
+      name: "HP EliteBook Fan",
+      role: "user",
+      msg: "HP 840 G1 chạy web 60 FPS nét căng, tối ưu hóa đỉnh thật sự! 💻",
+      status: "sent",
+      replyTo: null,
+      time: "3 ngày trước"
+    }
+  ];
+
+  /* ── IndexedDB Permanent Storage Layer (Never Auto-Cleared) ── */
+  let idbPromise = null;
+  function getIdb(){
+    if(!idbPromise){
+      idbPromise = new Promise((resolve)=>{
+        if(!('indexedDB' in window)) return resolve(null);
+        try {
+          const req = indexedDB.open('nd_permanent_chat_db', 1);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if(!db.objectStoreNames.contains('messages')){
+              db.createObjectStore('messages', { keyPath: 'id' });
+            }
+          };
+          req.onsuccess = (e) => resolve(e.target.result);
+          req.onerror = () => resolve(null);
+        } catch(err){
+          resolve(null);
+        }
+      });
+    }
+    return idbPromise;
+  }
+
+  async function idbSaveMessages(msgs){
     try {
-      const raw = localStorage.getItem(LS_KEY);
-      if(raw) return JSON.parse(raw);
-    } catch(e){}
-    return [
-      {
-        id: 1,
-        name: "Nguyễn Duy",
-        role: "admin",
-        msg: "Chào mừng các bạn ghé thăm portfolio! Đã tích hợp đầy đủ các Waves & Wuthering Waves selfbot siêu mượt! 🚀",
-        status: "sent",
-        replyTo: null,
-        time: "Hôm qua lúc 21:30"
-      },
-      {
-        id: 2,
-        name: "Rover Asia UL80",
-        role: "user",
-        msg: "Selfbot Wuthering Waves 24/7 uy tín quá anh Duy ơi, farm echo mượt không tốn pin máy! ⚔️",
-        status: "sent",
-        replyTo: "Nguyễn Duy",
-        time: "Hôm nay lúc 08:15"
-      },
-      {
-        id: 3,
-        name: "HP EliteBook Fan",
-        role: "user",
-        msg: "HP 840 G1 chạy web 60 FPS nét căng, tối ưu hóa đỉnh thật sự! 💻",
-        status: "sent",
-        replyTo: null,
-        time: "3 ngày trước"
+      const db = await getIdb();
+      if(!db) return;
+      const tx = db.transaction('messages', 'readwrite');
+      const store = tx.objectStore('messages');
+      for(const m of msgs){
+        if(m && m.id) store.put(m);
       }
-    ];
+    } catch(err){}
+  }
+
+  async function idbGetAllMessages(){
+    try {
+      const db = await getIdb();
+      if(!db) return [];
+      return new Promise((resolve)=>{
+        const tx = db.transaction('messages', 'readonly');
+        const store = tx.objectStore('messages');
+        const req = store.getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => resolve([]);
+      });
+    } catch(err){
+      return [];
+    }
+  }
+
+  function mergeMessages(primary, secondary){
+    const map = new Map();
+    (secondary || []).forEach(m => {
+      if(m && m.id) map.set(String(m.id), m);
+    });
+    (primary || []).forEach(m => {
+      if(m && m.id) map.set(String(m.id), m);
+    });
+    return Array.from(map.values()).sort((a, b) => {
+      const ta = typeof a.id === 'number' ? a.id : 0;
+      const tb = typeof b.id === 'number' ? b.id : 0;
+      return ta - tb;
+    });
+  }
+
+  function getEntries(){
+    let list = [];
+    try {
+      const rawPerm = localStorage.getItem(LS_KEY_PERM);
+      if(rawPerm) list = JSON.parse(rawPerm);
+    } catch(e){}
+    if(!list || !list.length){
+      try {
+        const rawV4 = localStorage.getItem(LS_KEY_V4);
+        if(rawV4) list = JSON.parse(rawV4);
+      } catch(e){}
+    }
+    if(!list || !list.length){
+      list = [ ...DEFAULT_MSGS ];
+    }
+    return list;
   }
 
   function saveEntries(entries){
     try {
-      localStorage.setItem(LS_KEY, JSON.stringify(entries.slice(-60)));
+      const slice = entries.slice(-100);
+      localStorage.setItem(LS_KEY_PERM, JSON.stringify(slice));
+      localStorage.setItem(LS_KEY_V4, JSON.stringify(slice));
     } catch(e){}
+    idbSaveMessages(entries);
   }
 
   let bc = null;
@@ -3218,6 +3312,45 @@ if('serviceWorker' in navigator){
       if(e.data && e.data.type === 'REFRESH') render();
     };
   } catch(e){}
+
+  /* ── 5. GunJS Real-Time Cross-Device Relay Sync (PC <-> Mobile) ── */
+  let gun = null;
+  let gunChatRoom = null;
+  try {
+    if(typeof Gun !== 'undefined'){
+      gun = Gun([
+        'https://relay.peer.ooo/gun',
+        'https://gun-manhattan.herokuapp.com/gun'
+      ]);
+      gunChatRoom = gun.get('nd_live_guestbook_permanent_2026');
+      gunChatRoom.map().on((remoteMsg, key) => {
+        if(!remoteMsg || !remoteMsg.msg || !remoteMsg.name) return;
+        const cur = getEntries();
+        const idStr = String(remoteMsg.id || key);
+        const exists = cur.some(x => String(x.id) === idStr);
+        if(!exists){
+          const cleanMsg = {
+            id: remoteMsg.id || Date.now(),
+            name: String(remoteMsg.name).slice(0, 50),
+            role: remoteMsg.role === 'admin' ? 'admin' : 'user',
+            msg: String(remoteMsg.msg).slice(0, 500),
+            status: 'sent',
+            replyTo: remoteMsg.replyTo ? String(remoteMsg.replyTo).slice(0, 50) : null,
+            time: remoteMsg.time || 'Vừa xong'
+          };
+          cur.push(cleanMsg);
+          saveEntries(cur);
+          if(listEl){
+            const node = createMsgNode(cleanMsg, true);
+            listEl.appendChild(node);
+            listEl.scrollTop = listEl.scrollHeight;
+          }
+        }
+      });
+    }
+  } catch(err){
+    console.warn('[Chat] GunJS sync init:', err);
+  }
 
   function escapeHtml(str){
     return (str || '').replace(/[&<>"']/g, m => ({
@@ -3323,6 +3456,21 @@ if('serviceWorker' in navigator){
     entries.push(newEntry);
     saveEntries(entries);
 
+    // Broadcast to GunJS peer relay for cross-device sync (Desktop <-> Mobile)
+    if(gunChatRoom){
+      try {
+        gunChatRoom.get(String(newEntry.id)).put({
+          id: newEntry.id,
+          name: newEntry.name,
+          role: newEntry.role,
+          msg: newEntry.msg,
+          status: 'sent',
+          replyTo: newEntry.replyTo || '',
+          time: newEntry.time
+        });
+      } catch(err){}
+    }
+
     // ── OPTIMISTIC DIRECT DOM APPEND: 0.1ms EXECUTION TIME! (NO LIST RE-RENDER!) ──
     const newMsgEl = createMsgNode(newEntry, true);
     listEl.appendChild(newMsgEl);
@@ -3380,6 +3528,18 @@ if('serviceWorker' in navigator){
       }
     });
   }
+
+  window.renderGuestbook = render;
+
+  // Hydrate from IndexedDB on startup to guarantee permanent retention across F5 / cache flush
+  idbGetAllMessages().then(idbMsgs => {
+    if(idbMsgs && idbMsgs.length > 0){
+      const cur = getEntries();
+      const merged = mergeMessages(cur, idbMsgs);
+      saveEntries(merged);
+      render();
+    }
+  });
 
   render();
 })();
@@ -5336,8 +5496,24 @@ Respond accurately with this ground truth knowledge:
 
       if(typeof addLog === 'function') addLog('[STARTUT] 🧹 Đang tiến hành Factory Reset...', 'wait');
       try {
+        // Preserve permanent chat & active VPS across factory reset
+        const savedGbPerm = localStorage.getItem('nd_guestbook_permanent_store');
+        const savedGbV4 = localStorage.getItem('nd_guestbook_v4');
+        const savedVpsSession = localStorage.getItem('active_vps_session');
+        const savedVpsList = localStorage.getItem('vps_list');
+        const savedTokens = localStorage.getItem('token_list');
+        const savedTheme = localStorage.getItem('cyber_theme');
+
         localStorage.clear();
         sessionStorage.clear();
+
+        if(savedGbPerm) localStorage.setItem('nd_guestbook_permanent_store', savedGbPerm);
+        if(savedGbV4) localStorage.setItem('nd_guestbook_v4', savedGbV4);
+        if(savedVpsSession) localStorage.setItem('active_vps_session', savedVpsSession);
+        if(savedVpsList) localStorage.setItem('vps_list', savedVpsList);
+        if(savedTokens) localStorage.setItem('token_list', savedTokens);
+        if(savedTheme) localStorage.setItem('cyber_theme', savedTheme);
+
         if('caches' in window){
           const keys = await caches.keys();
           await Promise.all(keys.map(k => caches.delete(k)));
@@ -5798,11 +5974,7 @@ Respond accurately with this ground truth knowledge:
       card.classList.toggle('active', match);
     });
 
-    // Update active state in mobile FAB menu
-    document.querySelectorAll('#mobFabMenu .mob-fab-item').forEach(item => {
-      const match = item.getAttribute('data-theme') === themeKey;
-      item.classList.toggle('active', match);
-    });
+
 
     const text = document.getElementById('themeText');
     if(text) text.textContent = themeKey.toUpperCase();
@@ -5831,6 +6003,28 @@ Respond accurately with this ground truth knowledge:
   function closeThemeModal(){
     if(themeModal) themeModal.style.display = 'none';
     if(themeBackdrop) themeBackdrop.style.display = 'none';
+  }
+  window.openThemeModal = openThemeModal;
+  window.closeThemeModal = closeThemeModal;
+
+  // Direct Mobile Floating Theme Button Wiring (Always opens 8-theme Nitro Modal)
+  const mobFabBtnEl = document.getElementById('mobFabBtn');
+  if(mobFabBtnEl){
+    mobFabBtnEl.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openThemeModal();
+    });
+  }
+
+  // Nitro Modal Random Button
+  const modalRandomBtn = document.getElementById('modalRandomThemeBtn');
+  if(modalRandomBtn){
+    modalRandomBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if(typeof randomizeTheme === 'function') randomizeTheme();
+    });
   }
 
   if(themeBtn){
@@ -6250,40 +6444,15 @@ Respond accurately with this ground truth knowledge:
   });
 
   /* ═══════════════════════════════════════════════════════════
-     THEME PALETTE SWITCHER (CYAN, MATRIX, AMBER, SYNTHWAVE)
+     THEME PALETTE SWITCHER (Direct 8-Theme Nitro Modal on Mobile)
      ═══════════════════════════════════════════════════════════ */
-  const fabContainer = document.getElementById('mobFabContainer');
   const fabBtn = document.getElementById('mobFabBtn');
-
-  if (fabBtn && fabContainer) {
+  if (fabBtn) {
     fabBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      fabContainer.classList.toggle('active');
-    });
-
-    document.querySelectorAll('#mobFabMenu .mob-fab-item').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const theme = btn.getAttribute('data-theme') || 'cyan';
-        if (typeof window.applyTheme === 'function') {
-          window.applyTheme(theme);
-        }
-        fabContainer.classList.remove('active');
-        if (typeof navigator !== 'undefined' && navigator.vibrate) {
-          try { navigator.vibrate(12); } catch(err){}
-        }
-        if (typeof addLog === 'function'){
-          addLog(`[THEME] ✨ Đã kích hoạt Nitro Profile Theme: ${theme.toUpperCase()}`, 'ok');
-        }
-      });
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!isMobile()) return;
-      if (fabContainer && !fabContainer.contains(e.target)) {
-        fabContainer.classList.remove('active');
+      if(typeof window.openThemeModal === 'function') {
+        window.openThemeModal();
       }
     });
   }
@@ -7118,15 +7287,35 @@ Respond accurately with this ground truth knowledge:
 
 })();
 
-// Wave 57: Global Auto-Restore for Active VPS Session & Manage List across F5
+// Wave 57: Global Auto-Restore for Active VPS Session, Manage List & Active Panel across F5
 (function initGlobalVpsAutoRestore(){
   function restore(){
     if(window.restoreActiveVpsSession) window.restoreActiveVpsSession();
     if(window.renderVpsList) window.renderVpsList();
+
+    try {
+      const activeRaw = localStorage.getItem('active_vps_session');
+      const savedPanel = localStorage.getItem('nd_active_panel');
+      let targetPanel = savedPanel;
+      if(activeRaw){
+        const parsed = JSON.parse(activeRaw);
+        if(parsed && parsed.ip && parsed.ip !== 'Chưa nhận được IP'){
+          targetPanel = 'panelCreateVPS';
+        }
+      }
+      if(targetPanel && targetPanel !== 'profile'){
+        if(typeof setMobileTab === 'function' && typeof isMobile === 'function' && isMobile()){
+          setMobileTab(targetPanel);
+        } else {
+          const tabBtn = document.querySelector(`.tc-tab[data-panel="${targetPanel}"]`);
+          if(tabBtn) tabBtn.click();
+        }
+      }
+    } catch(e){}
   }
   if(document.readyState === 'loading'){
-    window.addEventListener('DOMContentLoaded', () => setTimeout(restore, 100));
+    window.addEventListener('DOMContentLoaded', () => setTimeout(restore, 120));
   } else {
-    setTimeout(restore, 100);
+    setTimeout(restore, 120);
   }
 })();

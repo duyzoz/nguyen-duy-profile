@@ -1031,53 +1031,9 @@
       </button>
     </nav>
 
-    <!-- MOBILE THEME PALETTE FAB & MENU -->
+    <!-- MOBILE THEME PALETTE FAB -->
     <div class="mob-fab-container" id="mobFabContainer">
-      <div class="mob-fab-menu" id="mobFabMenu">
-        <div class="mfm-header">✨ PROFILE THEMES</div>
-        <button class="mob-fab-item cyber-sound-btn" id="themeCyan" data-theme="cyan" type="button">
-          <span class="mfi-icon">💎</span>
-          <span class="mfi-txt">Cyber Cyan</span>
-        </button>
-        <button class="mob-fab-item cyber-sound-btn" id="themeAmethyst" data-theme="amethyst" type="button">
-          <span class="mfi-icon">🟣</span>
-          <span class="mfi-txt">Amethyst Velvet</span>
-        </button>
-        <button class="mob-fab-item cyber-sound-btn" id="themeMatrix" data-theme="matrix" type="button">
-          <span class="mfi-icon">🟢</span>
-          <span class="mfi-txt">Matrix Emerald</span>
-        </button>
-        <button class="mob-fab-item cyber-sound-btn" id="themeAmber" data-theme="amber" type="button">
-          <span class="mfi-icon">🟡</span>
-          <span class="mfi-txt">Sunset Amber</span>
-        </button>
-        <button class="mob-fab-item cyber-sound-btn" id="themeCrimson" data-theme="crimson" type="button">
-          <span class="mfi-icon">🔴</span>
-          <span class="mfi-txt">Blood Moon</span>
-        </button>
-        <button class="mob-fab-item cyber-sound-btn" id="themeFrost" data-theme="frost" type="button">
-          <span class="mfi-icon">❄️</span>
-          <span class="mfi-txt">Arctic Frost</span>
-        </button>
-        <button class="mob-fab-item cyber-sound-btn" id="themeSnow" data-theme="snow" type="button">
-          <span class="mfi-icon">🤍</span>
-          <span class="mfi-txt">Trắng Tuyết (Snow)</span>
-        </button>
-        <button class="mob-fab-item cyber-sound-btn" id="themeOled" data-theme="oled" type="button">
-          <span class="mfi-icon">🖤</span>
-          <span class="mfi-txt">OLED True Black (Max Pin)</span>
-        </button>
-        <div class="mfm-divider" style="height:1px;background:rgba(255,255,255,0.1);margin:4px 0"></div>
-        <button class="mob-fab-item cyber-sound-btn" id="mobSfxToggleBtn" type="button">
-          <span class="mfi-icon" id="mobSfxIcon">🔊</span>
-          <span class="mfi-txt" id="mobSfxTxt">Âm Thanh: BẬT</span>
-        </button>
-        <button class="mob-fab-item cyber-sound-btn" id="mobThemeRandomBtn" type="button">
-          <span class="mfi-icon">🎲</span>
-          <span class="mfi-txt">Theme Ngẫu Nhiên</span>
-        </button>
-      </div>
-      <button class="mob-fab-btn cyber-sound-btn" id="mobFabBtn" type="button" aria-label="Bảng Màu Cyber" title="Đổi giao diện">
+      <button class="mob-fab-btn cyber-sound-btn" id="mobFabBtn" type="button" aria-label="Bảng Màu Cyber" title="Đổi giao diện (8 Themes Nitro)">
         <span class="mfb-icon" id="mobFabIcon">🎨</span>
       </button>
     </div>
@@ -1180,7 +1136,10 @@
         <div class="nitro-theme-title"><span class="nitro-icon">✨</span> GIAO DIỆN PROFILE NITRO</div>
         <div class="nitro-theme-sub">Biến đổi toàn diện màu nền Profile Card, Tiện Ích &amp; Music Player chuẩn Discord Nitro</div>
       </div>
-      <button class="nitro-theme-close" id="themeModalClose" type="button" aria-label="Đóng bảng theme">✕</button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="nitro-random-btn cyber-sound-btn" id="modalRandomThemeBtn" type="button" title="Chọn Theme Ngẫu Nhiên">🎲 Ngẫu nhiên</button>
+        <button class="nitro-theme-close" id="themeModalClose" type="button" aria-label="Đóng bảng theme">✕</button>
+      </div>
     </div>
     <div class="nitro-theme-grid">
       <!-- 6 DISCORD NITRO PROFILE THEMES -->
@@ -1437,6 +1396,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
   <script src="app_nd.js?v=20260917_v50"></script>
 <textarea id="rawWorkflowYaml" style="display:none" readonly>name: 🚀 SEVER AI STV PREMIUM
 
