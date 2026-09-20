@@ -26,7 +26,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" href="assets/avatar.png" />
   <link rel="apple-touch-icon" href="assets/avatar.png" />
-  <link rel="stylesheet" href="style.css?v=20260920_v57" />
+  <link rel="stylesheet" href="style.css?v=20260920_v58" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -74,6 +74,12 @@
         <div class="fps-hud-dot" id="fpsDot"></div>
         <div class="fps-hud-val"><span id="fpsCount">60</span><small>FPS</small></div>
         <div class="fps-hud-tag" id="fpsTag">Smooth</div>
+      </div>
+
+      <!-- PING LATENCY HUD (Wave 83) -->
+      <div class="ping-hud-box" id="pingHudBox" title="Độ trễ mạng thực tế (Network Latency)">
+        <div class="ping-hud-dot" id="pingDot"></div>
+        <div class="ping-hud-val"><span id="pingCount">--</span><small>ms</small></div>
       </div>
 
       <div class="lang-switch-box" id="langSwitchBox">
@@ -435,8 +441,11 @@
                 </div>
 
                 <div style="display:flex;gap:8px;margin-top:2px">
-                  <button type="button" id="vpsDownloadRdpBtn" class="vps-download-rdp-btn cyber-sound-btn" style="width:100%" title="Tải file cấu hình .RDP kết nối ngay vào máy tính">
-                    <span>📥 Tải File Kết Nối (.RDP)</span>
+                  <button type="button" id="vpsDownloadRdpBtn" class="vps-download-rdp-btn cyber-sound-btn" style="flex:1" title="Tải file cấu hình .RDP kết nối ngay vào máy tính">
+                    <span>📥 Tải File (.RDP)</span>
+                  </button>
+                  <button type="button" id="vpsPingProbeBtn" class="vps-ping-probe-btn cyber-sound-btn" style="flex:1" title="Kiểm tra trạng thái đường truyền VPS">
+                    <span id="vpsPingProbeTxt">⚡ Kiểm Tra VPS</span>
                   </button>
                 </div>
 
@@ -493,6 +502,24 @@
               <div class="vps-list" id="vpsList">
                 <div class="token-empty" id="vpsEmptyMsg">Chưa có VPS nào được tạo</div>
               </div>
+            </div>
+
+            <!-- CROSS-DEVICE CONFIG SYNC & BACKUP (Wave 86) -->
+            <div class="t-divider"></div>
+            <div class="t-block">
+              <div class="t-title" style="font-size:.85rem;margin-bottom:4px">🔄 Đồng Bộ Cấu Hình &amp; Phiên VPS (Cross-Device)</div>
+              <div class="t-sub" style="margin-bottom:8px">Sao lưu hoặc chuyển toàn bộ token &amp; phiên VPS giữa PC và Smartphone</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+                <button type="button" id="btnExportConfig" class="proj-btn proj-gh cyber-sound-btn" style="text-align:center;padding:8px" title="Xuất cấu hình JSON">
+                  <span>📤 Xuất Cấu Hình</span>
+                </button>
+                <button type="button" id="btnImportConfig" class="proj-btn proj-live cyber-sound-btn" style="text-align:center;padding:8px" title="Nhập cấu hình từ thiết bị khác">
+                  <span>📥 Nhập Cấu Hình</span>
+                </button>
+              </div>
+              <button type="button" id="btnQrSyncConfig" class="bp-btn cyber-sound-btn" style="width:100%;margin-top:2px" title="Quét mã QR để đồng bộ sang điện thoại">
+                <span>📱 Quét QR Chuyển Sang Mobile</span>
+              </button>
             </div>
           </div>
         </div>
@@ -974,6 +1001,32 @@
     </div>
   </div>
 
+  <!-- MOBILE FLOATING CYBER MINI MUSIC BAR (Wave 84) -->
+  <div class="mobile-mini-player" id="mobileMiniPlayer" style="display:none">
+    <div class="mmp-track-progress" id="mmpProgress"></div>
+    <div class="mmp-inner">
+      <div class="mmp-art-wrap" id="mmpArtClick" title="Chạm để mở đĩa than">
+        <img src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg" alt="Mini Art" class="mmp-art" id="mmpArt" />
+        <div class="mmp-spin-dot"></div>
+      </div>
+      <div class="mmp-info" id="mmpInfoClick" title="Chạm để mở đĩa than">
+        <div class="mmp-title" id="mmpTitle">2IN1 - Người Đã Yêu Ai Remix</div>
+        <div class="mmp-sub"><span class="mmp-dot"></span><span id="mmpStatus">Đang phát · Chạm mở đĩa than</span></div>
+      </div>
+      <div class="mmp-controls">
+        <button class="mmp-btn cyber-sound-btn" id="mmpPrevBtn" type="button" aria-label="Bài trước">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><rect x="5" y="4" width="2" height="16" rx="1"/></svg>
+        </button>
+        <button class="mmp-btn mmp-btn-play cyber-sound-btn" id="mmpPlayBtn" type="button" aria-label="Phát / Dừng">
+          <svg id="mmpPlayIcon" viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+        <button class="mmp-btn cyber-sound-btn" id="mmpNextBtn" type="button" aria-label="Bài tiếp">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><rect x="17" y="4" width="2" height="16" rx="1"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MOBILE CYBER NAVIGATION DOCK (Thumb-friendly 6-item bar) -->
     <nav class="mobile-nav-dock" id="mobileNavDock" aria-label="Mobile Navigation">
       <button class="mob-nav-item active cyber-sound-btn" id="mobNavProfile" data-target="profile" aria-label="Hồ Sơ">
@@ -1275,6 +1328,24 @@
     </div>
   </div>
 
+  <!-- CROSS-DEVICE CONFIG SYNC MODAL (Wave 86) -->
+  <div class="nitro-theme-backdrop" id="configModalBackdrop" style="display:none"></div>
+  <div class="cyber-config-modal" id="cyberConfigModal" style="display:none">
+    <div class="cqm-header">
+      <div class="cqm-title">🔄 ĐỒNG BỘ CẤU HÌNH CLOUD &amp; VPS</div>
+      <button class="cqm-close" id="configModalClose">✕</button>
+    </div>
+    <div class="cqm-body">
+      <div class="cqm-desc" id="configModalDesc">Dán mã cấu hình để nhập hoặc sao chép mã xuất để chuyển sang thiết bị khác:</div>
+      <textarea class="config-modal-textarea" id="configModalTextarea" rows="6" placeholder="Dán chuỗi cấu hình JSON tại đây..."></textarea>
+      <div class="config-modal-actions" style="display:flex;gap:8px;margin-top:10px">
+        <button class="bp-btn cyber-sound-btn" id="btnConfigApply" style="flex:1"><span>✅ Áp Dụng (Nhập)</span></button>
+        <button class="proj-btn proj-gh cyber-sound-btn" id="btnConfigCopy" style="flex:1"><span>📋 Sao Chép</span></button>
+      </div>
+      <div id="configModalStatus" style="font-size:0.75rem;margin-top:8px;text-align:center;display:none"></div>
+    </div>
+  </div>
+
   <!-- DISCORD NITRO AVATAR FRAME MODAL (Wave 62) -->
   <div class="nitro-theme-backdrop" id="avatarModalBackdrop" style="display:none"></div>
   <div class="avatar-deco-modal" id="avatarDecoModal" style="display:none">
@@ -1356,6 +1427,14 @@
           <span class="bi-label">💾 SSD (LƯU TRỮ)</span>
           <span class="bi-val" id="benchSsdVal">Đang nhận diện...</span>
         </div>
+        <div class="bench-item" id="benchItemHz">
+          <span class="bi-label">📺 TẦN SỐ QUÉT (HZ)</span>
+          <span class="bi-val" id="benchHzVal">Đang đo VSync...</span>
+        </div>
+        <div class="bench-item" id="benchItemBattery">
+          <span class="bi-label">🔋 PIN &amp; NGUỒN</span>
+          <span class="bi-val" id="benchBatteryVal">Đang kiểm tra...</span>
+        </div>
       </div>
       <button class="bp-btn cyber-sound-btn" id="btnRunBenchAgain" style="margin-top:12px">
         <span>🔄 Đo lại ngay</span>
@@ -1364,7 +1443,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
-  <script src="app_nd.js?v=20260920_v57"></script>
+  <script src="app_nd.js?v=20260920_v58"></script>
 <textarea id="rawWorkflowYaml" style="display:none" readonly>name: 🚀 SEVER AI STV NGROK RDP
 
 on:

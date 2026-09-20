@@ -8331,3 +8331,327 @@ html[data-theme="snow"] .bench-item .bi-val {
     font-size: 0.68rem !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   WAVE 83 — REAL-TIME NETWORK LATENCY (PING HUD & VPS PROBE)
+   ═══════════════════════════════════════════════════════════ */
+.ping-hud-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(8, 16, 32, 0.82);
+  border: 1px solid rgba(0, 240, 255, 0.28);
+  border-radius: 18px;
+  padding: 4px 10px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: 'JetBrains Mono', monospace;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  user-select: none;
+}
+.ping-hud-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+.ping-hud-val {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+.ping-hud-val small {
+  font-size: 0.62rem;
+  color: #64748b;
+  text-transform: uppercase;
+}
+.ping-hud-box.ping-optimal .ping-hud-dot { background: #10b981; box-shadow: 0 0 8px #10b981; }
+.ping-hud-box.ping-good .ping-hud-dot { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+.ping-hud-box.ping-slow .ping-hud-dot { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+.vps-ping-probe-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(59, 130, 246, 0.18));
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  color: #38bdf8;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: 'Space Grotesk', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+.vps-ping-probe-btn:hover {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(59, 130, 246, 0.3));
+  border-color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+  transform: translateY(-1px);
+}
+.vps-ping-probe-btn:active {
+  transform: scale(0.98);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   WAVE 84 — MOBILE FLOATING CYBER MINI MUSIC BAR
+   ═══════════════════════════════════════════════════════════ */
+.mobile-mini-player {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-mini-player {
+    display: block;
+    position: fixed;
+    bottom: calc(62px + env(safe-area-inset-bottom, 8px));
+    left: 10px;
+    right: 10px;
+    z-index: 9990;
+    background: rgba(10, 15, 30, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.65), 0 0 15px rgba(0, 240, 255, 0.15);
+    overflow: hidden;
+    animation: mmpSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes mmpSlideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .mmp-track-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    background: linear-gradient(90deg, #00f0ff, #a855f7);
+    box-shadow: 0 0 6px #00f0ff;
+    transition: width 0.15s linear;
+  }
+
+  .mmp-inner {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    gap: 10px;
+  }
+
+  .mmp-art-wrap {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .mmp-art {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(0, 240, 255, 0.5);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+  }
+
+  .mobile-mini-player.is-playing .mmp-art {
+    animation: vinylSpin 6s linear infinite;
+  }
+
+  .mmp-spin-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #00f0ff;
+    border: 1px solid #000;
+  }
+
+  .mmp-info {
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+  }
+
+  .mmp-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .mmp-sub {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.62rem;
+    color: #94a3b8;
+    margin-top: 1px;
+  }
+
+  .mmp-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #00f0ff;
+    box-shadow: 0 0 5px #00f0ff;
+  }
+
+  .mmp-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .mmp-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: all 0.15s ease;
+  }
+
+  .mmp-btn:active {
+    transform: scale(0.92);
+    background: rgba(0, 240, 255, 0.2);
+  }
+
+  .mmp-btn-play {
+    background: linear-gradient(135deg, #00f0ff, #7c3aed);
+    border: none;
+    color: #000;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   WAVE 86 — CROSS-DEVICE CONFIG SYNC MODAL & BACKUP
+   ═══════════════════════════════════════════════════════════ */
+.cyber-config-modal {
+  position: fixed;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: min(460px, 92vw) !important;
+  max-height: min(88vh, 580px) !important;
+  background: rgba(10, 14, 26, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 18px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 240, 255, 0.2);
+  z-index: 10005;
+  padding: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.config-modal-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(4, 8, 18, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 10px;
+  color: #38bdf8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.74rem;
+  padding: 10px;
+  resize: vertical;
+  margin-top: 8px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.config-modal-textarea:focus {
+  border-color: #00f0ff;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+@media (max-width: 768px) {
+  .cyber-config-modal {
+    width: 94vw !important;
+  }
+  .config-modal-textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SNOW WHITE THEME HIGH-CONTRAST EXTENSIONS (WAVES 83-86)
+   ═══════════════════════════════════════════════════════════ */
+html[data-theme="snow"] .ping-hud-box {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="snow"] .ping-hud-val {
+  color: #0f172a !important;
+}
+html[data-theme="snow"] .ping-hud-val small {
+  color: #64748b !important;
+}
+html[data-theme="snow"] .vps-ping-probe-btn {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+  color: #0369a1 !important;
+}
+html[data-theme="snow"] .vps-ping-probe-btn:hover {
+  background: #e2e8f0 !important;
+  border-color: #0284c7 !important;
+}
+html[data-theme="snow"] .mobile-mini-player {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+html[data-theme="snow"] .mmp-title {
+  color: #0f172a !important;
+}
+html[data-theme="snow"] .mmp-sub {
+  color: #475569 !important;
+}
+html[data-theme="snow"] .mmp-btn {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+html[data-theme="snow"] .mmp-btn-play {
+  background: linear-gradient(135deg, #0284c7, #6366f1) !important;
+  color: #ffffff !important;
+}
+html[data-theme="snow"] .cyber-config-modal {
+  background: #ffffff !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18) !important;
+}
+html[data-theme="snow"] .config-modal-textarea {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
