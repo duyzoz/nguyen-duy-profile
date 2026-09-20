@@ -1,5 +1,5 @@
-/* Service Worker v55 - Network First */
-const CACHE_NAME = 'nd-profile-v55';
+/* Service Worker v56 - Network First */
+const CACHE_NAME = 'nd-profile-v56';
 
 self.addEventListener('install', function(e) {
   self.skipWaiting();

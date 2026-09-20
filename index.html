@@ -26,7 +26,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" href="assets/avatar.png" />
   <link rel="apple-touch-icon" href="assets/avatar.png" />
-  <link rel="stylesheet" href="style.css?v=20260920_v55" />
+  <link rel="stylesheet" href="style.css?v=20260920_v56" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -96,7 +96,7 @@
     <div class="hud-capsule-row hud-row-tools">
       <button class="perf-toggle-btn cyber-sound-btn" id="perfToggle" title="Bật / Tắt video nền (Tăng hiệu năng & Giảm tải GPU)">
         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        <span id="perfToggleText">⚡ Video</span>
+        <span id="perfToggleText">Video</span>
       </button>
       <button class="theme-toggle-btn cyber-sound-btn" id="themeToggleBtn" title="Chọn Giao Diện Discord Nitro cho Profile, Tiện Ích & Music">
         <span id="themeIcon">🎨</span>
@@ -434,12 +434,9 @@
                   </div>
                 </div>
 
-                <div style="display:flex;gap:8px;flex-wrap:wrap">
-                  <button type="button" id="vpsDownloadRdpBtn" class="vps-download-rdp-btn cyber-sound-btn" style="flex:1;min-width:200px" title="Tải file cấu hình .RDP kết nối ngay vào máy tính">
+                <div style="display:flex;gap:8px;margin-top:2px">
+                  <button type="button" id="vpsDownloadRdpBtn" class="vps-download-rdp-btn cyber-sound-btn" style="width:100%" title="Tải file cấu hình .RDP kết nối ngay vào máy tính">
                     <span>📥 Tải File Kết Nối (.RDP)</span>
-                  </button>
-                  <button type="button" id="vpsOpenRdpDirectBtn" class="vps-open-rdp-btn cyber-sound-btn" style="flex:1;min-width:160px" title="Mở trực tiếp ứng dụng Remote Desktop trên máy/điện thoại">
-                    <span>🚀 Mở RDP Ngay</span>
                   </button>
                 </div>
 
@@ -454,20 +451,6 @@
                   <div class="vcc-progress-bar">
                     <div class="vcc-progress-fill" id="vpsCountdownFill" style="width:100%"></div>
                   </div>
-                </div>
-
-                <!-- QUICK ACTIONS -->
-                <div class="vps-quick-actions" style="display:flex;gap:6px;margin-top:6px">
-                  <button type="button" id="vpsCopyMstscBtn" class="vps-action-btn cyber-sound-btn" style="flex:1" title="Sao chép lệnh mstsc /v:Host:Port để dán vào Win + R">
-                    <span id="mstscBtnTxt">📋 Lệnh <code>mstsc /v:...</code></span>
-                  </button>
-                  <button type="button" id="vpsPingTestBtn" class="vps-action-btn cyber-sound-btn" style="width:auto;padding:0 10px" title="Kiểm tra độ trễ mạng tới server Ngrok">
-                    <span id="vpsPingDot" class="vps-ping-dot"></span>
-                    <span id="vpsPingText">⚡ Ping: -- ms</span>
-                  </button>
-                  <button type="button" id="vpsQrShareBtn" class="vps-action-btn cyber-sound-btn" style="width:auto;padding:0 9px" title="Quét mã QR kết nối tức thì trên điện thoại">
-                    <span>📱 QR</span>
-                  </button>
                 </div>
 
                 <div class="vps-guide-tip">
@@ -1381,7 +1364,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
-  <script src="app_nd.js?v=20260920_v55"></script>
+  <script src="app_nd.js?v=20260920_v56"></script>
 <textarea id="rawWorkflowYaml" style="display:none" readonly>name: 🚀 SEVER AI STV NGROK RDP
 
 on:

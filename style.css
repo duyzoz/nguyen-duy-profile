@@ -6045,25 +6045,36 @@ html[data-theme="snow"] .view-eye {
 /* ── SNOW THEME HIGH CONTRAST GUARDS (WAVE 73) ── */
 html[data-theme="snow"] #perfToggle,
 html[data-theme="snow"] .hud-row-tools .perf-toggle-btn {
-  background: rgba(15, 23, 42, 0.08) !important;
-  border: 1px solid rgba(15, 23, 42, 0.35) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(148, 163, 184, 0.65) !important;
   color: #0f172a !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06) !important;
   font-weight: 700 !important;
 }
 html[data-theme="snow"] #perfToggle svg,
 html[data-theme="snow"] .hud-row-tools .perf-toggle-btn svg {
-  stroke: #0f172a !important;
+  stroke: #ca8a04 !important;
+  fill: #ca8a04 !important;
+}
+html[data-theme="snow"] #perfToggle span,
+html[data-theme="snow"] .hud-row-tools .perf-toggle-btn span {
+  color: #0f172a !important;
 }
 html[data-theme="snow"] #perfToggle.active,
 html[data-theme="snow"] .hud-row-tools .perf-toggle-btn.active {
-  background: #0f172a !important;
-  color: #ffffff !important;
-  border-color: #0f172a !important;
+  background: #fef9c3 !important;
+  border-color: #eab308 !important;
+  color: #854d0e !important;
+  box-shadow: 0 2px 8px rgba(234, 179, 8, 0.25) !important;
 }
 html[data-theme="snow"] #perfToggle.active svg,
 html[data-theme="snow"] .hud-row-tools .perf-toggle-btn.active svg {
-  stroke: #ffffff !important;
+  stroke: #a16207 !important;
+  fill: #a16207 !important;
+}
+html[data-theme="snow"] #perfToggle.active span,
+html[data-theme="snow"] .hud-row-tools .perf-toggle-btn.active span {
+  color: #854d0e !important;
 }
 
 html[data-theme="snow"] .vps-specs-badge {
@@ -8168,17 +8179,75 @@ html[data-theme="snow"] .sfx-toggle-btn {
   color: #ef4444 !important;
 }
 
-/* ══ WAVE 74: HARDWARE ACCELERATION & GPU RASTERIZATION GUARD ══ */
+/* ══ WAVE 74: HARDWARE ACCELERATION & GPU RASTERIZATION GUARD (SAFE) ══ */
 .profile-card,
 .tool-card,
 .music-player,
-.fps-hud-box,
-.cyber-bench-modal {
+.fps-hud-box {
   will-change: transform;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+}
+
+/* Strictly Center Benchmark Modal (Desktop & Tablet) */
+.cyber-bench-modal {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  z-index: 100002 !important;
+}
+
+/* ══ SNOW THEME BENCHMARK MODAL HIGH CONTRAST ══ */
+html[data-theme="snow"] .cyber-bench-modal {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(148, 163, 184, 0.6) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 25px rgba(56, 189, 248, 0.25) !important;
+  color: #0f172a !important;
+}
+html[data-theme="snow"] .cyber-bench-modal .nitro-theme-title,
+html[data-theme="snow"] .cyber-bench-modal .t-title {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+html[data-theme="snow"] .cyber-bench-modal .nitro-theme-sub,
+html[data-theme="snow"] .cyber-bench-modal .t-sub {
+  color: #475569 !important;
+}
+html[data-theme="snow"] .cyber-bench-modal .nitro-theme-close,
+html[data-theme="snow"] .bench-close-btn {
+  background: rgba(15, 23, 42, 0.08) !important;
+  color: #0f172a !important;
+  border-radius: 50% !important;
+}
+html[data-theme="snow"] .cyber-bench-modal .nitro-theme-close:hover,
+html[data-theme="snow"] .bench-close-btn:hover {
+  background: rgba(15, 23, 42, 0.16) !important;
+  color: #0f172a !important;
+}
+html[data-theme="snow"] .bench-score-card {
+  background: #f1f5f9 !important;
+  border: 1px solid rgba(203, 213, 225, 0.9) !important;
+}
+html[data-theme="snow"] .bench-score-num {
+  color: #0284c7 !important;
+  text-shadow: none !important;
+}
+html[data-theme="snow"] .bench-score-label {
+  color: #64748b !important;
+}
+html[data-theme="snow"] .bench-item {
+  background: #ffffff !important;
+  border: 1px solid rgba(203, 213, 225, 0.9) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+html[data-theme="snow"] .bench-item .bi-label {
+  color: #64748b !important;
+}
+html[data-theme="snow"] .bench-item .bi-val {
+  color: #0f172a !important;
+  font-weight: 700 !important;
 }
 
 /* ═══════════════════════════════════════════════════════════
