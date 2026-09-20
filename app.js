@@ -1150,7 +1150,23 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   }
 
   function getTokenList(){
-    try{return JSON.parse(localStorage.getItem(LS_LIST)||'[]');}catch{return[];}
+    try{
+      const raw = JSON.parse(localStorage.getItem(LS_LIST)||'[]');
+      const seen = new Set();
+      const deduped = [];
+      for(const t of raw){
+        if(!t || !t.token) continue;
+        const clean = t.token.trim();
+        if(!seen.has(clean)){
+          seen.add(clean);
+          deduped.push({ ...t, token: clean });
+        }
+      }
+      if(deduped.length !== raw.length){
+        localStorage.setItem(LS_LIST, JSON.stringify(deduped));
+      }
+      return deduped;
+    }catch{return[];}
   }
   function saveTokenList(list){
     localStorage.setItem(LS_LIST,JSON.stringify(list));
@@ -1261,7 +1277,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
 
     const vpsEntry = {
       id: sessionData.id || Date.now().toString(36),
-      name: sessionData.name || `VPS #${list.length + 1} (${sessionData.ip})`,
+      name: sessionData.name || `VPS #${list.length + 1}`,
       ip: sessionData.ip,
       link: `ms-rd:connect?server=${sessionData.ip}`,
       user: sessionData.user || 'duyzoz',
@@ -1309,29 +1325,31 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       listEl.innerHTML = `<div class="token-empty" id="vpsEmptyMsg">${emptyMsg}</div>`;
       return;
     }
-    listEl.innerHTML = list.map(v => {
+    listEl.innerHTML = list.map((v, idx) => {
       const cd = fmtCountdown(v.created, v.durationSeconds || 20400);
       const ipMatch = (v.link || '').match(/server=([^&]+)/) || (v.name || '').match(/100\.\d+\.\d+\.\d+/);
-      const ip = v.ip || (ipMatch ? ipMatch[1] : '100.86.124.90');
+      const ip = v.ip || (ipMatch ? ipMatch[1] : '0.tcp.ap.ngrok.io');
       const pass = v.pass || 'Admin@123456';
       const user = v.user || 'duyzoz';
+      const cleanTitle = (v.name || `VPS #${idx + 1}`).replace(/\s*\([^\)]*\)/g, '').trim() || `VPS #${idx + 1}`;
       return `<div class="vps-item" data-id="${v.id}">
         <div class="vps-item-top">
-          <div class="vps-item-title-wrap">
-            <span class="vps-item-name">${v.name}</span>
-            <span class="vps-item-ip-badge">${ip}</span>
-          </div>
+          <span class="vps-item-name" title="${cleanTitle}">🖥️ ${cleanTitle}</span>
           <div class="vps-item-cd ${cd.urgent ? 'urgent' : ''}" data-created="${v.created}" data-duration="${v.durationSeconds || 20400}">${cd.expired ? '⛔ Hết hạn' : cd.str}</div>
         </div>
-        <div style="font-size:0.7rem;color:var(--sub);margin:3px 0 6px;display:flex;gap:12px">
-          <span>👤 User: <strong style="color:var(--txt)">${user}</strong></span>
-          <span>🔐 Pass: <strong style="color:var(--txt)">${pass}</strong></span>
+        <div class="vps-item-ip-box">
+          <span class="vps-item-ip-val" title="${ip}">🌐 ${ip}</span>
+          <button class="vps-item-act-btn vps-copy-ip cyber-sound-btn" data-ip="${ip}" style="padding:2px 8px;font-size:0.65rem;flex-shrink:0" title="Sao chép Host:Port">📋 Chép</button>
+        </div>
+        <div class="vps-item-creds">
+          <span>👤 User: <strong>${user}</strong></span>
+          <span>🔐 Pass: <strong>${pass}</strong></span>
         </div>
         <div class="vps-item-actions-row">
-          <button class="vps-item-act-btn vps-copy-ip cyber-sound-btn" data-ip="${ip}" title="Sao chép IP">📋 Copy IP</button>
+          <button class="vps-item-act-btn vps-copy-ip cyber-sound-btn" data-ip="${ip}" title="Sao chép Host:Port">📋 IP</button>
           <button class="vps-item-act-btn vps-copy-mstsc cyber-sound-btn" data-ip="${ip}" title="Sao chép lệnh mstsc /v:">💻 mstsc</button>
           <button class="vps-item-act-btn vps-dl-rdp cyber-sound-btn" data-ip="${ip}" data-user="${user}" title="Tải file .rdp">📥 .rdp</button>
-          <button class="vps-item-act-btn vps-del cyber-sound-btn" data-id="${v.id}" title="Xóa máy này" style="color:#f87171;margin-left:auto">🗑️ Xóa</button>
+          <button class="vps-item-act-btn vps-del cyber-sound-btn" data-id="${v.id}" title="Xóa máy này">🗑️ Xóa</button>
         </div>
       </div>`;
     }).join('') + `<button class="vps-clear-all-btn cyber-sound-btn" id="vpsClearAllBtn">🗑️ Xóa Tất Cả Danh Sách VPS</button>`;
@@ -2361,7 +2379,16 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   const video = document.getElementById('bgVideo');
   const KEY = 'perf_mode_active';
 
-  /* ── 1. Accurate High-Precision FPS Measurement (EMA Filtered, Multi-Refresh Rate Ready) ── */
+  /* ── 1. Accurate High-Precision FPS Measurement (EMA Filtered, Multi-Refresh Rate Ready, Wave 71) ── */
+  let peakFps = parseInt(localStorage.getItem('nd_peak_fps') || '60', 10);
+  function updatePeakFps(fps){
+    if(fps > peakFps && fps <= 360){
+      peakFps = fps;
+      try { localStorage.setItem('nd_peak_fps', peakFps.toString()); } catch(e){}
+    }
+  }
+  window.__getPeakFps = function(){ return peakFps; };
+
   if(fpsBox && fpsCount && fpsTag){
     let frameCount = 0;
     let lastTime = performance.now();
@@ -2381,6 +2408,7 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
         // Clamped realistic range (supports 30, 60, 75, 90, 120, 144, 165, 240Hz)
         const displayFps = Math.max(1, Math.min(smoothedFps, 240));
         fpsCount.textContent = displayFps;
+        updatePeakFps(displayFps);
 
         // Tags fit perfectly inside the fixed 46px tag box
         if(displayFps >= 90){
@@ -5367,7 +5395,23 @@ Respond accurately with this ground truth knowledge:
   // 5. Ngrok Authtokens List Management
   const LS_NGROK_TOKENS = 'ngrok_tokens_list';
   function getNgrokTokensList(){
-    try { return JSON.parse(localStorage.getItem(LS_NGROK_TOKENS) || '[]'); } catch{ return []; }
+    try {
+      const raw = JSON.parse(localStorage.getItem(LS_NGROK_TOKENS) || '[]');
+      const seen = new Set();
+      const deduped = [];
+      for(const item of raw){
+        if(!item || !item.token) continue;
+        const clean = item.token.trim();
+        if(!seen.has(clean)){
+          seen.add(clean);
+          deduped.push({ ...item, token: clean });
+        }
+      }
+      if(deduped.length !== raw.length){
+        localStorage.setItem(LS_NGROK_TOKENS, JSON.stringify(deduped));
+      }
+      return deduped;
+    } catch{ return []; }
   }
   function saveNgrokTokensList(list){
     localStorage.setItem(LS_NGROK_TOKENS, JSON.stringify(list));
@@ -5432,6 +5476,15 @@ Respond accurately with this ground truth knowledge:
       }
       if(ngrokTokenWarnEl) ngrokTokenWarnEl.style.display = 'none';
       const list = getNgrokTokensList();
+      const existing = list.find(t => t.token === val);
+      if(existing){
+        localStorage.setItem('ngrok_auth_token', val);
+        if(typeof addLog === 'function') addLog(`[VPS] ℹ️ Token này đã có trong danh sách (${existing.label})!`, 'info');
+        const prev = saveNgrokTokenBtn.innerHTML;
+        saveNgrokTokenBtn.innerHTML = '<span style="color:#38bdf8;font-size:14px;font-weight:700">✓ Đã có</span>';
+        setTimeout(() => { saveNgrokTokenBtn.innerHTML = prev; }, 1200);
+        return;
+      }
       const autoLabel = nextNgrokTokenName();
       list.unshift({
         id: Date.now().toString(36),
@@ -7233,12 +7286,85 @@ Respond accurately with this ground truth knowledge:
     });
   });
 
-  /* ── 11. Hardware Benchmark & FPS Diagnostics (Wave 65) ── */
+  /* ── 11. Real Hardware Benchmark & FPS Diagnostics (Wave 71-76) ── */
   const benchModal = document.getElementById('benchmarkModal');
   const benchBackdrop = document.getElementById('benchModalBackdrop');
   const benchClose = document.getElementById('benchModalClose');
   const fpsBox = document.getElementById('fpsHudBox');
   const btnRunBench = document.getElementById('btnRunBenchAgain');
+
+  function detectRealGpu(){
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl') || canvas.getContext('webgl2');
+      if(!gl){
+        return { name: 'Không nhận diện được (Không hỗ trợ WebGL)', isWarning: true };
+      }
+      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+      if(debugInfo){
+        const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+        if(renderer && renderer.trim() !== ''){
+          let cleaned = renderer;
+          const angleMatch = renderer.match(/ANGLE\s*\([^,]+,\s*([^,]+?)(?:,\s*|\s*Direct3D|\))/i);
+          if(angleMatch && angleMatch[1]){
+            cleaned = angleMatch[1].trim();
+          }
+          cleaned = cleaned.replace(/\s*(Direct3D\d+|vs_\d+_\d+|ps_\d+_\d+|\(TM\)|\(R\))/gi, '').replace(/\s{2,}/g, ' ').trim();
+          if(!cleaned || cleaned.toLowerCase().includes('swiftshader') || cleaned.toLowerCase().includes('llvmpipe') || cleaned.toLowerCase().includes('software rasterizer')){
+            return { name: cleaned || 'Không nhận diện được (Không có GPU)', isWarning: true };
+          }
+          return { name: cleaned, isWarning: false };
+        }
+      }
+      const basicRenderer = gl.getParameter(gl.RENDERER);
+      if(basicRenderer && !basicRenderer.includes('WebKit') && !basicRenderer.includes('Mozilla')){
+        return { name: basicRenderer, isWarning: false };
+      }
+      return { name: 'Không nhận diện được (Không có GPU)', isWarning: true };
+    } catch(e){
+      return { name: 'Không nhận diện được (Lỗi WebGL)', isWarning: true };
+    }
+  }
+
+  function detectRealCpu(){
+    const cores = navigator.hardwareConcurrency;
+    let arch = '';
+    const ua = navigator.userAgent;
+    if(/x86_64|Win64|x64|WOW64/i.test(ua)) arch = ' x64';
+    else if(/arm64|aarch64/i.test(ua)) arch = ' ARM64';
+    else if(/arm/i.test(ua)) arch = ' ARM';
+
+    if(cores && cores > 0){
+      return `${cores} Luồng (Threads)${arch}`;
+    }
+    return 'Không nhận diện được (Bị chặn)';
+  }
+
+  function detectRealRam(){
+    if(navigator.deviceMemory){
+      const mem = navigator.deviceMemory;
+      if(mem >= 8) return `≥ ${mem} GB RAM`;
+      return `~${mem} GB RAM`;
+    }
+    return 'Không nhận diện được (Trình duyệt bảo mật)';
+  }
+
+  async function detectRealStorage(){
+    if(navigator.storage && navigator.storage.estimate){
+      try {
+        const estimate = await navigator.storage.estimate();
+        if(estimate.quota){
+          const quotaGB = (estimate.quota / (1024 * 1024 * 1024)).toFixed(1);
+          if(estimate.usage){
+            const usedMB = (estimate.usage / (1024 * 1024)).toFixed(0);
+            return `${quotaGB} GB Quota (${usedMB} MB dùng)`;
+          }
+          return `~${quotaGB} GB Web Storage`;
+        }
+      } catch(e){}
+    }
+    return 'Không nhận diện được (Web Quota)';
+  }
 
   function runBenchmark(){
     if(!benchModal) return;
@@ -7247,30 +7373,52 @@ Respond accurately with this ground truth knowledge:
 
     const liveFps = document.getElementById('fpsCount')?.textContent || '60';
     const fpsVal = parseInt(liveFps, 10) || 60;
-    const dpr = (window.devicePixelRatio || 1).toFixed(1);
-    const cores = navigator.hardwareConcurrency || 4;
+    const peak = (window.__getPeakFps ? window.__getPeakFps() : fpsVal) || fpsVal;
 
-    const fpsEl = document.getElementById('benchFpsLive');
-    const dprEl = document.getElementById('benchDpr');
-    const coresEl = document.getElementById('benchCores');
     const scoreEl = document.getElementById('benchScoreVal');
     const tagEl = document.getElementById('benchRatingTag');
+    const cpuValEl = document.getElementById('benchCpuVal');
+    const gpuValEl = document.getElementById('benchGpuVal');
+    const gpuIconEl = document.getElementById('benchGpuIcon');
+    const ramValEl = document.getElementById('benchRamVal');
+    const ssdValEl = document.getElementById('benchSsdVal');
 
-    if(fpsEl) fpsEl.textContent = `${fpsVal} FPS`;
-    if(dprEl) dprEl.textContent = `${dpr}x`;
-    if(coresEl) coresEl.textContent = `${cores} Cores`;
-
-    // Calculate dynamic Cyber Score
-    const score = Math.min(100, Math.round((fpsVal / 60) * 50 + (cores * 5) + 15));
+    // Peak FPS based score: 60 FPS -> 82+, 120 FPS -> 96+, 144 FPS -> 100
+    const score = Math.min(100, Math.max(20, Math.round((peak / 144) * 60 + 40)));
     if(scoreEl) scoreEl.textContent = score;
     if(tagEl){
-      if(fpsVal >= 55 && score >= 90){
-        tagEl.textContent = 'ULTRA 120 FPS READY';
+      if(peak >= 120){
+        tagEl.textContent = `ULTRA ${peak} FPS READY`;
         tagEl.style.color = '#22c55e';
-      } else {
-        tagEl.textContent = 'OPTIMIZED STABLE 60 FPS';
+      } else if(peak >= 55){
+        tagEl.textContent = `SMOOTH ${peak} FPS STABLE`;
         tagEl.style.color = '#38bdf8';
+      } else {
+        tagEl.textContent = `STANDARD ${peak} FPS`;
+        tagEl.style.color = '#eab308';
       }
+    }
+
+    if(cpuValEl) cpuValEl.textContent = detectRealCpu();
+
+    const gpuInfo = detectRealGpu();
+    if(gpuValEl){
+      gpuValEl.textContent = gpuInfo.name;
+      if(gpuInfo.isWarning){
+        gpuValEl.style.color = '#f59e0b';
+        if(gpuIconEl) gpuIconEl.textContent = '⚠️';
+      } else {
+        gpuValEl.style.color = '#00f0ff';
+        if(gpuIconEl) gpuIconEl.textContent = '🎮';
+      }
+    }
+
+    if(ramValEl) ramValEl.textContent = detectRealRam();
+
+    if(ssdValEl){
+      detectRealStorage().then(res => {
+        ssdValEl.textContent = res;
+      });
     }
   }
 
@@ -7299,6 +7447,34 @@ Respond accurately with this ground truth knowledge:
       runBenchmark();
     });
   }
+
+  // Wave 72: Memory Purge & Canvas throttle on page hidden
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden){
+      const video = document.getElementById('bgVideo');
+      if(video && !video.paused){
+        try { video.pause(); } catch(e){}
+      }
+    } else {
+      const isPerf = document.body.classList.contains('perf-mode');
+      const video = document.getElementById('bgVideo');
+      if(video && !isPerf && video.paused){
+        try { video.play(); } catch(e){}
+      }
+    }
+  });
+
+  // Wave 76: Touch Haptic Feedback Engine
+  function triggerHaptic(duration = 10){
+    if(typeof navigator !== 'undefined' && 'vibrate' in navigator){
+      try { navigator.vibrate(duration); } catch(e){}
+    }
+  }
+  document.addEventListener('pointerdown', (e) => {
+    if(e.target.closest('button, .cyber-sound-btn, .tc-tab, .mob-nav-item')){
+      triggerHaptic(12);
+    }
+  }, { passive: true });
 
 })();
 

@@ -26,7 +26,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" href="assets/avatar.png" />
   <link rel="apple-touch-icon" href="assets/avatar.png" />
-  <link rel="stylesheet" href="style.css?v=20260920_v54" />
+  <link rel="stylesheet" href="style.css?v=20260920_v55" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -1352,34 +1352,26 @@
     </div>
     <div class="bench-body">
       <div class="bench-score-card">
-        <div class="bench-score-num" id="benchScoreVal">98</div>
-        <div class="bench-score-label">ĐIỂM HIỆU NĂNG MƯỢT</div>
-        <div class="bench-rating-tag" id="benchRatingTag">ULTRA 120 FPS READY</div>
+        <div class="bench-score-num" id="benchScoreVal">--</div>
+        <div class="bench-score-label">ĐIỂM HIỆU NĂNG MƯỢT (PEAK FPS)</div>
+        <div class="bench-rating-tag" id="benchRatingTag">ĐANG KIỂM TRA...</div>
       </div>
-      <div class="bench-grid">
-        <div class="bench-item">
-          <span class="bi-label">Tốc độ khung hình (FPS)</span>
-          <span class="bi-val" id="benchFpsLive">60 FPS</span>
+      <div class="bench-grid bench-grid-2x2">
+        <div class="bench-item" id="benchItemCpu">
+          <span class="bi-label">🖥️ CPU</span>
+          <span class="bi-val" id="benchCpuVal">Đang nhận diện...</span>
         </div>
-        <div class="bench-item">
-          <span class="bi-label">Thời gian vẽ DOM (Latency)</span>
-          <span class="bi-val" id="benchDomLag">~1.2 ms</span>
+        <div class="bench-item" id="benchItemGpu">
+          <span class="bi-label">🎮 GPU</span>
+          <span class="bi-val" id="benchGpuVal">Đang nhận diện...</span>
         </div>
-        <div class="bench-item">
-          <span class="bi-label">Tỉ lệ điểm ảnh (DPR)</span>
-          <span class="bi-val" id="benchDpr">2.0x</span>
+        <div class="bench-item" id="benchItemRam">
+          <span class="bi-label">🧠 RAM</span>
+          <span class="bi-val" id="benchRamVal">Đang nhận diện...</span>
         </div>
-        <div class="bench-item">
-          <span class="bi-label">Số luồng CPU</span>
-          <span class="bi-val" id="benchCores">8 Cores</span>
-        </div>
-        <div class="bench-item">
-          <span class="bi-label">Công nghệ render</span>
-          <span class="bi-val">GPU Hardware Accelerated</span>
-        </div>
-        <div class="bench-item">
-          <span class="bi-label">Tối ưu Pin</span>
-          <span class="bi-val" id="benchBattery">Tối Ưu 100%</span>
+        <div class="bench-item" id="benchItemSsd">
+          <span class="bi-label">💾 SSD (LƯU TRỮ)</span>
+          <span class="bi-val" id="benchSsdVal">Đang nhận diện...</span>
         </div>
       </div>
       <button class="bp-btn cyber-sound-btn" id="btnRunBenchAgain" style="margin-top:12px">
@@ -1389,7 +1381,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
-  <script src="app_nd.js?v=20260920_v54"></script>
+  <script src="app_nd.js?v=20260920_v55"></script>
 <textarea id="rawWorkflowYaml" style="display:none" readonly>name: 🚀 SEVER AI STV NGROK RDP
 
 on:
