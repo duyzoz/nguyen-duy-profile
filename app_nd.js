@@ -1698,13 +1698,28 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
 
       if(remain <= 0){
         if(cdEl) { cdEl.textContent = '00:00:00'; cdEl.className = 'vcd-timer urgent'; }
-        if(timerDisplay) timerDisplay.textContent = '⛔ HẾT HẠN';
+        if(timerDisplay) timerDisplay.textContent = '00:00:00';
         if(fill) fill.style.width = '0%';
         if(rdpStatus) rdpStatus.className = 'rdp-live-badge rdp-offline';
-        if(rdpText) rdpText.textContent = '⛔ ĐÃ TẮT';
+        if(rdpText) rdpText.textContent = '⛔ HẾT HẠN';
         clearInterval(unifiedVpsInterval);
         unifiedVpsInterval = null;
-        if(typeof addLog === 'function') addLog('[STARTUT] ⛔ Phiên VPS đã kết thúc!', 'wait');
+
+        // Auto-archive expired session into management storage
+        try {
+          const rawAct = localStorage.getItem('active_vps_session');
+          if(rawAct && window.addOrUpdateVpsInList){
+            window.addOrUpdateVpsInList(JSON.parse(rawAct));
+          }
+          localStorage.removeItem('active_vps_session');
+        } catch(e){}
+
+        // Clean up Create VPS tab interface immediately
+        if(card) card.style.display = 'none';
+        const readyBox = document.getElementById('vpsReadyBox');
+        if(readyBox) readyBox.style.display = 'none';
+
+        if(typeof addLog === 'function') addLog('[STARTUT] 📁 Phiên VPS đã kết thúc và được lưu an toàn vào Kho VPS đã tạo!', 'info');
         return;
       }
 
@@ -1779,38 +1794,35 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       const ipVal = document.getElementById('vpsIpVal');
       const userVal = document.getElementById('vpsUserVal');
       const passVal = document.getElementById('vpsPassVal');
-      const rdpStatus = document.getElementById('rdpLiveStatus');
-      const rdpText = document.getElementById('rdpLiveText');
-      const cdEl = document.getElementById('vpsCountdown');
-      const timerDisplay = document.getElementById('vpsCountdownTimer');
-      const fill = document.getElementById('vpsCountdownFill');
-
-      if(readyBox) readyBox.style.display = 'flex';
-      if(countdownCard) countdownCard.style.display = 'block';
-
-      if(ipVal) ipVal.textContent = session.ip;
-      if(userVal) userVal.textContent = session.user || 'duyzoz';
-      if(passVal){
-        passVal.textContent = session.pass || 'Admin@123456';
-        passVal.dataset.real = session.pass || 'Admin@123456';
-      }
 
       const durSec = session.durationSeconds || 20400;
       const elapsed = (Date.now() - (session.created || Date.now())) / 1000;
       const remain = Math.max(0, durSec - elapsed);
 
       if(remain > 0){
-        startUnifiedVpsCountdown(session.created, durSec);
-      } else {
-        if(cdEl) { cdEl.textContent = '00:00:00'; cdEl.className = 'vcd-timer urgent'; }
-        if(timerDisplay) timerDisplay.textContent = '⛔ HẾT HẠN';
-        if(fill) fill.style.width = '0%';
-        if(rdpStatus) rdpStatus.className = 'rdp-live-badge rdp-offline';
-        if(rdpText) rdpText.textContent = '⛔ ĐÃ TẮT';
-      }
+        if(readyBox) readyBox.style.display = 'flex';
+        if(countdownCard) countdownCard.style.display = 'block';
 
-      if(window.addOrUpdateVpsInList){
-        window.addOrUpdateVpsInList(session);
+        if(ipVal) ipVal.textContent = session.ip;
+        if(userVal) userVal.textContent = session.user || 'duyzoz';
+        if(passVal){
+          passVal.textContent = session.pass || 'Admin@123456';
+          passVal.dataset.real = session.pass || 'Admin@123456';
+        }
+        startUnifiedVpsCountdown(session.created, durSec);
+        if(window.addOrUpdateVpsInList){
+          window.addOrUpdateVpsInList(session);
+        }
+      } else {
+        // Expired VPS: auto-archive to management storage, remove active_vps_session, and hide countdown cards
+        if(window.addOrUpdateVpsInList){
+          window.addOrUpdateVpsInList(session);
+        }
+        try {
+          localStorage.removeItem('active_vps_session');
+        } catch(e){}
+        if(readyBox) readyBox.style.display = 'none';
+        if(countdownCard) countdownCard.style.display = 'none';
       }
     } catch(e){
       console.warn('Could not restore active VPS session:', e);
@@ -2349,51 +2361,67 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   const video = document.getElementById('bgVideo');
   const KEY = 'perf_mode_active';
 
-  /* ── 1. Accurate High-Precision FPS Measurement ── */
+  /* ── 1. Accurate High-Precision FPS Measurement (EMA Filtered, Multi-Refresh Rate Ready) ── */
   if(fpsBox && fpsCount && fpsTag){
-    let frames = 0, lastTime = performance.now();
+    let frameCount = 0;
+    let lastTime = performance.now();
+    let smoothedFps = 60;
+
     function tickFps(now){
-      frames++;
-      if(now - lastTime >= 400){
-        const fps = Math.round((frames * 1000) / (now - lastTime));
-        fpsCount.textContent = fps;
-        if(fps >= 95){
+      frameCount++;
+      const elapsed = now - lastTime;
+      if(elapsed >= 450){
+        const rawFps = (frameCount * 1000) / elapsed;
+        frameCount = 0;
+        lastTime = now;
+
+        // Exponential moving average for smooth, accurate frame tracking without jitter
+        smoothedFps = Math.round(smoothedFps * 0.25 + rawFps * 0.75);
+
+        // Clamped realistic range (supports 30, 60, 75, 90, 120, 144, 165, 240Hz)
+        const displayFps = Math.max(1, Math.min(smoothedFps, 240));
+        fpsCount.textContent = displayFps;
+
+        // Tags fit perfectly inside the fixed 46px tag box
+        if(displayFps >= 90){
           fpsBox.className = 'fps-hud-box fps-ultra';
           fpsTag.textContent = 'Ultra';
-        } else if(fps >= 48){
+        } else if(displayFps >= 48){
           fpsBox.className = 'fps-hud-box';
           fpsTag.textContent = 'Smooth';
-        } else if(fps >= 26){
+        } else if(displayFps >= 26){
           fpsBox.className = 'fps-hud-box fps-warn';
           fpsTag.textContent = 'Normal';
         } else {
           fpsBox.className = 'fps-hud-box fps-drop';
           fpsTag.textContent = 'Low';
         }
-        frames = 0;
-        lastTime = now;
       }
       requestAnimationFrame(tickFps);
     }
     requestAnimationFrame(tickFps);
   }
 
-  /* ── 2. Fix Lag / Video-Image Cross-Fade Mode ── */
+  /* ── 2. Fix Lag / Video-Image Cross-Fade Mode (GPU & VRAM Saver) ── */
   if(!btn) return;
 
   function apply(active){
     if(active){
       document.body.classList.add('perf-mode');
       btn.classList.add('active');
-      if(btnText) btnText.textContent = '🎬 Bật lại Video';
-      btn.title = "Đang xem ảnh nền Background.png (Mượt tuyệt đối). Bấm để bật lại Video.";
-      if(video) video.pause();
+      if(btnText) btnText.textContent = '⚡ Video';
+      btn.title = "Đang xem ảnh nền tĩnh (Tối ưu GPU/VRAM tối đa). Bấm để bật lại Video.";
+      if(video){
+        try { video.pause(); } catch(e){}
+      }
     } else {
       document.body.classList.remove('perf-mode');
       btn.classList.remove('active');
-      if(btnText) btnText.textContent = '⚡ Tắt Video (Fix Lag)';
-      btn.title = "Tắt video nền để máy mượt tuyệt đối.";
-      if(video) video.play().catch(()=>{});
+      if(btnText) btnText.textContent = '⚡ Video';
+      btn.title = "Bật / Tắt video nền (Tăng hiệu năng & Giảm tải GPU)";
+      if(video){
+        try { video.play().catch(()=>{}); } catch(e){}
+      }
     }
   }
 
@@ -4433,8 +4461,8 @@ Respond accurately with this ground truth knowledge:
   const I18N = {
     en: {
       perfToggleTip: 'Toggle background video for max performance',
-      perfToggleOn: '⚡ Disable Video (Fix Lag)',
-      perfToggleOff: '🎬 Enable Video',
+      perfToggleOn: '⚡ Video',
+      perfToggleOff: '🎬 Video',
       fpsTip: 'Real-time hardware frame rate',
       cliTip: 'Open Cyber Terminal CLI (~ or Ctrl+K)',
       mpRepeatTip: 'Loop all',
@@ -4469,13 +4497,13 @@ Respond accurately with this ground truth knowledge:
       logInitMsg: '[--:--:--] Ready for commands...',
 
       // Panel VPS
-      vpsTitle: '🖥️ Create New VPS',
-      vpsSub: 'Deploy 6-hour free cloud VPS via GitHub Actions',
+      vpsTitle: '🖥️ Ngrok Cloud VPS RDP',
+      vpsSub: 'Deploy high-performance Windows RDP via Ngrok TCP Tunnel',
       vpsScopeNote: 'ℹ️ Token requires scopes: <code>repo</code> + <code>workflow</code>',
       vpsLabel: 'GitHub Token',
       vpsTokenLabel: 'GitHub Token',
       vpsTokenPh: 'ghp_xxxxxxxxxxxxxxxxxxxx (Click 💾 to save)',
-      vpsCreateBtn: '🚀 Deploy VPS Now',
+      vpsCreateBtn: '🚀 Create Ngrok VPS',
       vpsAccessBtn: '🖥️ Connect Now',
       vcdLabel: '⏳ Expires in',
       vpsCountdownLabel: '⏳ Expires in',
@@ -4576,8 +4604,8 @@ Respond accurately with this ground truth knowledge:
 
     vi: {
       perfToggleTip: 'Bật/tắt video nền để đạt hiệu năng tối đa',
-      perfToggleOn: '⚡ Tắt Video (Fix Lag)',
-      perfToggleOff: '🎬 Bật lại Video',
+      perfToggleOn: '⚡ Video',
+      perfToggleOff: '🎬 Video',
       fpsTip: 'Tốc độ khung hình thực tế theo máy',
       cliTip: 'Mở Cyber Terminal CLI (~ hoặc Ctrl+K)',
       mpRepeatTip: 'Lặp lại',
@@ -4612,13 +4640,13 @@ Respond accurately with this ground truth knowledge:
       logInitMsg: '[--:--:--] Sẵn sàng nhận lệnh...',
 
       // Panel VPS
-      vpsTitle: '🖥️ Tạo VPS mới',
-      vpsSub: 'Khởi tạo phên VPS 6h miễn phí từ GitHub Actions',
+      vpsTitle: '🖥️ Ngrok Cloud VPS RDP',
+      vpsSub: 'Khởi tạo Windows RDP cấu hình cao, kết nối trực tiếp không cần cài đặt VPN qua Ngrok Tunnel',
       vpsScopeNote: 'ℹ️ Token cần scope: <code>repo</code> + <code>workflow</code>',
-      vpsLabel: 'Token GitHub',
-      vpsTokenLabel: 'Token GitHub',
+      vpsLabel: 'GitHub Token',
+      vpsTokenLabel: 'GitHub Token',
       vpsTokenPh: 'ghp_xxxxxxxxxxxxxxxxxxxx (Bấm 💾 để lưu)',
-      vpsCreateBtn: '🚀 Tạo VPS ngay',
+      vpsCreateBtn: '🚀 Khởi Tạo Ngrok VPS',
       vpsAccessBtn: '🖥️ Truy cập ngay',
       vcdLabel: '⏳ Hết hạn sau',
       vpsCountdownLabel: '⏳ Hết hạn sau',
@@ -4719,8 +4747,8 @@ Respond accurately with this ground truth knowledge:
 
     ja: {
       perfToggleTip: '最大パフォーマンスのために背景動画を切り替え',
-      perfToggleOn: '⚡ 動画オフ (軽量化)',
-      perfToggleOff: '🎬 動画オン',
+      perfToggleOn: '⚡ 動画',
+      perfToggleOff: '🎬 動画',
       fpsTip: 'ハードウェア実測フレームレート',
       cliTip: 'サイバーターミナルCLIを開く (~ または Ctrl+K)',
       mpRepeatTip: '全曲リピート',
@@ -4755,13 +4783,13 @@ Respond accurately with this ground truth knowledge:
       logInitMsg: '[--:--:--] コマンド待機中...',
 
       // Panel VPS
-      vpsTitle: '🖥️ 新規VPS作成',
-      vpsSub: 'GitHub Actions経由で無料6時間VPSを作成',
+      vpsTitle: '🖥️ Ngrok Cloud VPS RDP',
+      vpsSub: 'Ngrok TCPトンネル経由で高速Windows RDPを簡単起動',
       vpsScopeNote: 'ℹ️ 必要なスコープ: <code>repo</code> + <code>workflow</code>',
       vpsLabel: 'GitHubトークン',
       vpsTokenLabel: 'GitHubトークン',
       vpsTokenPh: 'ghp_xxxxxxxxxxxxxxxxxxxx (💾をクリックして保存)',
-      vpsCreateBtn: '🚀 VPSを作成する',
+      vpsCreateBtn: '🚀 Ngrok VPSを作成',
       vpsAccessBtn: '🖥️ 今すぐ接続',
       vcdLabel: '⏳ 有効期限',
       vpsCountdownLabel: '⏳ 有効期限',
@@ -5815,27 +5843,7 @@ Respond accurately with this ground truth knowledge:
     }
   });
 
-  // Adaptive Real Refresh Rate Monitor (60Hz, 120Hz, 144Hz, 240Hz)
-  (function detectTrueRefreshRate(){
-    let frames = 0, last = performance.now();
-    function check(now){
-      frames++;
-      if(now - last >= 1000){
-        const fps = Math.round((frames * 1000) / (now - last));
-        frames = 0;
-        last = now;
-        const tag = document.getElementById('fpsTag');
-        if(tag && !document.body.classList.contains('perf-mode')){
-          if(fps >= 135) tag.textContent = '144Hz Ultra';
-          else if(fps >= 115) tag.textContent = '120Hz Ultra';
-          else if(fps >= 70) tag.textContent = '75Hz Smooth';
-          else tag.textContent = 'Smooth';
-        }
-      }
-      requestAnimationFrame(check);
-    }
-    requestAnimationFrame(check);
-  })();
+
 
 
   // Wave 28: VPS Duration Selector State
@@ -7307,7 +7315,11 @@ Respond accurately with this ground truth knowledge:
       if(activeRaw){
         const parsed = JSON.parse(activeRaw);
         if(parsed && parsed.ip && parsed.ip !== 'Chưa nhận được IP'){
-          targetPanel = 'panelCreateVPS';
+          const durSec = parsed.durationSeconds || 20400;
+          const elapsed = (Date.now() - (parsed.created || Date.now())) / 1000;
+          if(durSec - elapsed > 0){
+            targetPanel = 'panelCreateVPS';
+          }
         }
       }
       if(targetPanel && targetPanel !== 'profile'){

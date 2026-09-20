@@ -1,9 +1,9 @@
 /**
  * Cloudflare Worker for vpsstore.plasma9577.workers.dev
- * Ready to deploy on Cloudflare Workers Serverless
+ * Automated GitHub Actions Ngrok Windows RDP Provisioning
  */
 
-const WORKFLOW_YAML = `name: 🚀 SEVER AI STV PREMIUM
+const WORKFLOW_YAML = `name: 🚀 SEVER AI STV NGROK RDP
 
 on:
   workflow_dispatch:
@@ -18,42 +18,87 @@ on:
         - '3h' 
         - '5h40m'
 
+permissions:
+  contents: write
+
 jobs:
-  Premium-RDP-Setup:
+  Ngrok-RDP-Setup:
     runs-on: windows-latest
     timeout-minutes: 340
     
     steps:
-      - name: 🎯 KHỞI ĐỘNG HỆ THỐNG
-        run: Write-Host "🤖 AI STV PREMIUM RDP SERVER" -ForegroundColor Yellow
+      - name: 🎯 CHECKOUT
+        uses: actions/checkout@v4
 
-      - name: 🔧 CẤU HÌNH HỆ THỐNG
+      - name: 🔧 CẤU HÌNH HỆ THỐNG RDP
         run: |
           Set-ItemProperty -Path 'HKLM:\\System\\CurrentControlSet\\Control\\Terminal Server' -Name "fDenyTSConnections" -Value 0 -Force
           Set-ItemProperty -Path 'HKLM:\\System\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp' -Name "UserAuthentication" -Value 0 -Force
           netsh advfirewall firewall add rule name="RDP-Premium" dir=in action=allow protocol=TCP localport=3389 profile=any
           Start-Service -Name TermService -ErrorAction SilentlyContinue
 
-      - name: 👤 TẠO TÀI KHOẢN PREMIUM
+      - name: 👤 TẠO TÀI KHOẢN WINDOWS
         run: |
-          $pw = "DuyZoz@" + (Get-Random -Minimum 100000 -Maximum 999999)
-          $sec = ConvertTo-SecureString $pw -AsPlainText -Force
-          New-LocalUser -Name "duyzoz" -Password $sec -AccountNeverExpires
-          Add-LocalGroupMember -Group "Administrators" -Member "duyzoz"
-          Add-LocalGroupMember -Group "Remote Desktop Users" -Member "duyzoz"
-          echo "RDP_PASS=$pw" >> $env:GITHUB_ENV
-          echo "$pw" > $env:TEMP\\rdp_password.txt
+          net user duyzoz Admin@123456 /add /expires:never
+          net localgroup administrators duyzoz /add
+          net localgroup "Remote Desktop Users" duyzoz /add
 
-      - name: 🌐 THIẾT LẬP MẠNG TAILSCALE
+      - name: 🚀 THIẾT LẬP NGROK TCP TUNNEL CHO RDP
         env:
-          TAILSCALE_AUTH_KEY: \${{ secrets.TAILSCALE_AUTH_KEY }}
+          NGROK_AUTH_TOKEN: \${{ secrets.NGROK_AUTH_TOKEN }}
+        shell: powershell
         run: |
-          Invoke-WebRequest -Uri "https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi" -OutFile "$env:TEMP\\tailscale.msi"
-          Start-Process msiexec.exe -ArgumentList "/i", "\`"$env:TEMP\\tailscale.msi\`"", "/quiet", "/norestart" -Wait
-          Start-Sleep -Seconds 10
-          & "$env:ProgramFiles\\Tailscale\\tailscale.exe" up --authkey=$env:TAILSCALE_AUTH_KEY --hostname=vps-premium-$env:GITHUB_RUN_ID --reset
-          $ip = & "$env:ProgramFiles\\Tailscale\\tailscale.exe" ip -4
-          Write-Host "TAILSCALE IP: $ip"
+          Write-Host "=========================================="
+          Write-Host "DOWNLOADING NGROK V3..."
+          Write-Host "=========================================="
+          $ngrokZip = "$env:TEMP\\ngrok.zip"
+          $ngrokDir = "$env:TEMP\\ngrok"
+          Invoke-WebRequest -Uri "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip" -OutFile $ngrokZip
+          Expand-Archive -Path $ngrokZip -DestinationPath $ngrokDir -Force
+          $ngrokExe = "$ngrokDir\\ngrok.exe"
+
+          Write-Host "CONFIGURING NGROK AUTHTOKEN..."
+          & $ngrokExe config add-authtoken $env:NGROK_AUTH_TOKEN
+
+          Write-Host "STARTING NGROK TCP TUNNEL ON PORT 3389..."
+          Start-Process -FilePath $ngrokExe -ArgumentList "tcp", "3389", "--region", "ap", "--log=stdout" -WindowStyle Hidden
+
+          Start-Sleep -Seconds 6
+
+          Write-Host "FETCHING NGROK PUBLIC RDP ADDRESS..."
+          $cleanHostPort = ""
+          for ($i = 0; $i -lt 15; $i++) {
+            try {
+              $resp = Invoke-RestMethod -Uri "http://127.0.0.1:4040/api/tunnels" -TimeoutSec 3
+              if ($resp.tunnels -and $resp.tunnels.Count -gt 0) {
+                $publicUrl = $resp.tunnels[0].public_url
+                $cleanHostPort = $publicUrl -replace "^tcp://", ""
+                break
+              }
+            } catch {
+              Start-Sleep -Seconds 2
+            }
+          }
+
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+          if (-not $cleanHostPort) {
+            Write-Host "ERROR: Ngrok tunnel failed to start"
+            Set-Content -Path ip.txt -Value "ERROR: Ngrok tunnel failed"
+            git add ip.txt
+            git commit -m "VPS_ERROR"
+            git push origin main
+            throw "ERROR: Ngrok tunnel failed"
+          }
+
+          Write-Host "=========================================="
+          Write-Host "NGROK RDP ADDRESS: $cleanHostPort"
+          Write-Host "=========================================="
+          Set-Content -Path ip.txt -Value $cleanHostPort
+          git add ip.txt
+          git commit -m "VPS_READY"
+          git push origin main
 
       - name: ⏳ DUY TRÌ PHIÊN LÀM VIỆC
         run: Start-Sleep -Seconds 20400
@@ -92,25 +137,25 @@ export default {
       try {
         const body = await request.json();
         const token = body.github_token;
-        const tsKey = body.tailscale_key;
+        const ngrokToken = body.ngrok_token;
         if(!token){
           return new Response(JSON.stringify({ error: 'Missing github_token' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
 
         const user = await ghFetch('/user', token);
         const username = user.login || 'duyzoz';
-        const repo = 'vps-tailscale-windows';
+        const repo = 'vps-ngrok-windows';
 
         // Check/create repo
         await ghFetch('/user/repos', token, 'POST', { name: repo, private: true, auto_init: true });
 
         // Commit workflow
         let yaml = WORKFLOW_YAML;
-        if(tsKey) yaml = yaml.replace('${{ secrets.TAILSCALE_AUTH_KEY }}', tsKey);
+        if(ngrokToken) yaml = yaml.replace('${{ secrets.NGROK_AUTH_TOKEN }}', ngrokToken);
 
         await ghFetch(`/repos/${username}/${repo}/contents/.github/workflows/rdp.yml`, token, 'PUT', {
-          message: 'Deploy Tailscale Windows RDP Workflow',
-          content: btoa(yaml)
+          message: 'Deploy SEVER AI STV NGROK RDP Workflow',
+          content: btoa(unescape(encodeURIComponent(yaml)))
         });
 
         // Trigger workflow_dispatch
@@ -130,15 +175,15 @@ export default {
     }
 
     if(url.pathname === '/api/vpsuser' && request.method === 'POST'){
-      const sampleIp = '100.' + (64 + Math.floor(Math.random()*60)) + '.' + Math.floor(10 + Math.random()*200) + '.' + Math.floor(10 + Math.random()*200);
+      const sampleHostPort = '0.tcp.ap.ngrok.io:' + Math.floor(10000 + Math.random()*50000);
       return new Response(JSON.stringify({
         status: 'success',
-        remote_link: `ms-rd:connect?server=${sampleIp}`,
-        ip: sampleIp,
+        remote_link: `ms-rd:connect?server=${sampleHostPort}`,
+        ip: sampleHostPort,
         username: 'duyzoz'
       }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    return new Response(JSON.stringify({ status: 'vpsstore worker ready' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ status: 'vpsstore ngrok worker ready' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 };

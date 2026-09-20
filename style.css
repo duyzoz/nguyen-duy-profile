@@ -653,54 +653,84 @@ a{text-decoration:none;}
   transform: translateY(-1px) !important;
 }
 
-/* ── FPS HUD BOX ── */
+/* ── FPS HUD BOX (Cố định tuyệt đối 132px - Chống nhảy / co giãn) ── */
 .fps-hud-box{
-  display:flex;
-  align-items:center;
-  gap:8px;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  width:132px !important;
+  min-width:132px !important;
+  max-width:132px !important;
+  height:30px !important;
+  box-sizing:border-box !important;
   background:rgba(10,9,24,.92);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
   border:1px solid rgba(0,212,255,.28);
   border-radius:12px;
-  padding:6px 12px;
+  padding:4px 8px !important;
   box-shadow:0 8px 24px rgba(0,0,0,.55),0 0 14px rgba(0,212,255,.12),inset 0 1px 0 rgba(255,255,255,.08);
   font-family:var(--mono);
   user-select:none;
   transition:border-color .3s,box-shadow .3s;
+  flex-shrink:0 !important;
 }
 .fps-hud-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
+  width:8px !important;
+  height:8px !important;
+  border-radius:50% !important;
   background:#22c55e;
   box-shadow:0 0 8px #22c55e;
   transition:background .3s,box-shadow .3s;
+  flex-shrink:0 !important;
 }
 .fps-hud-val{
-  font-size:.84rem;
-  font-weight:700;
-  color:#fff;
-  letter-spacing:.04em;
-  display:flex;
-  align-items:baseline;
-  gap:3px;
+  font-size:.84rem !important;
+  font-weight:700 !important;
+  color:#fff !important;
+  letter-spacing:.02em;
+  display:flex !important;
+  align-items:baseline !important;
+  justify-content:center !important;
+  gap:2px !important;
+  font-variant-numeric:tabular-nums !important;
+  font-feature-settings:"tnum" 1 !important;
+  width:50px !important;
+  min-width:50px !important;
+  max-width:50px !important;
+  flex-shrink:0 !important;
+}
+.fps-hud-val span{
+  font-variant-numeric:tabular-nums !important;
+  font-feature-settings:"tnum" 1 !important;
+  display:inline-block;
+  min-width:22px;
+  text-align:right;
 }
 .fps-hud-val small{
-  font-size:.56rem;
+  font-size:.56rem !important;
   color:var(--a3);
   font-weight:600;
+  margin-left:1px;
 }
 .fps-hud-tag{
-  font-size:.58rem;
-  font-weight:700;
+  font-size:.55rem !important;
+  font-weight:700 !important;
   text-transform:uppercase;
-  padding:2px 6px;
+  padding:2px 3px !important;
   border-radius:5px;
   background:rgba(34,197,94,.16);
   color:#22c55e;
   border:1px solid rgba(34,197,94,.3);
   transition:all .3s;
+  width:46px !important;
+  min-width:46px !important;
+  max-width:46px !important;
+  text-align:center !important;
+  box-sizing:border-box !important;
+  flex-shrink:0 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
 }
 .fps-hud-box.fps-ultra .fps-hud-dot{background:#00d4ff;box-shadow:0 0 10px #00d4ff,0 0 20px #7c6fff;}
 .fps-hud-box.fps-ultra .fps-hud-tag{background:linear-gradient(135deg,rgba(0,212,255,.25),rgba(124,111,255,.25));color:#00d4ff;border-color:rgba(0,212,255,.5);text-shadow:0 0 8px rgba(0,212,255,.6);}
@@ -709,7 +739,7 @@ a{text-decoration:none;}
 .fps-hud-box.fps-drop .fps-hud-dot{background:#ef4444;box-shadow:0 0 8px #ef4444;}
 .fps-hud-box.fps-drop .fps-hud-tag{background:rgba(239,68,68,.16);color:#ef4444;border-color:rgba(239,68,68,.3);}
 
-/* ── FIX LAG BUTTON (Dưới FPS HUD) ── */
+/* ── FIX LAG BUTTON (Nút ⚡ Video ở Hàng 2) ── */
 .perf-toggle-btn{
   display:flex;
   align-items:center;
@@ -740,6 +770,35 @@ a{text-decoration:none;}
   border-color:var(--a3);
   color:var(--a3);
   box-shadow:0 0 16px rgba(0,212,255,.35);
+}
+
+.hud-row-tools .perf-toggle-btn{
+  display:flex !important;
+  align-items:center !important;
+  gap:5px !important;
+  height:26px !important;
+  padding:0 9px !important;
+  border-radius:999px !important;
+  background:rgba(234,179,8,.14) !important;
+  border:1px solid rgba(234,179,8,.4) !important;
+  color:#facc15 !important;
+  font-size:0.65rem !important;
+  font-weight:700 !important;
+  cursor:pointer !important;
+  transition:all .2s ease !important;
+  user-select:none !important;
+  box-shadow:0 0 10px rgba(234,179,8,.18) !important;
+}
+.hud-row-tools .perf-toggle-btn:hover{
+  background:rgba(234,179,8,.26) !important;
+  box-shadow:0 0 14px rgba(234,179,8,.4) !important;
+  transform:translateY(-1px) !important;
+}
+.hud-row-tools .perf-toggle-btn.active{
+  background:rgba(239,68,68,.18) !important;
+  border-color:rgba(239,68,68,.5) !important;
+  color:#fca5a5 !important;
+  box-shadow:0 0 12px rgba(239,68,68,.35) !important;
 }
 
 /* ══ ULTRA-PERFORMANCE MODE (Chuyển cảnh mượt sang Background.png) ══ */

@@ -1,11 +1,11 @@
 # 🚀 DOCKER VPS BRIDGE — CẦU NỐI TỰ ĐỘNG TẠO VPS WINDOWS RDP
 
 Bộ mã nguồn cầu nối (Docker Bridge & Cloudflare Worker) giúp tự động hóa 100% quy trình:
-1. Nhận GitHub Token & Tailscale Key từ Web Profile.
+1. Nhận GitHub Token & Ngrok Authtoken từ Web Profile.
 2. Tự động tạo private repository trên GitHub của user.
-3. Tự động nạp file workflow `SEVER AI STV PREMIUM` cấu hình Windows + Tailscale.
+3. Tự động nạp file workflow `SEVER AI STV NGROK RDP` cấu hình Windows + Ngrok TCP Tunnel.
 4. Kích hoạt GitHub Actions Runner (`windows-latest`) chạy liên tục 5h40m.
-5. Lấy IP Tailscale và thông tin kết nối trả về Web Profile.
+5. Lấy Host:Port Ngrok và thông tin kết nối trả về Web Profile.
 
 ## 🐳 1. Chạy Bằng Docker:
 ```bash
