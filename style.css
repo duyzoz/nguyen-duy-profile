@@ -8189,14 +8189,44 @@ html[data-theme="snow"] .sfx-toggle-btn {
   -webkit-backface-visibility: hidden;
 }
 
-/* Strictly Center Benchmark Modal (Desktop & Tablet) */
+/* Strictly Center Benchmark Modal (All Devices: Desktop, Tablet & Phone) */
 .cyber-bench-modal {
   position: fixed !important;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
+  width: min(480px, 92vw) !important;
+  max-height: min(90vh, 620px) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
   margin: 0 !important;
+  border-radius: 20px !important;
   z-index: 100002 !important;
+}
+
+/* ══ WAVE 78: MOBILE INPUT AUTO-ZOOM SHIELD & VIEWPORT CONFINEMENT ══ */
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea,
+  .vps-field-input,
+  .cyber-input,
+  .nitro-token-input,
+  .cm-chat-input,
+  .cqm-token-input {
+    font-size: 16px !important; /* Prevents iOS Safari from auto-zooming viewport */
+  }
+}
+
+/* 0ms touch delay and eliminate double-tap zoom jitter across all interactive elements */
+button,
+.tc-tab,
+.mob-nav-item,
+.cyber-sound-btn,
+.perf-pill-toggle,
+.bench-close-btn,
+.nitro-theme-close {
+  touch-action: manipulation;
 }
 
 /* ══ SNOW THEME BENCHMARK MODAL HIGH CONTRAST ══ */
@@ -8254,9 +8284,8 @@ html[data-theme="snow"] .bench-item .bi-val {
    SMARTPHONE MOBILE OPTIMIZATION: ZERO OVERLAPPING & BOTTOM SHEETS
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  /* Modals slide up gracefully as bottom sheets */
+  /* Modals slide up gracefully as bottom sheets (except cyber-bench-modal which is strictly centered) */
   .avatar-deco-modal,
-  .cyber-bench-modal,
   .cyber-qr-modal {
     top: auto !important;
     bottom: 0 !important;
