@@ -4698,6 +4698,7 @@ body.mob-sheet-open {
     font-size: 1.25rem !important;
     line-height: 1 !important;
     transition: transform 0.25s ease !important;
+  }
   .mob-fab-btn:active {
     transform: scale(0.92) !important;
   }
