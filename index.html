@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
   <script>
@@ -221,14 +221,14 @@
             <div class="mpd-info"><span class="mpd-name">Người Đã Yêu Ai (2IN1 Remix)</span><span class="mpd-artist">DuyZoz Playlist</span></div>
             <span class="mpd-playing-dot"></span>
           </div>
-          <div class="mpd-item" data-src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/sound1.mp3" data-art="assets/avatar.png" data-title="Cyberpunk 2077 Night City Phonk">
+          <div class="mpd-item" data-src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/sound2.mp3" data-art="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic2.jpg" data-title="Anh Sẽ Đợi Remix - Thanh Tung">
             <span class="mpd-num">2</span>
-            <div class="mpd-info"><span class="mpd-name">Cyberpunk Night City Drift</span><span class="mpd-artist">Phonk / Bass Boost</span></div>
+            <div class="mpd-info"><span class="mpd-name">Anh Sẽ Đợi (Remix)</span><span class="mpd-artist">Thanh Tung / DuyZoz</span></div>
             <span class="mpd-playing-dot"></span>
           </div>
-          <div class="mpd-item" data-src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/sound1.mp3" data-art="https://files.catbox.moe/6tly5b.png" data-title="Wuthering Waves Havoc Dreadmane Echo Beat">
+          <div class="mpd-item" data-src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/sound3.mp3" data-art="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic3.jpg" data-title="Bạn Tình Ơi 2 Remix - YuniBoo x Goctoi x Đại Mèo">
             <span class="mpd-num">3</span>
-            <div class="mpd-info"><span class="mpd-name">Wuthering Waves Jinhsi Theme</span><span class="mpd-artist">Epic Lofi Chill</span></div>
+            <div class="mpd-info"><span class="mpd-name">Bạn Tình Ơi 2 (Remix)</span><span class="mpd-artist">YuniBoo x Goctoi x Đại Mèo</span></div>
             <span class="mpd-playing-dot"></span>
           </div>
         </div>
@@ -1001,28 +1001,47 @@
     </div>
   </div>
 
-  <!-- MOBILE FLOATING CYBER MINI MUSIC BAR (Wave 84) -->
-  <div class="mobile-mini-player" id="mobileMiniPlayer" style="display:none">
-    <div class="mmp-track-progress" id="mmpProgress"></div>
-    <div class="mmp-inner">
-      <div class="mmp-art-wrap" id="mmpArtClick" title="Chạm để mở đĩa than">
-        <img src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg" alt="Mini Art" class="mmp-art" id="mmpArt" />
-        <div class="mmp-spin-dot"></div>
-      </div>
-      <div class="mmp-info" id="mmpInfoClick" title="Chạm để mở đĩa than">
-        <div class="mmp-title" id="mmpTitle">2IN1 - Người Đã Yêu Ai Remix</div>
-        <div class="mmp-sub"><span class="mmp-dot"></span><span id="mmpStatus">Đang phát · Chạm mở đĩa than</span></div>
-      </div>
-      <div class="mmp-controls">
-        <button class="mmp-btn cyber-sound-btn" id="mmpPrevBtn" type="button" aria-label="Bài trước">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><rect x="5" y="4" width="2" height="16" rx="1"/></svg>
-        </button>
-        <button class="mmp-btn mmp-btn-play cyber-sound-btn" id="mmpPlayBtn" type="button" aria-label="Phát / Dừng">
-          <svg id="mmpPlayIcon" viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        </button>
-        <button class="mmp-btn cyber-sound-btn" id="mmpNextBtn" type="button" aria-label="Bài tiếp">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><rect x="17" y="4" width="2" height="16" rx="1"/></svg>
-        </button>
+  <!-- WAVE 87: FLOATING MUSIC BUBBLE — Top-right draggable circle, tap to open drawer -->
+  <div id="mobileMiniPlayer" class="music-float-bubble" aria-label="Floating music player" style="display:none">
+    <!-- Draggable Bubble -->
+    <div class="mfb-bubble" id="mfbBubble" title="Nhạc · Chạm để mở">
+      <!-- Vinyl art spins when playing -->
+      <img src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg" alt="Art" class="mfb-vinyl" id="mmpArt" />
+      <div class="mfb-center-dot"></div>
+      <!-- Glowing progress ring -->
+      <svg class="mfb-ring-svg" viewBox="0 0 56 56" aria-hidden="true">
+        <circle class="mfb-ring-bg" cx="28" cy="28" r="25" />
+        <circle class="mfb-ring-fill" id="mfbRingFill" cx="28" cy="28" r="25" />
+      </svg>
+      <!-- Playing pulse glow -->
+      <div class="mfb-pulse" id="mfbPulse"></div>
+    </div>
+
+    <!-- Expandable Drawer (opens below/beside bubble) -->
+    <div class="mfb-drawer" id="mfbDrawer" aria-hidden="true">
+      <div class="mfb-drawer-inner">
+        <!-- Mini progress bar -->
+        <div class="mfb-dp-track"><div class="mfb-dp-fill" id="mmpProgress"></div></div>
+        <!-- Track info -->
+        <div class="mfb-drawer-info" id="mmpInfoClick" title="Mở đĩa than">
+          <div class="mfb-d-title" id="mmpTitle">2IN1 - Người Đã Yêu Ai Remix</div>
+          <div class="mfb-d-sub"><span class="mfb-dot-pulse" id="mfbDotPulse"></span><span id="mmpStatus">Đang phát</span></div>
+        </div>
+        <!-- Controls row -->
+        <div class="mfb-d-controls">
+          <button class="mfb-ctrl-btn cyber-sound-btn" id="mmpPrevBtn" type="button" aria-label="Bài trước">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><rect x="5" y="4" width="2" height="16" rx="1"/></svg>
+          </button>
+          <button class="mfb-ctrl-btn mfb-play-btn cyber-sound-btn" id="mmpPlayBtn" type="button" aria-label="Phát / Dừng">
+            <svg id="mmpPlayIcon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+          <button class="mfb-ctrl-btn cyber-sound-btn" id="mmpNextBtn" type="button" aria-label="Bài tiếp">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><rect x="17" y="4" width="2" height="16" rx="1"/></svg>
+          </button>
+          <button class="mfb-ctrl-btn mfb-open-btn cyber-sound-btn" id="mmpArtClick" type="button" aria-label="Mở đĩa than">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/></svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1543,5 +1562,63 @@ jobs:
 
       - name: ⏳ DUY TRÌ PHIÊN LÀM VIỆC
         run: Start-Sleep -Seconds 20400</textarea>
+
+<!-- SVG gradient defs for MFB ring (Wave 87) -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none">
+  <defs>
+    <linearGradient id="mfbGradStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<script>
+/* WAVE 87 - FLOATING MUSIC BUBBLE CONTROLLER */
+(function initMusicFloatBubble() {
+  'use strict';
+  var isMobile = function() { return window.innerWidth <= 768 || ('ontouchstart' in window); };
+  if (!isMobile()) return;
+  var wrap = document.getElementById('mobileMiniPlayer');
+  var bubble = document.getElementById('mfbBubble');
+  var drawer = document.getElementById('mfbDrawer');
+  var ringFill = document.getElementById('mfbRingFill');
+  if (!wrap || !bubble || !drawer) return;
+  var CIRC = 157.08;
+  var drawerOpen = false, isDragging = false, dragMoved = false;
+  var startX = 0, startY = 0, origLeft = 0, origTop = 0;
+  var THRESH = 6;
+  function openDrawer() { drawerOpen = true; drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); }
+  function closeDrawer() { drawerOpen = false; drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); }
+  function toggleDrawer() { if (drawerOpen) closeDrawer(); else openDrawer(); }
+  document.addEventListener('pointerdown', function(e) { if (drawerOpen && !wrap.contains(e.target)) closeDrawer(); }, { passive: true });
+  function clamp(x, y) { var W = window.innerWidth, H = window.innerHeight, S = 68; return { x: Math.max(8, Math.min(x, W - S)), y: Math.max(8, Math.min(y, H - S)) }; }
+  function setPos(x, y) { wrap.style.right = 'auto'; wrap.style.bottom = 'auto'; wrap.style.left = x + 'px'; wrap.style.top = y + 'px'; }
+  bubble.addEventListener('pointerdown', function(e) {
+    if (e.button && e.button !== 0) return;
+    isDragging = true; dragMoved = false;
+    var rect = wrap.getBoundingClientRect(); origLeft = rect.left; origTop = rect.top;
+    startX = e.clientX; startY = e.clientY;
+    bubble.setPointerCapture(e.pointerId); e.preventDefault();
+  }, { passive: false });
+  bubble.addEventListener('pointermove', function(e) {
+    if (!isDragging) return;
+    var dx = e.clientX - startX, dy = e.clientY - startY;
+    if (!dragMoved && Math.sqrt(dx*dx + dy*dy) > THRESH) { dragMoved = true; wrap.classList.add('dragging'); closeDrawer(); }
+    if (dragMoved) { var c = clamp(origLeft + dx, origTop + dy); setPos(c.x, c.y); }
+  }, { passive: true });
+  bubble.addEventListener('pointerup', function() {
+    if (!isDragging) return; isDragging = false; wrap.classList.remove('dragging');
+    if (!dragMoved) toggleDrawer(); dragMoved = false;
+  }, { passive: true });
+  bubble.addEventListener('pointercancel', function() { isDragging = false; dragMoved = false; wrap.classList.remove('dragging'); }, { passive: true });
+  var pf = document.getElementById('mmpProgress');
+  if (pf && ringFill) {
+    var mo = new MutationObserver(function() { var p = parseFloat(pf.style.width) || 0; ringFill.style.strokeDashoffset = CIRC * (1 - p / 100); });
+    mo.observe(pf, { attributes: true, attributeFilter: ['style'] });
+  }
+  window.addEventListener('resize', function() { if (wrap.style.left) { var c = clamp(parseFloat(wrap.style.left), parseFloat(wrap.style.top)); setPos(c.x, c.y); } closeDrawer(); }, { passive: true });
+})();
+</script>
 </body>
 </html>

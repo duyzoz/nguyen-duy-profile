@@ -5092,8 +5092,9 @@ body.mob-sheet-open {
   justify-content: center;
   background: #000;
 }
+/* Bug fix: Split selector — 28px cap ONLY when inside vinyl label, never globally */
 .mp-vinyl-label .mp-art,
-#mpArt {
+.mp-vinyl-label #mpArt {
   width: 100% !important;
   height: 100% !important;
   max-width: 28px !important;
@@ -5101,6 +5102,14 @@ body.mob-sheet-open {
   object-fit: cover !important;
   border-radius: 50% !important;
   display: block !important;
+}
+/* #mpArt outside vinyl label (e.g. expanded deck .mp-art-wrap) — no max-size constraint */
+.mp-art-wrap #mpArt {
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 11px !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 .mp-vinyl-spindle {
   position: absolute;
@@ -8402,151 +8411,289 @@ html[data-theme="snow"] .bench-item .bi-val {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   WAVE 84 — MOBILE FLOATING CYBER MINI MUSIC BAR
+   WAVE 87 — FLOATING MUSIC BUBBLE (Draggable, Top-Right, Tap to Open)
    ═══════════════════════════════════════════════════════════ */
-.mobile-mini-player {
+
+/* Legacy alias — hide old bar everywhere */
+.mobile-mini-player.is-playing .mmp-art { animation: vinylSpin 6s linear infinite; }
+
+/* Hide old classes that may still exist in JS */
+.mmp-track-progress { display: none !important; }
+
+/* === Base: hidden on desktop === */
+.music-float-bubble {
   display: none;
 }
 
 @media (max-width: 768px) {
-  .mobile-mini-player {
+  /* === FLOATING BUBBLE WRAPPER === */
+  .music-float-bubble {
     display: block;
     position: fixed;
-    bottom: calc(62px + env(safe-area-inset-bottom, 8px));
-    left: 10px;
-    right: 10px;
-    z-index: 9990;
-    background: rgba(10, 15, 30, 0.88);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(0, 240, 255, 0.3);
-    border-radius: 14px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.65), 0 0 15px rgba(0, 240, 255, 0.15);
-    overflow: hidden;
-    animation: mmpSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    top: 14px;
+    right: 14px;
+    z-index: 10100;
+    /* draggable repositions with transform */
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
-  @keyframes mmpSlideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+  /* === MAIN BUBBLE === */
+  .mfb-bubble {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    cursor: pointer;
+    touch-action: manipulation;
+    overflow: visible;
+    /* "dragging" class removes transition for smooth real-time drag */
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+    filter: drop-shadow(0 4px 12px rgba(0,240,255,0.4));
   }
 
-  .mmp-track-progress {
+  .mfb-bubble:active {
+    transform: scale(0.93);
+  }
+
+  /* Vinyl art fills bubble */
+  .mfb-vinyl {
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(0,240,255,0.6);
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.8);
+    transition: transform 0.1s linear;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  /* Spinning when playing */
+  .music-float-bubble.is-playing .mfb-vinyl {
+    animation: mfbVinylSpin 5s linear infinite;
+  }
+
+  @keyframes mfbVinylSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* Center spindle dot */
+  .mfb-center-dot {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff 30%, #00f0ff 100%);
+    border: 1px solid rgba(0,0,0,0.7);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* SVG Progress Ring */
+  .mfb-ring-svg {
+    position: absolute;
+    inset: -3px;
+    width: calc(100% + 6px);
+    height: calc(100% + 6px);
+    pointer-events: none;
+    transform: rotate(-90deg);
+  }
+
+  .mfb-ring-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.08);
+    stroke-width: 3;
+  }
+
+  .mfb-ring-fill {
+    fill: none;
+    stroke: url(#mfbGradStroke);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 157.08; /* 2π × 25 */
+    stroke-dashoffset: 157.08;
+    transition: stroke-dashoffset 0.15s linear;
+    filter: drop-shadow(0 0 4px #00f0ff);
+  }
+
+  /* Pulse glow ring (only when playing) */
+  .mfb-pulse {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    border: 2px solid rgba(0,240,255,0.5);
+    transition: opacity 0.3s ease;
+  }
+
+  .music-float-bubble.is-playing .mfb-pulse {
+    opacity: 1;
+    animation: mfbPulseRing 1.8s ease-out infinite;
+  }
+
+  @keyframes mfbPulseRing {
+    0%   { transform: scale(1);    opacity: 0.7; }
+    80%  { transform: scale(1.55); opacity: 0; }
+    100% { transform: scale(1.55); opacity: 0; }
+  }
+
+  /* === DRAWER === */
+  .mfb-drawer {
     position: absolute;
     top: 0;
-    left: 0;
+    right: 64px; /* slides in from right of bubble */
+    width: 220px;
+    background: rgba(8, 12, 24, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0,240,255,0.3);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 16px rgba(0,240,255,0.12);
+    overflow: hidden;
+    /* closed state */
+    transform-origin: right top;
+    transform: scale(0.6) translateX(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.28s cubic-bezier(0.16,1,0.3,1),
+                opacity 0.22s ease;
+  }
+
+  .mfb-drawer.open {
+    transform: scale(1) translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Drawer progress bar */
+  .mfb-dp-track {
+    width: 100%;
     height: 2px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  .mfb-dp-fill {
+    height: 100%;
     width: 0%;
     background: linear-gradient(90deg, #00f0ff, #a855f7);
     box-shadow: 0 0 6px #00f0ff;
     transition: width 0.15s linear;
   }
 
-  .mmp-inner {
+  .mfb-drawer-inner {
+    padding: 10px 12px 12px;
     display: flex;
-    align-items: center;
-    padding: 6px 10px;
-    gap: 10px;
+    flex-direction: column;
+    gap: 8px;
   }
 
-  .mmp-art-wrap {
-    position: relative;
-    width: 38px;
-    height: 38px;
-    flex-shrink: 0;
+  /* Track info */
+  .mfb-drawer-info {
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .mmp-art {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid rgba(0, 240, 255, 0.5);
-    box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
-  }
-
-  .mobile-mini-player.is-playing .mmp-art {
-    animation: vinylSpin 6s linear infinite;
-  }
-
-  .mmp-spin-dot {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #00f0ff;
-    border: 1px solid #000;
-  }
-
-  .mmp-info {
-    flex: 1;
-    min-width: 0;
-    cursor: pointer;
-  }
-
-  .mmp-title {
-    font-size: 0.78rem;
+  .mfb-d-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #f1f5f9;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: 'Space Grotesk', sans-serif;
   }
 
-  .mmp-sub {
+  .mfb-d-sub {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     font-size: 0.62rem;
     color: #94a3b8;
-    margin-top: 1px;
+    margin-top: 2px;
   }
 
-  .mmp-dot {
-    width: 5px;
-    height: 5px;
+  .mfb-dot-pulse {
+    width: 5px; height: 5px;
     border-radius: 50%;
     background: #00f0ff;
-    box-shadow: 0 0 5px #00f0ff;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px #00f0ff;
   }
 
-  .mmp-controls {
+  .music-float-bubble.is-playing .mfb-dot-pulse {
+    animation: mfbDotBlink 1s ease-in-out infinite alternate;
+  }
+
+  @keyframes mfbDotBlink {
+    from { opacity: 1; box-shadow: 0 0 6px #00f0ff; }
+    to   { opacity: 0.3; box-shadow: none; }
+  }
+
+  /* Controls row */
+  .mfb-d-controls {
     display: flex;
     align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
+    justify-content: center;
+    gap: 6px;
   }
 
-  .mmp-btn {
-    width: 32px;
-    height: 32px;
+  .mfb-ctrl-btn {
+    width: 34px; height: 34px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.14);
     color: #e2e8f0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     touch-action: manipulation;
-    transition: all 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s ease, transform 0.1s ease;
+    flex-shrink: 0;
   }
 
-  .mmp-btn:active {
-    transform: scale(0.92);
-    background: rgba(0, 240, 255, 0.2);
+  .mfb-ctrl-btn:active {
+    transform: scale(0.88);
+    background: rgba(0,240,255,0.2);
   }
 
-  .mmp-btn-play {
-    background: linear-gradient(135deg, #00f0ff, #7c3aed);
+  /* Play button — larger + gradient */
+  .mfb-play-btn {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #00f0ff 0%, #7c3aed 100%);
     border: none;
     color: #000;
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    box-shadow: 0 0 14px rgba(0,240,255,0.5);
+  }
+
+  .mfb-play-btn:active {
+    background: linear-gradient(135deg, #00c8d9 0%, #6427c4 100%);
+  }
+
+  /* Open vinyl button — cyan tint */
+  .mfb-open-btn {
+    background: rgba(0,240,255,0.1);
+    border-color: rgba(0,240,255,0.3);
+    color: #00f0ff;
+  }
+
+  /* === DRAGGING STATE === */
+  .music-float-bubble.dragging .mfb-bubble {
+    transform: scale(1.08);
+    filter: drop-shadow(0 6px 20px rgba(0,240,255,0.65));
+    transition: none;
+  }
+
+  .music-float-bubble.dragging .mfb-drawer {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: none;
   }
 }
 
@@ -8625,25 +8772,47 @@ html[data-theme="snow"] .vps-ping-probe-btn:hover {
   background: #e2e8f0 !important;
   border-color: #0284c7 !important;
 }
-html[data-theme="snow"] .mobile-mini-player {
-  background: rgba(255, 255, 255, 0.94) !important;
+html[data-theme="snow"] .music-float-bubble .mfb-bubble {
+  filter: drop-shadow(0 4px 12px rgba(2, 132, 199, 0.5)) !important;
+}
+html[data-theme="snow"] .mfb-vinyl {
+  border-color: rgba(2, 132, 199, 0.7) !important;
+}
+html[data-theme="snow"] .mfb-ring-fill {
+  stroke: #0284c7 !important;
+  filter: drop-shadow(0 0 4px #0284c7) !important;
+}
+html[data-theme="snow"] .mfb-pulse {
+  border-color: rgba(2, 132, 199, 0.5) !important;
+}
+html[data-theme="snow"] .mfb-drawer {
+  background: rgba(255, 255, 255, 0.96) !important;
   border-color: #cbd5e1 !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
 }
-html[data-theme="snow"] .mmp-title {
+html[data-theme="snow"] .mfb-d-title {
   color: #0f172a !important;
 }
-html[data-theme="snow"] .mmp-sub {
+html[data-theme="snow"] .mfb-d-sub {
   color: #475569 !important;
 }
-html[data-theme="snow"] .mmp-btn {
+html[data-theme="snow"] .mfb-dot-pulse {
+  background: #0284c7 !important;
+  box-shadow: 0 0 6px #0284c7 !important;
+}
+html[data-theme="snow"] .mfb-ctrl-btn {
   background: #f1f5f9 !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
 }
-html[data-theme="snow"] .mmp-btn-play {
+html[data-theme="snow"] .mfb-play-btn {
   background: linear-gradient(135deg, #0284c7, #6366f1) !important;
   color: #ffffff !important;
+}
+html[data-theme="snow"] .mfb-open-btn {
+  background: rgba(2, 132, 199, 0.1) !important;
+  border-color: rgba(2, 132, 199, 0.4) !important;
+  color: #0284c7 !important;
 }
 html[data-theme="snow"] .cyber-config-modal {
   background: #ffffff !important;

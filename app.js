@@ -2207,6 +2207,21 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     if(durEl) durEl.textContent='0:00';
     audio.load();
     if(autoPlay) audio.play().catch(()=>{});
+    /* Bug fix: Sync MediaSession metadata on every track change (Wave 53 fix) */
+    if('mediaSession' in navigator){
+      try{
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: t.title,
+          artist: 'Nguyễn Duy Playlist',
+          album: 'Cyber Profile Audio Edition',
+          artwork: [{ src: AUDIO_BASE + t.cover, sizes: '512x512', type: 'image/jpeg' }]
+        });
+      }catch(_){}
+    }
+    /* Bug fix: Sync playlist drawer active state */
+    document.querySelectorAll('.mpd-item').forEach((el, i) => {
+      el.classList.toggle('active', i === curIdx);
+    });
   }
 
   /* ── Play/Pause UI ── */
@@ -2254,6 +2269,12 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   audio.volume=0.8;
   if(volSlider) volSlider.value=0.8;
   setRepeatUI();
+  /* Bug fix: Expose PLAYLIST for drawer lookup + listen for cross-scope loadTrack events */
+  window.__MP_PLAYLIST = PLAYLIST;
+  document.addEventListener('mp:loadTrackByIdx', e => {
+    const { idx, autoPlay } = e.detail || {};
+    if(typeof idx === 'number') loadTrack(idx, autoPlay !== false);
+  });
 
   /* ── Controls ── */
   if(playBtn) playBtn.addEventListener('click',()=>{if(audio.paused)audio.play().catch(()=>{});else audio.pause();});
@@ -4118,6 +4139,9 @@ Respond accurately with this ground truth knowledge:
   const ctx = canvas.getContext('2d');
   let isRunning = false;
   let rafId = null;
+  /* Bug fix: Cache gradient object — created once, reused every frame (perf fix) */
+  let _cachedGrad = null;
+  let _cachedGradH = -1;
 
   function draw(){
     if(!isRunning) return;
@@ -4136,6 +4160,16 @@ Respond accurately with this ground truth knowledge:
     const t = (audio.currentTime || 0) * 4 + (Date.now() * 0.003);
     const vol = audio.volume || 0.8;
 
+    /* Re-create gradient only when canvas height changes */
+    if(_cachedGradH !== canvas.height){
+      _cachedGrad = ctx.createLinearGradient(0, canvas.height, 0, 0);
+      _cachedGrad.addColorStop(0, '#00d4ff');
+      _cachedGrad.addColorStop(0.5, '#7c6fff');
+      _cachedGrad.addColorStop(1, '#ff6b9d');
+      _cachedGradH = canvas.height;
+    }
+    ctx.fillStyle = _cachedGrad;
+
     for(let i = 0; i < barCount; i++){
       // Smooth dynamic procedural harmonics reactive to audio playback & rhythm
       const h1 = Math.sin(t * 2.2 + i * 0.5) * 0.5 + 0.5;
@@ -4143,13 +4177,6 @@ Respond accurately with this ground truth knowledge:
       const h3 = Math.sin(t * 4.0 + i * 1.1) * 0.3 + 0.3;
       const beat = (h1 * 0.5 + h2 * 0.35 + h3 * 0.15) * vol;
       const barHeight = Math.max(3, beat * canvas.height * 0.95);
-
-      const grad = ctx.createLinearGradient(0, canvas.height, 0, 0);
-      grad.addColorStop(0, '#00d4ff');
-      grad.addColorStop(0.5, '#7c6fff');
-      grad.addColorStop(1, '#ff6b9d');
-
-      ctx.fillStyle = grad;
       ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
       x += barWidth + 1.5;
     }
@@ -6834,47 +6861,37 @@ Respond accurately with this ground truth knowledge:
     }
   });
 
-  // Playlist Item switching
-  document.querySelectorAll('.mpd-item').forEach(item => {
+  // Playlist Item switching — Bug fix: use PLAYLIST index via loadTrack() so curIdx stays in sync
+  document.querySelectorAll('.mpd-item').forEach((item, itemIdx) => {
     item.addEventListener('click', ()=>{
-      const src = item.getAttribute('data-src');
-      const title = item.getAttribute('data-title');
-      const art = item.getAttribute('data-art');
+      /* Find matching PLAYLIST index by data-src filename to stay in sync with curIdx */
+      const dataSrc = item.getAttribute('data-src') || '';
+      const filename = dataSrc.split('/').pop(); // e.g. 'sound2.mp3'
+      let targetIdx = -1;
+      /* Try match by filename first (robust) */
+      try{
+        const mpPlayer = document.getElementById('musicPlayer');
+        if(mpPlayer && window.__MP_PLAYLIST){
+          targetIdx = window.__MP_PLAYLIST.findIndex(p => p.src === filename);
+        }
+      }catch(_){}
+      /* Fallback: use DOM order index */
+      if(targetIdx < 0) targetIdx = itemIdx;
 
-      document.querySelectorAll('.mpd-item').forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
+      /* Use the main loadTrack to keep curIdx consistent */
+      const mpPrev = document.getElementById('mpPrev');
+      const mpNext = document.getElementById('mpNext');
+      /* Dispatch a custom event that the music player IIFE listens to */
+      document.dispatchEvent(new CustomEvent('mp:loadTrackByIdx', { detail: { idx: targetIdx, autoPlay: true } }));
 
-      const audio = document.getElementById('mpAudio');
-      const artImg = document.getElementById('mpArt');
-      const marquee = document.getElementById('mpMarquee');
-
-      if(artImg && art) artImg.src = art;
-      if(marquee && title){
-        marquee.innerHTML = `<span>${title}</span><span aria-hidden="true">    ${title}</span>`;
-      }
-      if(audio && src){
-        audio.src = src;
-        audio.play().then(()=>{
-          const player = document.getElementById('musicPlayer');
-          if(player) player.classList.add('playing');
-        }).catch(()=>{});
-      }
       if(playlistDrawer) playlistDrawer.style.display = 'none';
       CyberSFX.click();
     });
   });
 
-  // MediaSession API Sync (Wave 53)
+  // MediaSession API Sync (Wave 53) — base action handlers only; metadata set in loadTrack()
   if('mediaSession' in navigator){
     try {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: '2IN1 - Người Đã Yêu Ai Remix',
-        artist: 'Nguyễn Duy Playlist',
-        album: 'Cyber Profile Audio Edition',
-        artwork: [
-          { src: 'https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg', sizes: '512x512', type: 'image/jpeg' }
-        ]
-      });
       navigator.mediaSession.setActionHandler('play', ()=>{
         const pBtn = document.getElementById('mpPlay');
         if(pBtn) pBtn.click();
