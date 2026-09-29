@@ -97,6 +97,13 @@ Dự án được deploy đồng thời lên **2 Repositories GitHub** của tà
 * **Wave 86: 1-Click Cross-Device Config Sync (Export / Import / QR Sync)**:
   - Cho phép xuất (Export) và nhập (Import) toàn bộ token GitHub, Ngrok token, danh sách phiên VPS, theme và ngôn ngữ giữa PC và Smartphone qua chuỗi JSON mã hóa.
   - Tích hợp modal giao diện Cyberpunk chuyên dụng và hỗ trợ quét mã QR để chuyển giao cấu hình sang điện thoại trong 1 giây mà không cần nhập tay.
+* **Wave 87: Mobile Floating Music Bubble & Bottom Overlap Elimination (Redesign Trình Phát Nhạc Di Động)**:
+  - **Triệt tiêu hoàn toàn thanh nhạc chắn dưới tab**: Xóa bỏ vĩnh viễn thanh nhạc cũ chắn phía trên navigation dock và khung chat lưu bút trên smartphone.
+  - **Ẩn dứt điểm Vinyl Deck cũ trên di động**: Áp dụng rule `#musicPlayer, .music-player { display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important; }` bên trong `@media (max-width: 768px)`, ngăn chặn đĩa than mini 36px cố định đè lên góc phải trên.
+  - **Floating Cyber Music Bubble 56px**: Chuyển đổi thành bóng tròn đĩa than nổi gọn gàng, viền SVG hiển thị % tiến trình bài hát (Progress Ring), hiệu ứng ánh sáng Cyan phát xung khi chơi nhạc.
+  - **Bung mở Drawer ngón cái (Thumb-Friendly Controls)**: Chạm vào bóng tròn sẽ mở thanh trượt nhỏ gọn hiển thị tên bài hát, thanh tiến trình, cụm nút điều khiển Prev / Play / Next / Mở Deck.
+  - **Hỗ trợ Kéo Thả Đa Điểm (Pointer Dragging)**: Cho phép người dùng chạm giữ và kéo bóng tròn âm nhạc đến bất kỳ vị trí mong muốn trên màn hình điện thoại (tự động khóa biên an toàn).
+  - **Đồng bộ song song**: Hoàn thành kiểm tra cân bằng dấu ngoặc CSS (`1549/1549`), đồng bộ 100% băm byte-for-byte giữa `app.js` và `app_nd.js`.
 
 ---
 
@@ -141,10 +148,11 @@ Khi bạn (AI Agent / Developer) thực hiện bất kỳ yêu cầu mới nào 
 
 ## 🎯 6. TRẠNG THÁI HIỆN TẠI & HƯỚNG PHÁT TRIỂN TIẾP THEO
 
-* **Phiên bản hiện tại**: `v20260920_v58` (Hoàn tất Wave 86).
+* **Phiên bản hiện tại**: `v20260928_v59` (Hoàn tất Wave 87).
 * **Trạng thái hệ thống**: 
   - Khởi tạo VPS GitHub Actions & Ngrok RDP hoạt động ổn định kèm chức năng Health Probe đo Ping trực tiếp.
-  - Thanh phát nhạc nổi Mobile Floating Mini Music Bar tối ưu hoàn hảo cho ngón cái trên màn hình di động.
+  - Floating Music Bubble gọn nhẹ, hỗ trợ kéo thả trên mobile, giải phóng 100% không gian phía trên thanh Navigation Dock và Chat Lưu Bút.
+  - Ẩn hoàn toàn deck đĩa than cũ và thanh chặn ngang dưới tab trên tất cả các dòng smartphone.
   - Đo hiệu năng phần cứng mở rộng hiển thị Tần số quét VSync thực tế (Hz) và Tình trạng Pin/Nguồn chân thực 100%.
   - Đồng bộ cấu hình Cross-Device 1-Click sao lưu và chuyển giao giữa PC & Smartphone.
   - Theme Trắng Tuyết hiển thị độ tương phản cao sắc nét trên mọi thành phần mới.
