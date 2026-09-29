@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <script>
@@ -1006,7 +1006,7 @@
     <!-- Draggable Bubble -->
     <div class="mfb-bubble" id="mfbBubble" title="Nhạc · Chạm để mở">
       <!-- Vinyl art spins when playing -->
-      <img src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg" alt="Art" class="mfb-vinyl" id="mmpArt" />
+      <img src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg" alt="Art" class="mfb-vinyl" id="mmpArt" onerror="this.onerror=null;this.src='assets/avatar.png';" />
       <div class="mfb-center-dot"></div>
       <!-- Glowing progress ring -->
       <svg class="mfb-ring-svg" viewBox="0 0 56 56" aria-hidden="true">
@@ -1593,7 +1593,9 @@ jobs:
   function toggleDrawer() { if (drawerOpen) closeDrawer(); else openDrawer(); }
   document.addEventListener('pointerdown', function(e) { if (drawerOpen && !wrap.contains(e.target)) closeDrawer(); }, { passive: true });
   function clamp(x, y) { var W = window.innerWidth, H = window.innerHeight, S = 68; return { x: Math.max(8, Math.min(x, W - S)), y: Math.max(8, Math.min(y, H - S)) }; }
-  function setPos(x, y) { wrap.style.right = 'auto'; wrap.style.bottom = 'auto'; wrap.style.left = x + 'px'; wrap.style.top = y + 'px'; }
+  var dragRaf = null, curDragX = 0, curDragY = 0;
+  function applyPos() { wrap.style.right = 'auto'; wrap.style.bottom = 'auto'; wrap.style.left = curDragX + 'px'; wrap.style.top = curDragY + 'px'; dragRaf = null; }
+  function setPos(x, y) { curDragX = x; curDragY = y; if (!dragRaf) dragRaf = requestAnimationFrame(applyPos); }
   bubble.addEventListener('pointerdown', function(e) {
     if (e.button && e.button !== 0) return;
     isDragging = true; dragMoved = false;

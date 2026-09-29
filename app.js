@@ -640,7 +640,7 @@ window.TYPING_DATA = {
   const mobClose    = document.getElementById('toolCardMobClose');
   const CARD_W      = 320;
   const PEEK_W      = Math.ceil(CARD_W * 0.333);
-  const isMobile    = () => window.innerWidth < 768;
+  const isMobile    = () => window.innerWidth <= 768 || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0 && window.innerWidth <= 1024);
 
   let isOpen = false, closeTimer = null, rafPending = false, lastMx = 0, lastMy = 0;
   let cachedPr = null, cachedTr = null;
@@ -868,7 +868,7 @@ window.TYPING_DATA = {
   const scene=document.getElementById('scene');
   const toolCard=document.getElementById('toolCard');
   if(!scene||!toolCard)return;
-  const isMobile=()=>window.innerWidth<768;
+  const isMobile=()=>window.innerWidth<=768 || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0 && window.innerWidth <= 1024);
   let cx=0,cy=0,tcx=0,tcy=0;
   let targetNx=0, targetNy=0;
   let rafId=null;
@@ -2195,6 +2195,11 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
       artEl.src = AUDIO_BASE + t.cover;
       artEl.onerror = () => { artEl.src = AUDIO_BASE + 'pic1.jpg'; };
       artEl.style.opacity = '1';
+    }
+    const mmpArtEl = document.getElementById('mmpArt');
+    if(mmpArtEl){
+      mmpArtEl.src = AUDIO_BASE + t.cover;
+      mmpArtEl.onerror = () => { mmpArtEl.src = 'assets/avatar.png'; };
     }
     /* Marquee cập nhật cả 2 span */
     const spans = marquee ? marquee.querySelectorAll('span') : [];

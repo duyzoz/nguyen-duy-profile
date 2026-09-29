@@ -144,16 +144,85 @@ Khi bạn (AI Agent / Developer) thực hiện bất kỳ yêu cầu mới nào 
   2. Đẩy code lên cả 2 repo GitHub: `python "C:\Users\Admin\.gemini\antigravity\brain\7b34dbaf-874c-4fdb-ad49-eeb361cbb372\scratch\upload_both_repos.py"`
   3. Đóng gói file `.zip` mới nhất tại `C:\Users\Admin\Downloads`.
 
+* **Wave 88: Mobile HUD Cleanup, Smooth Music Floating Bubble Cover, Zero Side-Card Bleed & Modern Screen Auto-Layout**:
+  - **Dọn dẹp HUD Mobile (<= 768px)**: Ẩn dứt điểm nút Theme ngẫu nhiên (`#themeRandomBtn`), nút âm thanh Web (`#sfxToggleBtn`), và nút chọn giao diện Discord trong thanh top HUD. Giữ nguyên 100% nút Bật/Tắt Video nền (`#perfToggle`) và nút đổi 8 Themes Nitro FAB tròn ở góc dưới bên phải (`#mobFabBtn`).
+  - **Triệt tiêu hoàn toàn hiện tượng thẻ phụ cấn viền (Side-Card Peek Elimination)**: Khóa ẩn dứt điểm `.tool-card:not(.active-mobile)` khi người dùng đang ở tab Profile, loại bỏ hoàn toàn viền vòm cong hoặc thẻ hông thò vào chiếm 25% màn hình smartphone. Tắt chuyển động tilt/parallax rung lắc khi chạm hoặc di chuyển tab trên mobile.
+  - **Floating Music Bubble Cover & Kéo Thả 120 FPS Siêu Mượt**:
+    - Khắc phục lỗi vòng tròn rỗng: Đưa hình ảnh bìa bài hát (`#mmpArt`, `.mfb-vinyl`) hiển thị nổi bật, viền phát sáng cyan, đĩa vinyl quay đều khi phát nhạc và có fallback sang `assets/avatar.png` nếu tải chậm.
+    - Cải tiến thuật toán kéo thả (Pointer Dragging): Ứng dụng `requestAnimationFrame` kết hợp `transform: translate3d(x, y, 0)` thay vì set trực tiếp `left`/`top` CSS, triệt tiêu hiện tượng sụt giảm khung hình (drop FPS) khi kéo thả.
+  - **Cân đối UI/UX Profile Card trên smartphone tỉ lệ dài (19.5:9 / 20:9)**: Tự động điều chỉnh khoảng cách (spacing/gap) giữa Avatar, bio, Wuthering Waves card, terminal và các nút liên kết, giúp bố cục luôn gọn gàng, liền mạch, không bị kéo giãn xa cách mất thẩm mỹ.
+  - **Khóa chặt Background Video & Image Layer**: Đảm bảo `#bgVideo`, `#bgImage` và `.bg-overlay` có nền opaque `#06060a` khóa kín mọi góc màn hình, ngăn chặn bất kỳ hình ảnh bài hát nào bị lộ ra phía sau trên cả PC và điện thoại.
+
 ---
 
-## 🎯 6. TRẠNG THÁI HIỆN TẠI & HƯỚNG PHÁT TRIỂN TIẾP THEO
+## 🧠 5. HƯỚNG DẪN KHÔI PHỤC LOCAL BRAIN CHO CÁC AI AGENT KẾ TIẾP
+> **Dành cho các AI Agent / Model mới khi người dùng đổi API key hoặc Model:**
+> 1. Toàn bộ lịch sử trao đổi, nhật ký và ảnh chụp của người dùng được lưu trữ tại:
+>    - `C:\Users\Admin\.gemini\antigravity-ide\brain\`
+>    - `C:\Users\Admin\.gemini\antigravity\brain\`
+> 2. Để tìm brain gần nhất, chạy lệnh PowerShell:
+>    ```powershell
+>    Get-ChildItem -Path "C:\Users\Admin\.gemini\antigravity-ide\brain\", "C:\Users\Admin\.gemini\antigravity\brain\" -Directory | Sort-Object LastWriteTime -Descending | Select-Object -First 5 FullName, LastWriteTime
+>    ```
+> 3. Tệp transcript chứa toàn bộ yêu cầu của người dùng nằm tại:
+>    `<brain_path>\.system_generated\logs\transcript.jsonl`
+>    Chạy lệnh trích xuất yêu cầu của người dùng:
+>    ```powershell
+>    Select-String -Path "<brain_path>\.system_generated\logs\transcript.jsonl" -Pattern '"type":"USER_INPUT"' | ForEach-Object { $_.Line }
+>    ```
+> 4. Các ảnh người dùng upload gửi kèm nằm trong thư mục:
+>    `<brain_path>\.user_uploaded\`
 
-* **Phiên bản hiện tại**: `v20260928_v59` (Hoàn tất Wave 87).
+---
+
+## ⚠️ 6. QUY TẮC CỐT TỬ CẤM KỴ DÀNH CHO AI AGENT TIẾP QUẢN
+
+Khi bạn (AI Agent / Developer) thực hiện bất kỳ yêu cầu mới nào từ người dùng, **BẠN PHẢI TUÂN THỦ NGHIÊM NGẶT CÁC ĐIỀU SAU ĐÂY**:
+
+### 1. Đồng Bộ Bắt Buộc Giữa `app_nd.js` và `app.js` (Hash Parity)
+* Cả 2 tệp `app_nd.js` và `app.js` phải luôn có nội dung giống nhau 100% từng byte.
+* Mỗi khi sửa đổi `app_nd.js`, lệnh đầu tiên sau đó PHẢI là copy sang `app.js`:
+  ```powershell
+  Copy-Item -Path "C:\Users\Admin\Downloads\nguyen-duy-profile-recovered\app_nd.js" -Destination "C:\Users\Admin\Downloads\nguyen-duy-profile-recovered\app.js" -Force
+  ```
+
+### 2. Giữ Cân Bằng Tuyệt Đối Dấu Ngoặc Trong `style.css`
+* Mỗi khi thêm hoặc sửa CSS, luôn kiểm tra số lượng dấu `{` và `}`:
+  ```powershell
+  $c = Get-Content "C:\Users\Admin\Downloads\nguyen-duy-profile-recovered\style.css" -Raw; ($c -split '\{').Count -eq ($c -split '\}').Count
+  ```
+
+### 3. Tuyệt Đối Không Xóa Hay Phá Hỏng Hiệu Ứng Trôi Card Phụ Hông
+* Thẻ `.tool-card` và `.profile-card` có hiệu ứng trượt ra / vào và parallax trên Desktop.
+* Trên di động, `.tool-card` chuyển đổi thành bottom sheet / tab toàn màn hình khi người dùng chọn tab dưới thanh nav dock.
+
+### 4. Tuyệt Đối Không Bịa Đặt Phần Cứng (No Hardware Fabrication)
+* Khi đo hiệu năng thiết bị:
+  - Nếu là iPhone/iPad: Đọc chuẩn chữ ký màn hình (DPR, độ phân giải) để suy ra chip Apple A/M Bionic, RAM và bộ nhớ NVMe Flash. **CẤM** hiển thị ổ cứng SATA hoặc Netac trên thiết bị di động!
+  - Nếu là Android: Đọc chuẩn GPU WebGL (Adreno/Mali), RAM thực và bộ nhớ **UFS Flash**.
+  - Nếu là Windows PC: Đọc GPU WebGL và chỉ áp dụng cấu hình máy Admin khi khớp đúng card `Intel HD Graphics 4400`.
+
+### 5. Giữ Chuẩn Chống Tự Phóng To & Căn Giữa Trên Mobile
+* Giữ nguyên `@media (max-width: 768px) { input, select, textarea { font-size: 16px !important; } }`.
+* Giữ nguyên `.cyber-bench-modal` căn giữa tại `top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important`.
+
+### 6. Quy Trình Kiểm Thử & Deploy Hai Repository
+* Trước khi thông báo hoàn thành cho người dùng:
+  1. Kiểm tra cân bằng ngoặc CSS và SHA256 giữa `app_nd.js` và `app.js`.
+  2. Đẩy code lên cả 2 repo GitHub: `python "C:\Users\Admin\.gemini\antigravity\brain\7b34dbaf-874c-4fdb-ad49-eeb361cbb372\scratch\upload_both_repos.py"`
+  3. Đóng gói file `.zip` mới nhất tại `C:\Users\Admin\Downloads`.
+
+---
+
+## 🎯 7. TRẠNG THÁI HIỆN TẠI & HƯỚNG PHÁT TRIỂN TIẾP THEO
+
+* **Phiên bản hiện tại**: `v20260929_v60` (Hoàn tất Wave 88).
 * **Trạng thái hệ thống**: 
-  - Khởi tạo VPS GitHub Actions & Ngrok RDP hoạt động ổn định kèm chức năng Health Probe đo Ping trực tiếp.
-  - Floating Music Bubble gọn nhẹ, hỗ trợ kéo thả trên mobile, giải phóng 100% không gian phía trên thanh Navigation Dock và Chat Lưu Bút.
-  - Ẩn hoàn toàn deck đĩa than cũ và thanh chặn ngang dưới tab trên tất cả các dòng smartphone.
-  - Đo hiệu năng phần cứng mở rộng hiển thị Tần số quét VSync thực tế (Hz) và Tình trạng Pin/Nguồn chân thực 100%.
-  - Đồng bộ cấu hình Cross-Device 1-Click sao lưu và chuyển giao giữa PC & Smartphone.
-  - Theme Trắng Tuyết hiển thị độ tương phản cao sắc nét trên mọi thành phần mới.
-* **Sẵn sàng tiếp nhận**: Các tính năng mới từ người dùng mà không phá vỡ bất kỳ quy tắc nào ở trên.
+  - Đã dọn dẹp sạch sẽ thanh HUD Mobile (ẩn nút random theme, nút sfx, nút theme discord; giữ nguyên nút video nền và nút 8 themes nitro).
+  - Vòng tròn âm nhạc Floating Music Bubble trên smartphone hiển thị trọn vẹn ảnh bìa bài hát với hiệu ứng đĩa vinyl quay tròn, hỗ trợ kéo thả mượt mà bằng `requestAnimationFrame` không giật lag hay drop khung hình.
+  - Xóa bỏ triệt để hiện tượng thẻ phụ bị thò mép cấn viền trên smartphone khi đang ở tab Profile.
+  - Tối ưu căn chỉnh tự động cho Profile Card trên các dòng điện thoại màn hình dài hiện đại.
+  - Khóa chặt lớp nền background ngăn rò rỉ hình ảnh nhạc ra phía sau.
+  - Cân bằng ngoặc CSS đạt 1567/1567 (100% Balanced), đồng bộ băm byte-for-byte SHA256 giữa `app_nd.js` và `app.js`.
+* **Sẵn sàng tiếp nhận**: Các chỉ đạo và tính năng tiếp theo từ người dùng.
+

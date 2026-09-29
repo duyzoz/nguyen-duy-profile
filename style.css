@@ -8833,3 +8833,145 @@ html[data-theme="snow"] .config-modal-textarea {
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   WAVE 88: MOBILE CLEANUP, FLOATING MUSIC COVER & PROFILE UX
+   ══════════════════════════════════════════════════════════════ */
+
+/* 1. Mobile HUD: Hide Random Theme, SFX, Discord Theme picker; Keep Video toggle & 8 Themes FAB */
+@media (max-width: 768px) {
+  #hudTopLeft #themeRandomBtn,
+  #hudTopLeft #sfxToggleBtn,
+  #hudTopLeft #themeToggleBtn {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0 !important;
+  }
+  #hudTopLeft #perfToggle {
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  /* 2. Triệt tiêu hoàn toàn hiệu ứng thẻ phụ thò vào (Side card peek / cấn viền) trên smartphone */
+  .tool-card:not(.active-mobile) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: none !important;
+    right: 9999px !important;
+  }
+
+  .tool-card::after {
+    display: none !important;
+  }
+
+  /* Tắt chuyển động rung lắc/tilt/mouse-follow trên màn hình mobile */
+  .scene, .profile-card, .tool-card {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* 3. Vòng tròn Floating Music Bubble: Luôn hiển thị Cover bài hát rõ nét & đĩa xoay mượt */
+  .music-float-bubble {
+    display: block !important;
+    position: fixed !important;
+    z-index: 10100 !important;
+    touch-action: none !important;
+    will-change: transform;
+  }
+
+  .mfb-bubble {
+    width: 58px !important;
+    height: 58px !important;
+    border-radius: 50% !important;
+    background: radial-gradient(circle at center, #1e293b 0%, #030712 100%) !important;
+    border: 2px solid rgba(0, 240, 255, 0.6) !important;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.4), 0 4px 14px rgba(0,0,0,0.8) !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .mfb-vinyl {
+    position: absolute !important;
+    inset: 3px !important;
+    width: calc(100% - 6px) !important;
+    height: calc(100% - 6px) !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: 1 !important;
+    background: #0f172a !important;
+    border: 1px solid rgba(0, 240, 255, 0.5) !important;
+  }
+
+  .mfb-center-dot {
+    z-index: 3 !important;
+    width: 10px !important;
+    height: 10px !important;
+    box-shadow: 0 0 6px #00f0ff !important;
+  }
+
+  .mfb-ring-svg {
+    z-index: 2 !important;
+  }
+
+  /* 4. Tối ưu UI/UX Profile Card trên điện thoại màn hình dài (Modern Aspect Ratio 19.5:9 / 20:9) */
+  .profile-card {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    padding-bottom: 20px !important;
+    max-height: calc(100vh - 84px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .p-info {
+    gap: 10px !important;
+    margin-top: 4px !important;
+  }
+
+  .p-socials-wrap {
+    margin-top: 6px !important;
+    gap: 8px !important;
+  }
+}
+
+/* 5. Khóa chặt Background & Wallpaper ngăn rò rỉ hình ảnh nhạc hoặc cover ra ngoài */
+.bg-wrap {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: -10 !important;
+  overflow: hidden !important;
+  background-color: #06060a !important;
+}
+
+#bgVideo, #bgImage {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.bg-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  background: rgba(6, 6, 10, 0.45) !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+}
+
