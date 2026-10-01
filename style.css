@@ -9061,7 +9061,6 @@ body.perf-mode .bg-static-img {
 
 .stage,
 #stage {
-  position: relative !important;
   z-index: 10 !important;
 }
 
