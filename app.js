@@ -365,7 +365,7 @@
 /* ─── SHARED AVATAR VISIBILITY OBSERVER (Zero CPU when scrolled away) ─── */
 let __avatarInView = true;
 if(typeof window !== 'undefined' && typeof IntersectionObserver !== 'undefined'){
-  const avtWrap = document.querySelector('.profile-avatar-wrap');
+  const avtWrap = document.getElementById('avatarWrap') || document.querySelector('.avatar-wrap');
   if(avtWrap){
     const avtObs = new IntersectionObserver((entries)=>{
       entries.forEach(e => { __avatarInView = e.isIntersecting; });
@@ -481,7 +481,11 @@ if(typeof window !== 'undefined' && typeof IntersectionObserver !== 'undefined')
     }
   }
 
+  let lastDustPush = 0;
   addEventListener('mousemove',e=>{
+    const now = performance.now();
+    if(now - lastDustPush < 16) return; // Cap particle generation at ~60fps for high-polling gaming mice (1000Hz+)
+    lastDustPush = now;
     for(let i=0;i<2;i++){
       pts.push({
         x:e.clientX+(Math.random()-.5)*8,
@@ -594,12 +598,18 @@ window.TYPING_DATA = {
   setTimeout(step, 1400);
 })();
 
-/* ─── 3D TILT (Energetic Dynamic Tilt & Depth, Disables in Perf Mode) ─── */
+/* ─── 3D TILT (Energetic Dynamic Tilt & Depth, Disables in Perf Mode & Mobile Touch) ─── */
 (function(){
   const card=document.getElementById('profileCard');
   if(!card)return;
+  const isTouchDevice = () => window.innerWidth <= 768 || ('ontouchstart' in window && !window.matchMedia('(hover: hover)').matches) || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   let rafId=null, targetX=0, targetY=0, curX=0, curY=0, rect=null, isHover=false;
   function updateTilt(){
+    if(isTouchDevice() || document.body.classList.contains('perf-mode')){
+      card.style.transform = '';
+      rafId = null;
+      return;
+    }
     curX += (targetX - curX) * 0.35;
     curY += (targetY - curY) * 0.35;
     const rotY = (curX * 16).toFixed(2);
@@ -613,11 +623,13 @@ window.TYPING_DATA = {
     }
   }
   card.addEventListener('mouseenter',()=>{
+    if(isTouchDevice() || document.body.classList.contains('perf-mode')) return;
     rect=card.getBoundingClientRect();
     isHover=true;
     if(!rafId) rafId=requestAnimationFrame(updateTilt);
   },{passive:true});
   card.addEventListener('mousemove',e=>{
+    if(isTouchDevice() || document.body.classList.contains('perf-mode')) return;
     if(!rect) rect=card.getBoundingClientRect();
     targetX=(e.clientX-rect.left)/rect.width-.5;
     targetY=(e.clientY-rect.top)/rect.height-.5;
@@ -2438,8 +2450,14 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
     let frameCount = 0;
     let lastTime = performance.now();
     let smoothedFps = 60;
+    let lastDisplayFps = -1;
+    let lastTag = '';
 
     function tickFps(now){
+      if(document.hidden){
+        setTimeout(()=>{ requestAnimationFrame(tickFps); }, 800);
+        return;
+      }
       frameCount++;
       const elapsed = now - lastTime;
       if(elapsed >= 450){
@@ -2452,22 +2470,32 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
 
         // Clamped realistic range (supports 30, 60, 75, 90, 120, 144, 165, 240Hz)
         const displayFps = Math.max(1, Math.min(smoothedFps, 240));
-        fpsCount.textContent = displayFps;
-        updatePeakFps(displayFps);
+        if(displayFps !== lastDisplayFps){
+          lastDisplayFps = displayFps;
+          fpsCount.textContent = displayFps;
+          updatePeakFps(displayFps);
+        }
 
         // Tags fit perfectly inside the fixed 46px tag box
+        let newTag = 'Smooth';
+        let newClass = 'fps-hud-box';
         if(displayFps >= 90){
-          fpsBox.className = 'fps-hud-box fps-ultra';
-          fpsTag.textContent = 'Ultra';
+          newClass = 'fps-hud-box fps-ultra';
+          newTag = 'Ultra';
         } else if(displayFps >= 48){
-          fpsBox.className = 'fps-hud-box';
-          fpsTag.textContent = 'Smooth';
+          newClass = 'fps-hud-box';
+          newTag = 'Smooth';
         } else if(displayFps >= 26){
-          fpsBox.className = 'fps-hud-box fps-warn';
-          fpsTag.textContent = 'Normal';
+          newClass = 'fps-hud-box fps-warn';
+          newTag = 'Normal';
         } else {
-          fpsBox.className = 'fps-hud-box fps-drop';
-          fpsTag.textContent = 'Low';
+          newClass = 'fps-hud-box fps-drop';
+          newTag = 'Low';
+        }
+        if(newTag !== lastTag){
+          lastTag = newTag;
+          fpsBox.className = newClass;
+          fpsTag.textContent = newTag;
         }
       }
       requestAnimationFrame(tickFps);

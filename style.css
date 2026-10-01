@@ -842,10 +842,7 @@ body.perf-mode .tool-card{
   .tags{margin-bottom:6px;}
   .bio-box{padding:6px 8px;}
   .stack-icons img{width:20px;height:20px;}
-}/* ════════════════════════════════════════
-   PASTE SNIPPET NÀY VÀO CUỐI FILE style.css
-   NÉU CHƯ A CÓ CÁC CLASS NÀY
-════════════════════════════════════════ */
+}
 
 /* Eye button (hiện/ẩn token) */
 .key-eye-btn {
@@ -1661,7 +1658,6 @@ body.perf-mode .tool-card{
   letter-spacing: .08em;
 }
 .vcd-timer.urgent { color: #ff4d4d; animation: pulse 1s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
 
 /* ── VPS LIST in Manage ── */
 .vps-list { display: flex; flex-direction: column; gap: 8px; }
@@ -9238,4 +9234,62 @@ body.perf-mode .bg-static-img {
 #musicPlayer {
   z-index: 20 !important;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   WAVE 91-95: UNIVERSAL HIGH-FPS COMPATIBILITY & ZERO-LAG SYSTEM ACCELERATION
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Eliminate Tap Delay & Grey Flash across all touch devices */
+html, body {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+button, a, input, select, textarea, .soc-btn, .tc-tab, .mob-nav-btn {
+  touch-action: manipulation;
+}
+
+/* 2. Prevent iOS Auto-Zoom on form input focus (iPhone SE - 16 Pro Max) */
+@media (max-width: 768px) {
+  input, textarea, select, .bp-input, .chat-input, .guestbook-input, .bm-input {
+    font-size: 16px !important;
+  }
+}
+
+/* 3. GPU Compositor Layer Promotion: Zero CPU rasterization for spinning elements */
+.mp-vinyl-disc,
+.mfb-vinyl,
+.avatar-deco-ring,
+.avatar-orbit,
+.avatar-snow-canvas,
+.status-dot,
+.wuwa-selfbot-dot {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 4. Notch & Dynamic Island Safe-Area Adaptation */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .hud-top-left {
+    top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+    left: calc(8px + env(safe-area-inset-left, 0px)) !important;
+  }
+  .music-player {
+    top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+    right: calc(8px + env(safe-area-inset-right, 0px)) !important;
+  }
+}
+
+/* 5. Smooth Touch Scroll Momentum for Modals & Drawers */
+.profile-card,
+.tc-panel,
+.nitro-modal-content,
+.gb-messages,
+.bm-modal-body,
+.startut-log-body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
 
