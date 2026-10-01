@@ -216,15 +216,16 @@ Khi bạn (AI Agent / Developer) thực hiện bất kỳ yêu cầu mới nào 
 
 ## 🎯 7. TRẠNG THÁI HIỆN TẠI & HƯỚNG PHÁT TRIỂN TIẾP THEO
 
-* **Phiên bản hiện tại**: `v20260929_v61` (Hoàn tất Wave 89).
+* **Phiên bản hiện tại**: `v20261001_v63` (Hoàn tất Wave 90).
 * **Trạng thái hệ thống**: 
-  - Khắc phục triệt để lỗi ảnh bìa đĩa nhạc (`pic1.jpg`) bị bung kích thước đè lên hình nền background và video nền trên máy tính (Desktop).
-  - Khóa chết kích thước toàn cục cho Album Art (`#mmpArt`, `.mfb-vinyl` tối đa 58px; `#mpArt`, `.mp-art` tối đa 28px), tuyệt đối không để ảnh bung tràn màn hình.
-  - Khóa chặt `#mobileMiniPlayer` trên Desktop (`min-width: 769px`) với `display: none !important; left: -9999px !important; pointer-events: none !important;`, đồng thời bổ sung kiểm tra `window.innerWidth <= 768` trong hàm `updateMmpState()` của JS để không bao giờ hiện trên Desktop.
-  - Phân tầng Z-Index chuẩn xác cho hệ thống hình nền: Lớp bọc `.bg-wrap` (z:0) -> Video nền `#bgVideo` (z:1) -> Ảnh nền tĩnh `#bgImage` (z:2) -> Lớp phủ chuyển sắc `.bg-overlay` (z:3) -> Hiệu ứng tuyết/bụi Canvas (z:4) -> Sân khấu giao diện `#stage` (z:10) -> HUD & Trình phát nhạc (z:20).
-  - Bảo toàn 100% hiệu ứng trôi ra trôi vào (hover, slide-in, peek float) của card phụ hông `.tool-card` trên Desktop.
-  - Giữ vững nguyên tắc Không Bịa Đặt Phần Cứng (Zero Fabrication) cho iPhone, Android, Laptop, PC.
-  - Đảm bảo cân bằng tuyệt đối dấu ngoặc nhọn `{` và `}` trong `style.css` (1576/1576) và đồng bộ băm byte-for-byte SHA256 giữa `app_nd.js` và `app.js`.
+  - Khắc phục triệt để lỗi thẻ Profile & About trên điện thoại thông minh bị co rúm, teo nhỏ và dồn dí dít các icon vào nhau ("bé di dít").
+  - Phục hồi Avatar trên smartphone từ 50px siêu nhỏ lên chuẩn sắc nét 86px (85% tỉ lệ PC), giữ trọn vẹn vòng quỹ đạo phát sáng, canvas tuyết rơi và huy hiệu Online rõ ràng.
+  - Phục hồi toàn diện thẻ game Wuthering Waves trên mobile: Khôi phục ảnh nhân vật Jinhsi ở banner header (54px), khôi phục tiêu đề NOW PLAYING, ảnh đại diện game (46px), tên nhân vật, chi tiết trạng thái, thời gian chơi và thanh User ID sao chép.
+  - Phục hồi kích thước tiêu chuẩn cho Tech Stack: Icon công nghệ (HTML5, CSS3, JS, Python, Git, VS Code) đạt 26px sắc nét (thay vì 16px li ti), khôi phục tiêu đề "TECH STACK".
+  - Phục hồi các nút mạng xã hội (TikTok, Discord, Facebook) và dòng Donate/Lượt xem với padding và cỡ chữ chuẩn app native dễ thao tác cảm ứng.
+  - Thay thế cơ chế kéo giãn `justify-content: space-between` cưỡng ép bằng hệ thống luồng tự nhiên `display: flex; flex-direction: column; align-items: center; gap: 8px; justify-content: flex-start`, hỗ trợ cuộn mượt mà không thanh cuộn (`-webkit-overflow-scrolling: touch; scrollbar-width: none`) trên các dòng điện thoại ngắn như iPhone SE/7 Plus, đồng thời hiển thị hoàn mỹ trên các dòng màn hình dài 19.5:9 / 20:9 (iPhone 12-16 Pro Max, Samsung Galaxy, Xiaomi,...).
+  - Cân bằng tuyệt đối 1571/1571 dấu ngoặc trong `style.css` và đồng bộ 100% băm SHA256 giữa `app_nd.js` và `app.js`.
 * **Sẵn sàng tiếp nhận**: Các chỉ đạo và tính năng tiếp theo từ người dùng.
+
 
 
