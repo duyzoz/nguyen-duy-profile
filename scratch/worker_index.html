@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        for (var i = 0; i < regs.length; i++) {
+          regs[i].unregister();
+        }
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(keys) {
+        for (var j = 0; j < keys.length; j++) {
+          caches.delete(keys[j]);
+        }
+      });
+    }
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Nguyễn Duy — Profile</title>
+  <meta name="theme-color" content="#06060a" />
+  <meta name="description" content="Nguyễn Duy — Developer & 3D Designer Profile" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="assets/avatar.png" />
+  <link rel="apple-touch-icon" href="assets/avatar.png" />
+  <link rel="stylesheet" href="style.css?v=20260920_v58" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body class="turbo-120-active">
+
+  <!-- VIDEO & IMAGE BG (Cross-fade) -->
+  <div class="bg-wrap">
+    <video id="bgVideo" autoplay muted loop playsinline>
+      <source src="assets/Wallpaper.mp4" type="video/mp4" />
+    </video>
+    <img id="bgImage" src="assets/Background.png" alt="Background" class="bg-static-img" />
+    <div class="bg-overlay"></div>
+  </div>
+
+  <!-- TERMINAL LOADER -->
+  <div id="loader">
+    <div class="terminal-box">
+      <div class="term-header">
+        <span class="tdot tdot-r"></span>
+        <span class="tdot tdot-y"></span>
+        <span class="tdot tdot-g"></span>
+        <span class="term-title-bar" id="termTitleBar">system.exe — bash</span>
+      </div>
+      <div class="term-body">
+        <pre class="ascii-art" id="asciiArt"></pre>
+        <div class="term-output" id="termOutput"></div>
+        <div class="term-continue" id="termContinue" style="display:none">
+          Press Enter / Click To Continue<span class="term-blink">█</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL CANVASES -->
+  <canvas id="snowCanvas"></canvas>
+  <canvas id="dustCanvas"></canvas>
+  <canvas id="matrixCanvas" style="display:none"></canvas>
+
+  <!-- HUD TOP-LEFT: CYBER DOCK WITH PERFORMANCE, LANG, THEMES, SFX, CLI -->
+  <div class="hud-top-left" id="hudTopLeft">
+    <!-- Row 1: System & Lang Pill -->
+    <div class="hud-capsule-row hud-row-sys">
+      <div class="fps-hud-box" id="fpsHudBox" title="Tốc độ khung hình thực tế theo máy">
+        <div class="fps-hud-dot" id="fpsDot"></div>
+        <div class="fps-hud-val"><span id="fpsCount">60</span><small>FPS</small></div>
+        <div class="fps-hud-tag" id="fpsTag">Smooth</div>
+      </div>
+
+      <!-- PING LATENCY HUD (Wave 83) -->
+      <div class="ping-hud-box" id="pingHudBox" title="Độ trễ mạng thực tế (Network Latency)">
+        <div class="ping-hud-dot" id="pingDot"></div>
+        <div class="ping-hud-val"><span id="pingCount">--</span><small>ms</small></div>
+      </div>
+
+      <div class="lang-switch-box" id="langSwitchBox">
+        <div class="lang-region-badge" id="langRegionBadge" title="Region">🌐 US</div>
+        <div class="lang-buttons">
+          <button class="lang-btn" id="langBtnVi" data-lang="vi" title="Tiếng Việt (Vietnam)">
+            <span class="lang-flag">🇻🇳</span><span class="lang-txt">VI</span>
+          </button>
+          <button class="lang-btn active" id="langBtnEng" data-lang="en" title="English (Global)">
+            <span class="lang-flag">🇺🇸</span><span class="lang-txt">ENG</span>
+          </button>
+          <button class="lang-btn" id="langBtnJp" data-lang="ja" title="日本語 (Japan)">
+            <span class="lang-flag">🇯🇵</span><span class="lang-txt">JP</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Video Toggle, Theme, SFX & Tools Cyber Capsule -->
+    <div class="hud-capsule-row hud-row-tools">
+      <button class="perf-toggle-btn cyber-sound-btn" id="perfToggle" title="Bật / Tắt video nền (Tăng hiệu năng & Giảm tải GPU)">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span id="perfToggleText">Video</span>
+      </button>
+      <button class="theme-toggle-btn cyber-sound-btn" id="themeToggleBtn" title="Chọn Giao Diện Discord Nitro cho Profile, Tiện Ích & Music">
+        <span id="themeIcon">🎨</span>
+        <span id="themeText">THEMES</span>
+      </button>
+      <button class="theme-random-btn cyber-sound-btn" id="themeRandomBtn" title="Theme ngẫu nhiên (Ctrl+T hoặc Lắc điện thoại)">
+        <span>🎲</span>
+      </button>
+      <button class="sfx-toggle-btn cyber-sound-btn" id="sfxToggleBtn" title="Bật / Tắt âm thanh Web Audio FX (0ms Latency)">
+        <span id="sfxIcon">🔊</span>
+        <span id="sfxText">SFX</span>
+      </button>
+      <button class="cli-toggle-btn cyber-sound-btn" id="cliToggleBtn" title="Mở Cyber Terminal CLI (~ hoặc Ctrl+K)">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        <span>_CLI</span>
+      </button>
+    </div>
+  </div>
+
+      <!-- MUSIC PLAYER — PEAK CYBER VINYL DECK -->
+  <div class="music-player" id="musicPlayer">
+    <!-- Spinning Vinyl Disc (On mobile: this is the ONLY thing visible in top right!) -->
+    <div class="mp-vinyl-wrap" id="mpVinylWrap" title="Đĩa nhạc Cyber (Chạm để mở bảng điều khiển)">
+      <div class="mp-vinyl-disc" id="mpVinylDisc">
+        <div class="mp-vinyl-grooves"></div>
+        <div class="mp-vinyl-label">
+          <img src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg" alt="cover" class="mp-art" id="mpArt" />
+          <div class="mp-vinyl-spindle"></div>
+        </div>
+      </div>
+      <div class="mp-art-glow" id="mpSpin"></div>
+    </div>
+
+    <!-- Main Player Deck (Desktop: always visible; Mobile: opens as a sleek rounded popup card on vinyl click) -->
+    <div class="mp-info" id="mpDeckInfo">
+      <div class="mp-header-row">
+        <div class="mp-badge-tag"><span class="mp-badge-dot"></span>CYBER VINYL DECK</div>
+        <button class="mp-modal-close cyber-sound-btn" id="mpModalClose" type="button" aria-label="Đóng đĩa nhạc">✕</button>
+      </div>
+      <div class="mp-marquee-wrap">
+        <div class="mp-marquee" id="mpMarquee">
+          <span>2IN1 - Người Đã Yêu Ai Remix</span>
+          <span aria-hidden="true">    2IN1 - Người Đã Yêu Ai Remix</span>
+        </div>
+        <div class="mp-eq" id="mpEq" title="Audio Equalizer">
+          <span class="mp-eq-bar"></span>
+          <span class="mp-eq-bar"></span>
+          <span class="mp-eq-bar"></span>
+          <span class="mp-eq-bar"></span>
+        </div>
+      </div>
+      <div class="mp-timeline-wrap">
+        <span class="mp-time" id="mpCur">0:00</span>
+        <div class="mp-track" id="mpTrack">
+          <div class="mp-fill" id="mpFill"></div>
+          <input class="mp-seek" id="mpSeek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Timeline" />
+        </div>
+        <span class="mp-time" id="mpDur">0:00</span>
+      </div>
+      <div class="mp-controls">
+        <button class="mp-btn mp-repeat-btn cyber-sound-btn" id="mpRepeat" title="Lặp tất cả">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="17 1 21 5 17 9"/>
+            <path d="M3 11V9a4 4 0 014-4h14"/>
+            <polyline points="7 23 3 19 7 15"/>
+            <path d="M21 13v2a4 4 0 01-4 4H3"/>
+          </svg>
+        </button>
+        <button class="mp-btn mp-skip cyber-sound-btn" id="mpPrev" title="Bài trước">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <polygon points="19 20 9 12 19 4 19 20"/><rect x="5" y="4" width="2" height="16" rx="1"/>
+          </svg>
+        </button>
+        <button class="mp-btn mp-play cyber-sound-btn" id="mpPlay" title="Phát / Dừng">
+          <svg id="mpPlayIcon" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </button>
+        <button class="mp-btn mp-skip cyber-sound-btn" id="mpNext" title="Bài tiếp">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <polygon points="5 4 15 12 5 20 5 4"/><rect x="17" y="4" width="2" height="16" rx="1"/>
+          </svg>
+        </button>
+        <button class="mp-btn cyber-sound-btn" id="mpMute" title="Tắt / Bật tiếng">
+          <svg id="mpVolIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
+          </svg>
+        </button>
+      </div>
+      <div class="mp-vol-wrap">
+        <svg class="mp-vol-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        </svg>
+        <input class="mp-vol-slider" id="mpVol" type="range" min="0" max="1" value="0.8" step="0.01" aria-label="Âm lượng" />
+        <svg class="mp-vol-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
+        </svg>
+      </div>
+      <div class="mp-bottom-row">
+        <canvas id="audioVisualizerCanvas" class="mp-visualizer-canvas" width="100" height="18" title="Click để đổi kiểu sóng (Bars/Wave/Orbit)"></canvas>
+        <button class="mp-mini-btn cyber-sound-btn" id="mpVisModeBtn" title="Đổi kiểu sóng nhạc (Bars / Wave / Glow)">📊</button>
+        <button class="mp-mini-btn cyber-sound-btn" id="mpPlaylistBtn" title="Danh sách bài hát tuyển chọn">📜</button>
+        <span class="mp-hotkey-tip" title="Space: Play/Pause | M: Mute | ← →: Đổi bài">⌨️ Space · M</span>
+      </div>
+      <!-- QUICK PLAYLIST DRAWER -->
+      <div class="mp-playlist-drawer" id="mpPlaylistDrawer" style="display:none">
+        <div class="mpd-header">
+          <span>🎵 BẢNG NHẠC TUYỂN CHỌN</span>
+          <button class="mpd-close" id="mpPlaylistClose">✕</button>
+        </div>
+        <div class="mpd-list" id="mpPlaylistList">
+          <div class="mpd-item active" data-src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/sound1.mp3" data-art="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg" data-title="2IN1 - Người Đã Yêu Ai Remix">
+            <span class="mpd-num">1</span>
+            <div class="mpd-info"><span class="mpd-name">Người Đã Yêu Ai (2IN1 Remix)</span><span class="mpd-artist">DuyZoz Playlist</span></div>
+            <span class="mpd-playing-dot"></span>
+          </div>
+          <div class="mpd-item" data-src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/sound2.mp3" data-art="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic2.jpg" data-title="Anh Sẽ Đợi Remix - Thanh Tung">
+            <span class="mpd-num">2</span>
+            <div class="mpd-info"><span class="mpd-name">Anh Sẽ Đợi (Remix)</span><span class="mpd-artist">Thanh Tung / DuyZoz</span></div>
+            <span class="mpd-playing-dot"></span>
+          </div>
+          <div class="mpd-item" data-src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/sound3.mp3" data-art="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic3.jpg" data-title="Bạn Tình Ơi 2 Remix - YuniBoo x Goctoi x Đại Mèo">
+            <span class="mpd-num">3</span>
+            <div class="mpd-info"><span class="mpd-name">Bạn Tình Ơi 2 (Remix)</span><span class="mpd-artist">YuniBoo x Goctoi x Đại Mèo</span></div>
+            <span class="mpd-playing-dot"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <audio id="mpAudio" preload="none">
+      <source src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/sound1.mp3" type="audio/mpeg" />
+    </audio>
+  </div>
+
+  <!-- STAGE -->
+  <div class="stage" id="stage">
+    <div class="scene" id="scene">
+
+      <!-- TOOL CARD -->
+      <div class="tool-card" id="toolCard">
+        <!-- MOBILE SHEET HEADER & DRAG HANDLE -->
+        <div class="tool-card-mob-hdr" id="toolCardMobHdr">
+          <div class="tool-card-mob-handle" id="toolCardMobHandle"></div>
+          <div class="tool-card-mob-title" id="toolCardMobTitle">⚡ Tiện Ích Cyber</div>
+          <button class="tool-card-mob-close cyber-sound-btn" id="toolCardMobClose" aria-label="Đóng bảng tiện ích" title="Đóng bảng tiện ích">✕</button>
+        </div>
+
+        <div class="card-hdr tool-hdr" id="toolHdr">⚡ Tiện Ích &amp; Công Cụ</div>
+
+        <!-- TABS (Icon-only taskbar) -->
+        <div class="tc-tabs">
+          <button class="tc-tab active cyber-sound-btn" id="tabBypass" data-panel="panelBypass" title="⚡ Bật Mã / Bypass Link">⚡</button>
+          <button class="tc-tab cyber-sound-btn" id="tabCreateVPS" data-panel="panelCreateVPS" title="➕ Khởi Tạo VPS Cloud">➕</button>
+          <button class="tc-tab cyber-sound-btn" id="tabManage" data-panel="panelManage" title="🔑 Quản Lý Token & VPS">🔑</button>
+          <button class="tc-tab cyber-sound-btn" id="tabProjects" data-panel="panelProjects" title="🚀 Dự Án Tiêu Biểu">🚀</button>
+          <button class="tc-tab cyber-sound-btn" id="tabTools" data-panel="panelTools" title="🛠️ Tiện Ích & Dev Tools">🛠️</button>
+          <button class="tc-tab cyber-sound-btn" id="tabGuestbook" data-panel="panelGuestbook" title="💬 Lưu Bút Trực Tuyến">💬</button>
+          <button class="tc-tab cyber-sound-btn" id="tabAi" data-panel="panelAi" title="🤖 Trợ Lý AI Nguyễn Duy">🤖</button>
+          <button class="tc-tab cyber-sound-btn" id="tabGame" data-panel="panelGame" title="🎮 Echo Hunter Mini-Game">🎮</button>
+        </div>
+
+        <!-- PANEL: STARTUT CONSOLE (startut.log) -->
+        <div class="tc-panel" id="panelBypass">
+          <div class="startut-console-wrap">
+            <div class="log-win startut-full-log">
+              <div class="log-win-hdr">
+                <span class="lw-dot lw-r"></span>
+                <span class="lw-dot lw-y"></span>
+                <span class="lw-dot lw-g"></span>
+                <span class="lw-title">startut.log</span>
+                <button class="lw-clear" id="lwClear">clear</button>
+              </div>
+              <div class="log-body startut-log-body" id="logBody">
+                <div class="le cyan">[STARTUT] Khởi động hệ sinh thái Nguyễn Duy Cyber v2.0... OK</div>
+                <div class="le dim" id="logInitMsg">[--:--:--] Sẵn sàng theo dõi mọi thao tác tương tác hệ thống.</div>
+              </div>
+            </div>
+
+            <!-- NÚT XÓA TẤT CẢ DỮ LIỆU (FACTORY RESET) -->
+            <div class="startut-reset-card">
+              <button class="startut-reset-btn cyber-sound-btn" id="btnResetAllCache" type="button" title="Bấm để xóa sạch dữ liệu và tải lại web">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                <span>🗑️ XÓA TẤT CẢ DỮ LIỆU (RESET)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="tc-panel" id="panelCreateVPS" style="display:none">
+          <div class="t-inner">
+            <div class="t-block">
+              <div class="t-title-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                <span class="t-title" id="vpsTitle">🖥️ Ngrok Cloud VPS RDP</span>
+                <span class="ngrok-badge-pill">⚡ Direct TCP 1-Click</span>
+              </div>
+              <div class="t-sub" id="vpsSub">Khởi tạo Windows RDP cấu hình cao, kết nối trực tiếp không cần cài đặt VPN qua Ngrok Tunnel</div>
+
+              <!-- HƯỚNG DẪN 3 BƯỚC SỬ DỤNG NGROK -->
+              <div class="ngrok-steps-card">
+                <div class="ngrok-step-item">
+                  <div class="ngrok-step-num">1</div>
+                  <div class="ngrok-step-body">
+                    <span><strong>Lấy Ngrok Authtoken:</strong> Đăng ký tài khoản miễn phí</span>
+                    <a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank" rel="noopener" class="ngrok-link-btn">🔑 Lấy Token Ngrok</a>
+                  </div>
+                </div>
+                <div class="ngrok-step-item">
+                  <div class="ngrok-step-num">2</div>
+                  <div class="ngrok-step-body">
+                    <span><strong>Nhập &amp; Lưu Khóa:</strong> Điền Ngrok Token &amp; GitHub Token</span>
+                  </div>
+                </div>
+                <div class="ngrok-step-item">
+                  <div class="ngrok-step-num">3</div>
+                  <div class="ngrok-step-body">
+                    <span><strong>Kết Nối Trực Tiếp:</strong> Mở Remote Desktop dán Host:Port là vào thẳng Windows</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FORM CẤU HÌNH -->
+              <div class="vps-form">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                  <label class="vps-label" id="vpsTokenLabel" style="margin-bottom:0">GitHub Token (<code>repo</code> + <code>workflow</code>)</label>
+                  <a href="https://github.com/settings/tokens/new?scopes=repo,workflow" target="_blank" rel="noopener" class="t-link-hint" style="color:#38bdf8;font-size:0.7rem;text-decoration:underline;font-weight:600">Lấy token GitHub tại đây</a>
+                </div>
+                <div class="key-row" style="display:flex;gap:6px">
+                  <input id="vpsToken" class="bp-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+                  <button class="key-save-btn" id="saveTokenBtn" title="Lưu GitHub Token">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px">
+                      <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                      <polyline points="17 21 17 13 7 13 7 21"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;margin-bottom:4px">
+                  <label class="vps-label" style="margin-bottom:0">Ngrok Authtoken (<code>dashboard.ngrok.com</code>)</label>
+                  <a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank" rel="noopener" class="t-link-hint" style="color:#38bdf8;font-size:0.7rem;text-decoration:underline;font-weight:600">🔑 Lấy Token Ngrok</a>
+                </div>
+                <div class="key-row" style="display:flex;gap:6px">
+                  <input id="vpsNgrokToken" class="bp-input" type="password" placeholder="Nhập mã Ngrok Authtoken của bạn..." autocomplete="off" />
+                  <button class="key-save-btn" id="saveNgrokTokenBtn" title="Lưu Ngrok Authtoken">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px">
+                      <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                      <polyline points="17 21 17 13 7 13 7 21"/>
+                    </svg>
+                  </button>
+                </div>
+                <div id="ngrokTokenFormatWarn" style="display:none;color:#f87171;font-size:0.68rem;margin-top:3px;font-weight:600">⚠️ Vui lòng nhập đúng mã Ngrok Authtoken lấy từ dashboard.ngrok.com</div>
+
+                <!-- VPS DURATION SELECTOR & HARDWARE SPECS -->
+                <div class="vps-duration-wrap" style="margin-top:10px">
+                  <div class="vps-dur-hdr" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                    <span class="vps-label" style="margin-bottom:0">Thời gian duy trì VPS:</span>
+                    <span id="vpsDurValDisplay" style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#00f0ff;font-weight:700">5h40m (Tối Đa)</span>
+                  </div>
+                  <div class="vps-duration-pills">
+                    <button type="button" class="vps-dur-pill cyber-sound-btn" data-dur="1h" data-seconds="3600">🕐 1 Giờ</button>
+                    <button type="button" class="vps-dur-pill cyber-sound-btn" data-dur="3h" data-seconds="10800">🕒 3 Giờ</button>
+                    <button type="button" class="vps-dur-pill active cyber-sound-btn" data-dur="5h40m" data-seconds="20400">🕔 5h40m (Max)</button>
+                  </div>
+                </div>
+
+                <div class="vps-specs-badge">
+                  <span class="vsb-item">⚡ 4 vCPU</span>
+                  <span class="vsb-item">🧠 16GB RAM</span>
+                  <span class="vsb-item">🪟 Windows Server 2022</span>
+                  <span class="vsb-item">🚀 Direct TCP Tunnel</span>
+                </div>
+
+                <div class="vps-btn-group" style="margin-top:12px;display:flex;gap:8px">
+                  <button class="bp-btn" id="vpsCreateBtn" style="flex:1">
+                    <span class="bp-txt">🚀 Khởi Tạo Ngrok VPS</span>
+                    <span class="bp-spin" style="display:none"><i></i><i></i><i></i></span>
+                  </button>
+                  <button class="bp-btn bp-btn-alt" id="copyWorkflowBtn" type="button" style="width:auto;padding:0 12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.18);border-radius:10px;cursor:pointer;color:#a5b4fc;font-size:.78rem;font-weight:600" title="Sao chép file YAML Workflow">
+                    📋 Copy Workflow
+                  </button>
+                </div>
+              </div>
+
+              <!-- THÔNG TIN KẾT NỐI SAU KHI SẴN SÀNG (NGROK VIP CARD) -->
+              <div class="vps-ready-box" id="vpsReadyBox" style="display:none;flex-direction:column;gap:10px;margin-top:12px">
+                <div class="vps-ready-header">
+                  <div class="rdp-live-badge rdp-live" id="rdpLiveStatus">
+                    <span class="rdp-live-dot"></span>
+                    <span class="rdp-live-text" id="rdpLiveText">RDP LIVE</span>
+                  </div>
+                  <div class="vps-timer-pill" id="vpsTimerPill">
+                    <span class="vtp-icon">⏳</span>
+                    <span class="vtp-time" id="vpsCountdown">05:40:00</span>
+                  </div>
+                </div>
+
+                <div class="vps-cred-card">
+                  <div class="vps-cred-row">
+                    <span class="cred-label">Host:Port:</span>
+                    <div class="cred-val-wrap">
+                      <code class="cred-val" id="vpsIpVal">0.tcp.ap.ngrok.io:12345</code>
+                    </div>
+                    <div class="cred-row-actions">
+                      <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsIpVal" type="button" title="Sao chép Host:Port">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="vps-cred-row">
+                    <span class="cred-label">User name:</span>
+                    <div class="cred-val-wrap">
+                      <code class="cred-val" id="vpsUserVal">duyzoz</code>
+                    </div>
+                    <div class="cred-row-actions">
+                      <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsUserVal" type="button" title="Sao chép User name">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="vps-cred-row">
+                    <span class="cred-label">Password:</span>
+                    <div class="cred-val-wrap">
+                      <code class="cred-val" id="vpsPassVal">Admin@123456</code>
+                    </div>
+                    <div class="cred-row-actions">
+                      <button class="cred-eye-btn cyber-sound-btn" id="togglePassEyeBtn" type="button" title="Ẩn/Hiện mật khẩu">
+                        <svg id="passEyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      </button>
+                      <button class="cred-copy-icon-btn cyber-sound-btn" data-copy="vpsPassVal" type="button" title="Sao chép Password">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-top:2px">
+                  <button type="button" id="vpsDownloadRdpBtn" class="vps-download-rdp-btn cyber-sound-btn" style="flex:1" title="Tải file cấu hình .RDP kết nối ngay vào máy tính">
+                    <span>📥 Tải File (.RDP)</span>
+                  </button>
+                  <button type="button" id="vpsPingProbeBtn" class="vps-ping-probe-btn cyber-sound-btn" style="flex:1" title="Kiểm tra trạng thái đường truyền VPS">
+                    <span id="vpsPingProbeTxt">⚡ Kiểm Tra VPS</span>
+                  </button>
+                </div>
+
+                <!-- LIVE VPS SESSION COUNTDOWN TIMER -->
+                <div class="vps-countdown-card" id="vpsCountdownCard" style="display:none">
+                  <div class="vcc-header">
+                    <span class="vcc-live-dot"></span>
+                    <span class="vcc-title">⏳ Phiên Hoạt Động RDP:</span>
+                    <strong class="vcc-timer" id="vpsCountdownTimer">05:40:00</strong>
+                    <span class="vcc-alarm-tag" id="vpsAlarmTag">🔔 Báo trước 15p</span>
+                  </div>
+                  <div class="vcc-progress-bar">
+                    <div class="vcc-progress-fill" id="vpsCountdownFill" style="width:100%"></div>
+                  </div>
+                </div>
+
+                <div class="vps-guide-tip">
+                  💡 <strong>Cách kết nối trực tiếp:</strong> Mở <em>Remote Desktop</em> (Windows: bấm <code>Win + R</code> gõ <code>mstsc</code>, hoặc mở app Remote Desktop trên điện thoại) &rarr; Dán địa chỉ <strong>Host:Port</strong> &rarr; Đăng nhập bằng User <strong>duyzoz</strong> &amp; Password <strong>Admin@123456</strong>!
+                </div>
+              </div>
+            </div>
+            <div class="t-divider"></div>
+            <div class="vps-status-box" id="vpsStatusBox" style="display:none">
+              <div class="vps-status-title" id="vpsStatusTitle">⚡ Trạng Thái</div>
+              <div class="vps-status-msg" id="vpsStatusMsg"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL: QUẢN LÝ -->
+        <div class="tc-panel" id="panelManage" style="display:none">
+          <div class="t-inner">
+            <!-- GitHub Tokens List -->
+            <div class="t-block">
+              <div class="t-title" id="mngTokensTitle" style="font-size:.85rem;margin-bottom:8px">🔑 Danh sách Token GitHub đã lưu</div>
+              <div class="token-list" id="tokenList">
+                <div class="token-empty" id="tokenEmptyMsg">Chưa có token GitHub nào được lưu</div>
+              </div>
+            </div>
+            <div class="t-divider"></div>
+
+            <!-- Ngrok Authtokens List -->
+            <div class="t-block">
+              <div class="t-title" style="font-size:.85rem;margin-bottom:8px">🔒 Danh sách Ngrok Authtoken đã lưu</div>
+              <div class="token-list" id="ngrokTokenList">
+                <div class="token-empty" id="ngrokTokenEmptyMsg">Chưa có Ngrok Authtoken nào được lưu</div>
+              </div>
+            </div>
+            <div class="t-divider"></div>
+
+            <!-- VPS List -->
+            <div class="t-block">
+              <div class="t-title" id="mngVpsTitle" style="font-size:.85rem;margin-bottom:8px">🖥️ Danh sách VPS đã tạo</div>
+              <div class="vps-list" id="vpsList">
+                <div class="token-empty" id="vpsEmptyMsg">Chưa có VPS nào được tạo</div>
+              </div>
+            </div>
+
+            <!-- CROSS-DEVICE CONFIG SYNC & BACKUP (Wave 86) -->
+            <div class="t-divider"></div>
+            <div class="t-block">
+              <div class="t-title" style="font-size:.85rem;margin-bottom:4px">🔄 Đồng Bộ Cấu Hình &amp; Phiên VPS (Cross-Device)</div>
+              <div class="t-sub" style="margin-bottom:8px">Sao lưu hoặc chuyển toàn bộ token &amp; phiên VPS giữa PC và Smartphone</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+                <button type="button" id="btnExportConfig" class="proj-btn proj-gh cyber-sound-btn" style="text-align:center;padding:8px" title="Xuất cấu hình JSON">
+                  <span>📤 Xuất Cấu Hình</span>
+                </button>
+                <button type="button" id="btnImportConfig" class="proj-btn proj-live cyber-sound-btn" style="text-align:center;padding:8px" title="Nhập cấu hình từ thiết bị khác">
+                  <span>📥 Nhập Cấu Hình</span>
+                </button>
+              </div>
+              <button type="button" id="btnQrSyncConfig" class="bp-btn cyber-sound-btn" style="width:100%;margin-top:2px" title="Quét mã QR để đồng bộ sang điện thoại">
+                <span>📱 Quét QR Chuyển Sang Mobile</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        
+        <!-- PANEL: DỰ ÁN (PROJECT SHOWCASE) -->
+        <div class="tc-panel" id="panelProjects" style="display:none">
+          <div class="t-inner">
+            <div class="proj-list">
+              <div class="proj-card">
+                <div class="proj-hdr">
+                  <div class="proj-badge neon-cyan">Featured</div>
+                  <div class="proj-stars">⭐ 48</div>
+                </div>
+                <div class="proj-name">OpenNOW Native Client</div>
+                <div class="proj-desc">Native high-performance Cloud Gaming client built with Qt 6 &amp; Rust. Sub-1ms latency, 120 FPS hardware decode.</div>
+                <div class="proj-tags"><span>Qt6</span><span>C++20</span><span>Rust</span><span>FFI</span></div>
+                <div class="proj-actions">
+                  <a href="https://github.com/duyzoz" target="_blank" class="proj-btn proj-gh">GitHub</a>
+                  <a href="https://github.com/duyzoz" target="_blank" class="proj-btn proj-live">Details</a>
+                </div>
+              </div>
+
+              <div class="proj-card">
+                <div class="proj-hdr">
+                  <div class="proj-badge neon-pink">Service</div>
+                  <div class="proj-stars">⭐ 128</div>
+                </div>
+                <div class="proj-name">Bypass Engine &amp; Proxy Cloud</div>
+                <div class="proj-desc">Automated URL shortener resolver via Cloudflare Edge API and tokenized authentication.</div>
+                <div class="proj-tags"><span>JavaScript</span><span>Workers</span><span>Edge API</span></div>
+                <div class="proj-actions">
+                  <a href="https://github.com/duyzoz" target="_blank" class="proj-btn proj-gh">GitHub</a>
+                  <button class="proj-btn proj-live" onclick="document.getElementById('tabTools').click()">Try it</button>
+                </div>
+              </div>
+
+              <div class="proj-card">
+                <div class="proj-hdr">
+                  <div class="proj-badge neon-purple">UI/UX</div>
+                  <div class="proj-stars">⭐ 95</div>
+                </div>
+                <div class="proj-name">Cyberpunk Glassmorphism Profile</div>
+                <div class="proj-desc">Ultra high-performance personal profile with lossless CDN audio, seamless video cross-fade, and real FPS tracking.</div>
+                <div class="proj-tags"><span>HTML5</span><span>CSS3</span><span>Web Audio</span></div>
+                <div class="proj-actions">
+                  <a href="https://github.com/duyzoz" target="_blank" class="proj-btn proj-gh">Source</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL: TIỆN ÍCH DEV (CYBER TOOLKIT) -->
+        <div class="tc-panel" id="panelTools" style="display:none">
+          <div class="t-inner">
+            <!-- Ping Tester -->
+            <div class="t-block">
+              <div class="t-title" id="pingTitle" style="font-size:.82rem;margin-bottom:8px">⚡ Kiểm tra Ping mạng Live</div>
+              <div class="ping-grid">
+                <div class="ping-item">
+                  <span class="ping-host">Cloudflare CDN</span>
+                  <span class="ping-val" id="pingCf">-- ms</span>
+                </div>
+                <div class="ping-item">
+                  <span class="ping-host">Google DNS</span>
+                  <span class="ping-val" id="pingGg">-- ms</span>
+                </div>
+                <div class="ping-item">
+                  <span class="ping-host">jsDelivr CDN</span>
+                  <span class="ping-val" id="pingJsd">-- ms</span>
+                </div>
+              </div>
+              <button class="bp-btn cyber-sound-btn" id="btnTestPing" style="margin-top:8px;padding:6px 0;font-size:.66rem">
+                <span>🔄 Bắt đầu đo Ping</span>
+              </button>
+            </div>
+
+            <div class="t-divider"></div>
+
+            <!-- Base64 Quick Converter -->
+            <div class="t-block">
+              <div class="t-title" id="b64Title" style="font-size:.82rem;margin-bottom:8px">🔐 Mã hóa / Giải mã Base64</div>
+              <input class="bp-input" id="b64Input" placeholder="Nhập văn bản cần mã hóa/giải mã..." style="margin-bottom:6px" />
+              <div class="b64-btn-row">
+                <button class="proj-btn proj-live cyber-sound-btn" id="btnB64Enc" style="flex:1">Mã hóa Base64</button>
+                <button class="proj-btn proj-gh cyber-sound-btn" id="btnB64Dec" style="flex:1">Giải mã Base64</button>
+              </div>
+              <div class="b64-result" id="b64Result" style="display:none">
+                <span id="b64ResultText"></span>
+                <button id="btnCopyB64" class="tia-use cyber-sound-btn" title="Sao chép">📋</button>
+              </div>
+            </div>
+
+            <div class="t-divider"></div>
+
+            <!-- WAVE 56: JSON FORMATTER & VALIDATOR (POCKET DEV TOOL) -->
+            <div class="t-block json-block">
+              <div class="t-title" style="font-size:.82rem;margin-bottom:8px">📦 JSON Formatter &amp; Validator</div>
+              <textarea class="bp-input json-input" id="jsonInput" rows="3" placeholder="Dán chuỗi JSON cần định dạng/kiểm tra..."></textarea>
+              <div class="b64-btn-row" style="margin-top:6px">
+                <button class="proj-btn proj-live cyber-sound-btn" id="btnJsonFormat" style="flex:1">Làm Đẹp (Beautify)</button>
+                <button class="proj-btn proj-gh cyber-sound-btn" id="btnJsonMinify" style="flex:1">Nén (Minify)</button>
+                <button class="proj-btn cyber-sound-btn" id="btnJsonCopy" style="flex:0 0 36px;background:rgba(255,255,255,0.08)" title="Sao chép kết quả">📋</button>
+              </div>
+              <div class="key-status" id="jsonStatus" style="display:none;margin-top:4px"></div>
+            </div>
+
+            <div class="t-divider"></div>
+
+            <!-- WAVE 56: SECURE RANDOM PASSWORD GENERATOR -->
+            <div class="t-block passgen-block">
+              <div class="t-title-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                <span class="t-title" style="font-size:.82rem">🔑 Bộ Tạo Mật Khẩu Siêu Cấp</span>
+                <span class="sl-badge" id="passStrengthBadge">Mạnh 100%</span>
+              </div>
+              <div class="passgen-row" style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+                <input class="bp-input" id="passGenResult" readonly placeholder="Bấm Tạo Mật Khẩu..." style="font-family:var(--mono);font-weight:700;color:#38bdf8" />
+                <button class="proj-btn proj-live cyber-sound-btn" id="btnGenPass" style="flex:0 0 75px">🎲 Tạo</button>
+                <button class="proj-btn cyber-sound-btn" id="btnCopyPass" style="flex:0 0 36px;background:rgba(255,255,255,0.08)" title="Sao chép mật khẩu">📋</button>
+              </div>
+              <div class="passgen-len-row" style="display:flex;align-items:center;justify-content:space-between;font-size:.64rem;color:#94a3b8">
+                <span>Độ dài: <strong id="passLenDisplay" style="color:#00f0ff">16 ký tự</strong></span>
+                <input type="range" id="passLenRange" min="8" max="32" value="16" style="width:140px" />
+              </div>
+            </div>
+
+            <div class="t-divider"></div>
+
+            <!-- BYPASS LINK (MOVED HERE AS REQUESTED) -->
+            <div class="t-block">
+              <div class="t-title-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                <span class="t-title" id="bpTitle">🔗 Bypass Link</span>
+                <button class="sl-badge cyber-sound-btn" id="slBadgeBtn">✅ Xem link hỗ trợ</button>
+              </div>
+              <div class="t-sub" id="bpSub">Tự động Bypass all-in-one link rút gọn</div>
+              <input id="bypassInput" class="bp-input" type="url" placeholder="https://link-can-bypass.net/..." autocomplete="off" />
+              <button class="bp-btn cyber-sound-btn" id="bypassBtn" style="margin-top:8px">
+                <span class="bp-txt">⚡ Bypass ngay</span>
+                <span class="bp-spin" style="display:none"><i></i><i></i><i></i></span>
+              </button>
+              <div class="bp-err" id="bpErr" style="display:none"></div>
+
+              <!-- Bypass Result Box -->
+              <div class="bypass-result-box" id="bypassResultBox" style="display:none;margin-top:8px">
+                <div class="brb-label">✅ Bypass Thành Công</div>
+                <div class="brb-row">
+                  <a class="brb-link" id="brbLink" href="#" target="_blank" rel="noopener noreferrer"></a>
+                  <button class="brb-copy cyber-sound-btn" id="brbCopy" title="Sao chép">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  </button>
+                  <a class="brb-open cyber-sound-btn" id="brbOpen" href="#" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="t-divider"></div>
+
+            <!-- GEFORCE NOW LIVE QUEUE & PING MONITOR (PrintedWaste Live API) -->
+            <div class="t-block gfn-block">
+              <div class="t-title-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                <span class="t-title" style="color:#76b900">🎮 Hàng Chờ &amp; Ping GFN (Live API)</span>
+                <button class="gfn-refresh-btn cyber-sound-btn" id="btnRefreshGfn" title="Lấy dữ liệu thời gian thực từ PrintedWaste">
+                  <span id="gfnRefreshTxt">🔄 Cập nhật</span>
+                </button>
+              </div>
+              <div class="t-sub">Dữ liệu hàng chờ thời gian thực từ <strong>PrintedWaste Queue API</strong> &amp; đo Ping chuẩn</div>
+
+              <!-- Filter Tabs theo Region -->
+              <div class="gfn-filter-bar">
+                <button class="gfn-ftab active cyber-sound-btn" data-filter="all">Tất cả</button>
+                <button class="gfn-ftab cyber-sound-btn" data-filter="us">🇺🇸 US</button>
+                <button class="gfn-ftab cyber-sound-btn" data-filter="eu">🇪🇺 EU</button>
+                <button class="gfn-ftab cyber-sound-btn" data-filter="asia">🌏 Asia</button>
+              </div>
+
+              <div class="gfn-server-list" id="gfnServerList">
+                <div class="gfn-loading-state">⏳ Đang tải dữ liệu hàng chờ từ PrintedWaste...</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        
+        <!-- PANEL: LƯU BÚT (GUESTBOOK - Wave 8 & Wave 11) -->
+        <div class="tc-panel" id="panelGuestbook" style="display:none">
+          <div class="t-inner gb-full-inner">
+            <!-- Cloudflare Edge Relay Header -->
+            <div class="gb-relay-bar">
+              <span class="gb-relay-title" id="gbTitle">💬 Global Chat &amp; Guestbook</span>
+              <div class="gb-relay-badge" id="gbRelayBadge" title="Cloudflare Anycast DNS Network">
+                <span class="gb-relay-dot"></span>
+                <span id="gbRelayText">Cloudflare Edge: SIN · 18ms</span>
+              </div>
+            </div>
+
+            <!-- Chat messages list (Spacious & Clean) -->
+            <div class="gb-chat-list" id="gbList"></div>
+
+            <!-- Bottom Messenger-style Bar -->
+            <div class="gb-bottom-bar">
+              <!-- Reply indicator directly docked above input -->
+              <div class="gb-reply-bar" id="gbReplyBar" style="display:none">
+                <span class="gb-reply-label" id="gbReplyLabel">↩️ Replying to <strong id="gbReplyTo"></strong></span>
+                <button class="gb-reply-cancel" id="gbReplyCancel">✕</button>
+              </div>
+
+              <!-- Identity indicator / Name input & Karma Badge (Wave 59) -->
+              <div class="gb-sender-bar">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span class="gb-sender-aura" id="gbSenderAura">✨ Admin: Nguyễn Duy</span>
+                  <span class="gb-karma-badge" id="gbKarmaBadge" title="Danh hiệu tương tác của bạn">🟢 Explorer</span>
+                </div>
+                <input class="bp-input gb-name-input" id="gbNameInput" placeholder="Your name..." style="display:none" />
+              </div>
+
+              <!-- Emoji Popover (Messenger style) -->
+              <div class="gb-emoji-popover" id="gbEmojiPopover" style="display:none">
+                <div class="gb-emoji-grid" id="gbEmojiList">
+                  <span class="gb-em" data-em="✨">✨</span>
+                  <span class="gb-em" data-em="🔥">🔥</span>
+                  <span class="gb-em" data-em="🚀">🚀</span>
+                  <span class="gb-em" data-em="💖">💖</span>
+                  <span class="gb-em" data-em="☕">☕</span>
+                  <span class="gb-em" data-em="😂">😂</span>
+                  <span class="gb-em" data-em="👋">👋</span>
+                  <span class="gb-em" data-em="🎮">🎮</span>
+                  <span class="gb-em" data-em="💻">💻</span>
+                  <span class="gb-em" data-em="⚔️">⚔️</span>
+                  <span class="gb-em" data-em="🌊">🌊</span>
+                  <span class="gb-em" data-em="❤️">❤️</span>
+                  <span class="gb-em" data-em="😎">😎</span>
+                  <span class="gb-em" data-em="👍">👍</span>
+                  <span class="gb-em" data-em="🎉">🎉</span>
+                  <span class="gb-em" data-em="🌸">🌸</span>
+                </div>
+              </div>
+
+              <!-- Input row -->
+              <div class="gb-input-row">
+                <button class="gb-emoji-btn" id="gbEmojiTrigger" title="Select emoji">😊</button>
+                <textarea class="bp-input gb-msg-area" id="gbMsgInput" rows="1" placeholder="Type a message..."></textarea>
+                <button class="gb-send-btn" id="btnSubmitGb" title="Send">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL: CYBER AI CHATBOT (Wave 9) -->
+        <div class="tc-panel" id="panelAi" style="display:none">
+          <div class="t-inner ai-full-inner">
+            <div class="ai-chat-wrap">
+              <div class="ai-header-bar">
+                <span class="ai-bot-avatar">🤖</span>
+                <div class="ai-bot-info">
+                  <div class="ai-bot-name">Nguyễn Duy AI</div>
+                  <div class="ai-bot-status" id="aiBotStatus">Cyberpunk Digital Twin · Ready</div>
+                </div>
+                <button class="ai-tts-btn cyber-sound-btn" id="btnAiTtsToggle" title="Bật/Tắt giọng đọc AI (Web Speech API)">
+                  <span id="aiTtsIcon">🔊</span>
+                  <span class="ai-tts-label" id="aiTtsLabel">Voice</span>
+                </button>
+                <button class="ai-key-btn" id="btnAiConfigKey" title="Configure AI API Key (Gemini / OpenAI / Groq)">
+                  <span class="ai-key-icon">🔑</span>
+                  <span class="ai-key-label" id="aiKeyLabel">API Key</span>
+                </button>
+              </div>
+
+              <!-- API Key Modal / Popover -->
+              <div class="ai-key-modal" id="aiKeyModal" style="display:none">
+                <div class="ai-key-modal-inner">
+                  <div class="ai-key-modal-title" id="aiKeyTitle">🔑 Cài Đặt AI API Key (Google Gemini v50)</div>
+                  <div class="ai-key-modal-desc" id="aiKeyDesc">
+                    Dán API Key Google Gemini (từ Google AI Studio - Free Tier, bắt đầu bằng AIza... hoặc AQ...) hoặc Groq / OpenAI để trò chuyện với AI thật 100%!
+                  </div>
+                  <input type="password" id="aiApiKeyInput" class="bp-input" placeholder="Dán Key Gemini (AIza... / AQ...) hoặc sk-..." autocomplete="off" />
+                  <div class="ai-key-status" id="aiKeyStatusText">⚪ Chưa có API Key (Đang dùng dữ liệu ngoại tuyến)</div>
+                  <div class="ai-key-actions">
+                    <button class="proj-btn proj-live" id="btnSaveAiKey">Save Key</button>
+                    <button class="proj-btn" id="btnClearAiKey" style="background:rgba(239,68,68,0.2);color:#fca5a5">Clear</button>
+                    <button class="proj-btn" id="btnCloseAiKey" style="background:rgba(255,255,255,0.08)">Close</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Messages List (Flex height) -->
+              <div class="ai-messages" id="aiMessages">
+                <div class="ai-msg bot" id="aiWelcomeMsg">
+                  Hello! I am Nguyễn Duy's digital twin. What would you like to explore about my 3D renders on HP 840 G1, Wuthering Waves 24/7 Discord selfbot, or custom web tools?
+                </div>
+              </div>
+
+              <!-- Bottom container: chips + input docked cleanly at bottom -->
+              <div class="ai-bottom-bar">
+                <div class="ai-chips" id="aiChips">
+                  <button class="ai-chip" id="aiChipSkills" data-ask="What are your tech stack and core skills?">💻 Skills</button>
+                  <button class="ai-chip" id="aiChipHp" data-ask="How do you render heavy 3D on an HP 840 G1 without GPU?">💻 HP 840 G1</button>
+                  <button class="ai-chip" id="aiChipBot" data-ask="How does your 24/7 Wuthering Waves selfbot work?">🌊 WuWa Bot</button>
+                  <button class="ai-chip" id="aiChipContact" data-ask="How to contact or support Nguyễn Duy?">📬 Contact</button>
+                </div>
+                <div class="ai-input-row">
+                  <input class="bp-input" id="aiInput" placeholder="Ask AI anything about Duy..." />
+                  <button class="proj-btn proj-live" id="btnAiSend">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL: ECHO HUNTER MINI-GAME (Wave 12) -->
+        <div class="tc-panel" id="panelGame" style="display:none">
+          <div class="t-inner">
+            <div class="echo-game-wrap">
+              <div class="echo-game-header">
+                <div class="echo-game-title">⚔️ Echo Hunter: Havoc Dreadmane</div>
+                <div class="echo-game-stats">
+                  <span>Score: <strong id="echoScore">0</strong></span>
+                  <span>Best: <strong id="echoBest">0</strong></span>
+                </div>
+              </div>
+              <div class="echo-canvas-container">
+                <canvas id="echoGameCanvas" width="270" height="210"></canvas>
+                <div class="echo-game-overlay" id="echoGameOverlay">
+                  <div class="echo-overlay-msg" id="echoOverlayMsg">🌊 HUNT HAVOC ECHO</div>
+                  <div class="echo-overlay-sub" id="echoOverlaySub">Controls: ← → Move · Space or J to Slash!</div>
+                  <button class="proj-btn proj-live" id="btnStartGame" style="margin-top:8px">Start Game ⚔️</button>
+                </div>
+              </div>
+              <div class="echo-game-controls">
+                <button class="echo-ctrl-btn" id="btnEchoLeft">◀</button>
+                <button class="echo-ctrl-btn echo-slash-btn" id="btnEchoSlash">⚔️ SLASH</button>
+                <button class="echo-ctrl-btn" id="btnEchoRight">▶</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE CARD -->
+      <div class="profile-card" id="profileCard">
+        <div class="card-hdr profile-hdr" id="profileHdr">👤 Profile &amp; About</div>
+        <div class="p-inner">
+
+          <div class="avatar-wrap" id="avatarWrap" title="Chạm để đổi Khung Trang Trí Avatar Discord Nitro">
+            <div class="avatar-deco-ring" id="avatarDecoRing"></div>
+            <canvas class="avatar-orbit" id="avatarOrbit"></canvas>
+            <img src="assets/avatar.png" alt="Avatar" class="avatar-img" />
+            <canvas class="avatar-snow-canvas" id="avatarSnowC"></canvas>
+            <div class="avatar-status" id="discordStatusBadge">
+              <span class="status-dot" id="discordStatusDot"></span>
+              <span id="discordStatusText">Online</span>
+            </div>
+          </div>
+
+          <h1 class="p-name">Nguyễn Duy</h1>
+
+          <div class="typing-wrap">
+            <span class="typing-cur"></span>
+            <span id="typingText" class="typing-text"></span>
+          </div>
+
+          <div class="tags">
+            <span class="tag" id="tagCoding">💻 Coding</span>
+            <span class="tag" id="tagGaming">🎮 Gaming</span>
+            <span class="tag" id="tagCoffee">☕ Coffee</span>
+          </div>
+
+          <!-- DISCORD WUTHERING WAVES SELFBOT GAMING CARD -->
+          <div class="wuwa-game-card" id="wuwaGameCard">
+            <!-- Header banner: Union Level 80 & Jinhsi Banner Art -->
+            <div class="wuwa-banner">
+              <div class="wuwa-banner-left">
+                <div class="wuwa-banner-badges">
+                  <span class="wuwa-pill-badge">🌊 WUWA</span>
+                  <span class="wuwa-pill-badge hl">Asia</span>
+                </div>
+                <div class="wuwa-game-title">Wuthering Waves</div>
+                <div class="wuwa-union-level" id="wuwaUnionLevel">Union Level: <strong>80</strong></div>
+                <a href="https://github.com/duyzoz/treo-wuthering-waves" target="_blank" class="wuwa-stats-link" id="wuwaStatsLink">View All Stats ↗</a>
+              </div>
+              <div class="wuwa-banner-art">
+                <img src="https://files.catbox.moe/6tly5b.png" alt="WuWa Large Art" class="wuwa-char-img" onerror="this.style.display='none'" />
+              </div>
+            </div>
+
+            <!-- Active playing section ("Đang chơi") -->
+            <div class="wuwa-playing-box">
+              <div class="wuwa-playing-hdr">
+                <span class="wuwa-playing-label" id="wuwaPlayingLabel">Now Playing</span>
+                <span class="wuwa-playing-dots">•••</span>
+              </div>
+              <div class="wuwa-playing-content">
+                <div class="wuwa-art-wrap">
+                  <img src="https://i.pinimg.com/736x/19/37/44/1937447c2110ad986866d1495e6c4b30.jpg" alt="Wuthering Waves" class="wuwa-cover-art" onerror="this.src='assets/avatar.png'" />
+                  <img src="assets/avatar.png" alt="avatar" class="wuwa-mini-avt" />
+                </div>
+                <div class="wuwa-info">
+                  <div class="wuwa-name" id="discordGameName">Wuthering Waves</div>
+                  <div class="wuwa-detail" id="discordGameDetail">⚔️ Hunting: Havoc Dreadmane</div>
+                  <div class="wuwa-state" id="discordGameState">Asia · UL80 · Exploration</div>
+                  <div class="wuwa-elapsed" id="discordGameElapsed">
+                    <span class="wuwa-game-icon">🎮</span>
+                    <span id="wuwaLiveTimer">1028:59:58</span>
+                  </div>
+                </div>
+              </div>
+              <div class="wuwa-selfbot-footer">
+                <span class="wuwa-selfbot-dot"></span>
+                <span class="wuwa-selfbot-txt" id="wuwaSelfbotTxt">Online</span>
+                <span class="wuwa-uid-wrap">
+                  <span class="wuwa-uid-label">User ID:</span>
+                  <span class="wuwa-uid-val" id="wuwaUidVal">713243969</span>
+                  <button class="wuwa-uid-copy" id="wuwaUidCopy" title="Copy User ID">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  </button>
+                  <span class="wuwa-uid-toast" id="wuwaUidToast">✅ Copied!</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bio-box">
+            <div class="bio-line">
+              <span class="bio-p">&gt;</span>
+              <div class="bio-t"><span id="bioTypewriter"></span><span class="bio-cursor"></span></div>
+            </div>
+          </div>
+          <div class="p-divider"></div>
+
+          <div class="stack-title" id="techStackTitle">Tech Stack</div>
+          <div class="stack-icons">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" title="HTML5" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" title="CSS3" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" title="JavaScript" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" title="Python" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" title="Git" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" title="VS Code" />
+          </div>
+
+          <div class="socials">
+            <a href="https://www.tiktok.com/@devtiemnang210" target="_blank" class="soc-btn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.76a4.85 4.85 0 01-1.01-.07z"/></svg>
+              TikTok
+            </a>
+            <a href="https://discord.gg/DceHsVSbW" target="_blank" class="soc-btn soc-discord">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+              Discord
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=100094384928226" target="_blank" class="soc-btn soc-fb">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.404 18.627 0 12 0S0 5.404 0 12.073c0 6.027 4.388 11.02 10.125 11.927v-8.437H7.078V12.07h3.047V9.43c0-3.007 1.793-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953h-1.514c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.493h-2.796v8.437C19.612 23.093 24 18.1 24 12.073z"/></svg>
+              Facebook
+            </a>
+          </div>
+
+          <div class="p-divider"></div>
+
+          <div class="donate-row">
+            <span class="donate-txt" id="donateTxt">Donet me 😊: <strong>1060830747</strong></span>
+            <button class="donate-btn" id="donateBtn">PLSDONET</button>
+          </div>
+
+          <div class="view-counter">
+            <svg class="view-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span id="viewCount">8,247</span>
+            <span class="view-float" id="viewFloat" style="display:none">+1</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WAVE 87: FLOATING MUSIC BUBBLE — Top-right draggable circle, tap to open drawer -->
+  <div id="mobileMiniPlayer" class="music-float-bubble" aria-label="Floating music player" style="display:none">
+    <!-- Draggable Bubble -->
+    <div class="mfb-bubble" id="mfbBubble" title="Nhạc · Chạm để mở">
+      <!-- Vinyl art spins when playing -->
+      <img src="https://cdn.jsdelivr.net/gh/duyzoz/Audio-deplynew@main/pic1.jpg" alt="Art" class="mfb-vinyl" id="mmpArt" onerror="this.onerror=null;this.src='assets/avatar.png';" />
+      <div class="mfb-center-dot"></div>
+      <!-- Glowing progress ring -->
+      <svg class="mfb-ring-svg" viewBox="0 0 56 56" aria-hidden="true">
+        <circle class="mfb-ring-bg" cx="28" cy="28" r="25" />
+        <circle class="mfb-ring-fill" id="mfbRingFill" cx="28" cy="28" r="25" />
+      </svg>
+      <!-- Playing pulse glow -->
+      <div class="mfb-pulse" id="mfbPulse"></div>
+    </div>
+
+    <!-- Expandable Drawer (opens below/beside bubble) -->
+    <div class="mfb-drawer" id="mfbDrawer" aria-hidden="true">
+      <div class="mfb-drawer-inner">
+        <!-- Mini progress bar -->
+        <div class="mfb-dp-track"><div class="mfb-dp-fill" id="mmpProgress"></div></div>
+        <!-- Track info -->
+        <div class="mfb-drawer-info" id="mmpInfoClick" title="Mở đĩa than">
+          <div class="mfb-d-title" id="mmpTitle">2IN1 - Người Đã Yêu Ai Remix</div>
+          <div class="mfb-d-sub"><span class="mfb-dot-pulse" id="mfbDotPulse"></span><span id="mmpStatus">Đang phát</span></div>
+        </div>
+        <!-- Controls row -->
+        <div class="mfb-d-controls">
+          <button class="mfb-ctrl-btn cyber-sound-btn" id="mmpPrevBtn" type="button" aria-label="Bài trước">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><rect x="5" y="4" width="2" height="16" rx="1"/></svg>
+          </button>
+          <button class="mfb-ctrl-btn mfb-play-btn cyber-sound-btn" id="mmpPlayBtn" type="button" aria-label="Phát / Dừng">
+            <svg id="mmpPlayIcon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+          <button class="mfb-ctrl-btn cyber-sound-btn" id="mmpNextBtn" type="button" aria-label="Bài tiếp">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><rect x="17" y="4" width="2" height="16" rx="1"/></svg>
+          </button>
+          <button class="mfb-ctrl-btn mfb-open-btn cyber-sound-btn" id="mmpArtClick" type="button" aria-label="Mở đĩa than">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE CYBER NAVIGATION DOCK (Thumb-friendly 6-item bar) -->
+    <nav class="mobile-nav-dock" id="mobileNavDock" aria-label="Mobile Navigation">
+      <button class="mob-nav-item active cyber-sound-btn" id="mobNavProfile" data-target="profile" aria-label="Hồ Sơ">
+        <span class="mob-nav-icon">👤</span>
+        <span class="mob-nav-label" id="mobLblProfile">Hồ Sơ</span>
+      </button>
+      <button class="mob-nav-item cyber-sound-btn" id="mobNavStartut" data-target="panelBypass" aria-label="Startut">
+        <span class="mob-nav-icon">📜</span>
+        <span class="mob-nav-label" id="mobLblStartut">Startut</span>
+      </button>
+      <button class="mob-nav-item cyber-sound-btn" id="mobNavVps" data-target="panelCreateVPS" aria-label="Tạo VPS">
+        <span class="mob-nav-icon">🖥️</span>
+        <span class="mob-nav-label" id="mobLblVps">Tạo VPS</span>
+      </button>
+      <button class="mob-nav-item cyber-sound-btn" id="mobNavManage" data-target="panelManage" aria-label="Quản Lý">
+        <span class="mob-nav-icon">🔑</span>
+        <span class="mob-nav-label" id="mobLblManage">Quản Lý</span>
+      </button>
+      <button class="mob-nav-item cyber-sound-btn" id="mobNavTools" data-target="panelTools" aria-label="Tiện Ích">
+        <span class="mob-nav-icon">🚀</span>
+        <span class="mob-nav-label" id="mobLblTools">Tiện Ích</span>
+      </button>
+      <button class="mob-nav-item cyber-sound-btn" id="mobNavChat" data-target="panelGuestbook" aria-label="Lưu Bút">
+        <span class="mob-nav-icon">💬</span>
+        <span class="mob-nav-label" id="mobLblChat">Lưu Bút</span>
+      </button>
+      <button class="mob-nav-item cyber-sound-btn" id="mobNavAi" data-target="panelAi" aria-label="AI Bot">
+        <span class="mob-nav-icon">🤖</span>
+        <span class="mob-nav-label" id="mobLblAi">AI Bot</span>
+      </button>
+    </nav>
+
+    <!-- MOBILE THEME PALETTE FAB -->
+    <div class="mob-fab-container" id="mobFabContainer">
+      <button class="mob-fab-btn cyber-sound-btn" id="mobFabBtn" type="button" aria-label="Bảng Màu Cyber" title="Đổi giao diện (8 Themes Nitro)">
+        <span class="mfb-icon" id="mobFabIcon">🎨</span>
+      </button>
+    </div>
+
+  <!-- SUPPORTED LINKS PANEL -->
+  <div class="sl-backdrop" id="slBackdrop"></div>
+  <div class="sl-panel" id="slPanel">
+    <div class="sl-handle"></div>
+    <div class="sl-header">
+      <span class="sl-title" id="slTitle">✅ Supported Bypass Links</span>
+      <button class="sl-close" id="slClose">✕</button>
+    </div>
+    <div class="sl-body">
+      <div class="sl-grid">
+        <div class="sl-cat">
+          <div class="sl-cat-title">📢 Ad Links</div>
+          <div class="sl-items">
+            <span>✅ adfoc.us</span>
+            <span>✅ bstlar <em>(&amp; other domains)</em></span>
+            <span>✅ cuty.io <em>(&amp; other domains)</em></span>
+            <span>✅ linkvertise.com <em>(&amp; other domains)</em></span>
+            <span>✅ lootlinks.com <em>(&amp; other domains)</em></span>
+            <span>✅ mendationforc.info</span>
+            <span>✅ paster.so <em>(&amp; other domains)</em></span>
+            <span>✅ work.ink <em>(&amp; other domains)</em></span>
+            <span>✅ link4m.com <em>(&amp; VPS bypass)</em></span>
+          </div>
+        </div>
+        <div class="sl-cat">
+          <div class="sl-cat-title">👥 Socials</div>
+          <div class="sl-items">
+            <span>✅ boost.ink</span>
+            <span>✅ declaremods.com</span>
+            <span>✅ mboost.me <em>(&amp; other domains)</em></span>
+            <span>✅ rekonise.com</span>
+            <span>✅ sub2unlock.com / .io / .net</span>
+            <span>✅ sub4unlock.com / .pro</span>
+            <span>✅ subfinal.com</span>
+          </div>
+        </div>
+        <div class="sl-cat">
+          <div class="sl-cat-title">📋 Pastes</div>
+          <div class="sl-items">
+            <span>✅ justpaste.it</span>
+            <span>✅ pastebin.com</span>
+            <span>✅ rentry.org / .co</span>
+            <span>✅ pastelink.net</span>
+          </div>
+        </div>
+        <div class="sl-cat">
+          <div class="sl-cat-title">🔗 Shorteners</div>
+          <div class="sl-items">
+            <span>✅ bit.ly</span>
+            <span>✅ cutt.ly</span>
+            <span>✅ tinyurl.com</span>
+            <span>✅ t.ly</span>
+            <span>✅ shorturl.at</span>
+          </div>
+        </div>
+        <div class="sl-cat sl-cat-full">
+          <div class="sl-cat-title">🎮 Roblox</div>
+          <div class="sl-items sl-items-row">
+            <span>✅ mobile.codex.lol</span>
+            <span>✅ flux.li</span>
+            <span>✅ rbscripts.net</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CYBER TERMINAL CLI (Wave 6) -->
+  <div class="cyber-cli-modal" id="cyberCliModal" style="display:none">
+    <div class="cli-window">
+      <div class="cli-header">
+        <div class="term-dots">
+          <span class="tdot tdot-r" id="cliClose"></span>
+          <span class="tdot tdot-y"></span>
+          <span class="tdot tdot-g"></span>
+        </div>
+        <div class="cli-title">duyzoz@elitebook-840g1: ~/terminal-cli</div>
+        <button class="cli-x" id="cliCloseBtn">✕</button>
+      </div>
+      <div class="cli-body" id="cliOutput">
+        <div class="cli-line dim" id="cliWelcome1">Cyber Terminal CLI v2.0 — Nguyễn Duy Virtual OS</div>
+        <div class="cli-line cyan" id="cliWelcome2">Type 'help' for command list. Shortcut: ~ or Esc to close.</div>
+      </div>
+      <div class="cli-input-wrap">
+        <span class="cli-prompt">root@duyzoz:~#</span>
+        <input class="cli-input" id="cliInput" type="text" autocomplete="off" spellcheck="false" placeholder="Enter command (e.g. help, wuwa, music, theme, matrix, ping)..." />
+      </div>
+    </div>
+  </div>
+
+  <!-- DISCORD NITRO PROFILE THEMES MODAL -->
+  <div class="nitro-theme-backdrop" id="themeModalBackdrop" style="display:none"></div>
+  <div class="nitro-theme-modal" id="themeModal" style="display:none">
+    <div class="nitro-theme-header">
+      <div class="nitro-theme-title-wrap">
+        <div class="nitro-theme-title"><span class="nitro-icon">✨</span> GIAO DIỆN PROFILE NITRO</div>
+        <div class="nitro-theme-sub">Biến đổi toàn diện màu nền Profile Card, Tiện Ích &amp; Music Player chuẩn Discord Nitro</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="nitro-random-btn cyber-sound-btn" id="modalRandomThemeBtn" type="button" title="Chọn Theme Ngẫu Nhiên">🎲 Ngẫu nhiên</button>
+        <button class="nitro-theme-close" id="themeModalClose" type="button" aria-label="Đóng bảng theme">✕</button>
+      </div>
+    </div>
+    <div class="nitro-theme-grid">
+      <!-- 6 DISCORD NITRO PROFILE THEMES -->
+      <div class="nitro-card active" data-theme="cyan">
+        <div class="nitro-card-preview nitro-prev-cyan">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">CYBER CYAN</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Cyber Cyan</div>
+          <div class="nitro-card-desc">Gốc Cyberpunk · Xanh Neon Điện Quang</div>
+          <div class="nitro-swatches">
+            <span style="background:#00f0ff"></span>
+            <span style="background:#7c6fff"></span>
+            <span style="background:#081020"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+
+      <div class="nitro-card" data-theme="amethyst">
+        <div class="nitro-card-preview nitro-prev-amethyst">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">AMETHYST NITRO</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Amethyst Velvet</div>
+          <div class="nitro-card-desc">Tokyo Nitro · Tím Hoàng Gia Quyến Rũ</div>
+          <div class="nitro-swatches">
+            <span style="background:#c084fc"></span>
+            <span style="background:#e879f9"></span>
+            <span style="background:#1a0a2e"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+
+      <div class="nitro-card" data-theme="matrix">
+        <div class="nitro-card-preview nitro-prev-matrix">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">HACKER MATRIX</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Matrix Emerald</div>
+          <div class="nitro-card-desc">Hacker Terminal · Xanh Ngọc Lục Bảo</div>
+          <div class="nitro-swatches">
+            <span style="background:#22c55e"></span>
+            <span style="background:#10b981"></span>
+            <span style="background:#041a0e"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+
+      <div class="nitro-card" data-theme="amber">
+        <div class="nitro-card-preview nitro-prev-amber">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">SUNSET 2077</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Sunset Amber</div>
+          <div class="nitro-card-desc">Night City · Vàng Hổ Phách Hoàng Hôn</div>
+          <div class="nitro-swatches">
+            <span style="background:#fbbf24"></span>
+            <span style="background:#f97316"></span>
+            <span style="background:#221204"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+
+      <div class="nitro-card" data-theme="crimson">
+        <div class="nitro-card-preview nitro-prev-crimson">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">BLOOD MOON</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Blood Moon Sakura</div>
+          <div class="nitro-card-desc">Nguyệt Thực Đỏ · Rượu Vang Ruby Neon</div>
+          <div class="nitro-swatches">
+            <span style="background:#fb7185"></span>
+            <span style="background:#e11d48"></span>
+            <span style="background:#240810"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+
+      <div class="nitro-card" data-theme="frost">
+        <div class="nitro-card-preview nitro-prev-frost">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">ARCTIC FROST</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Abyssal Arctic</div>
+          <div class="nitro-card-desc">Băng Giá Cực Quang · Tinh Thể Tuyết Sáng</div>
+          <div class="nitro-swatches">
+            <span style="background:#38bdf8"></span>
+            <span style="background:#a5f3fc"></span>
+            <span style="background:#061826"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+
+      <div class="nitro-card" data-theme="snow">
+        <div class="nitro-card-preview nitro-prev-snow">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">SNOW WHITE</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">Trắng Tuyết (Snow White)</div>
+          <div class="nitro-card-desc">Bão Tuyết Full Trắng · Chữ Đen Tương Phản Cao</div>
+          <div class="nitro-swatches">
+            <span style="background:#ffffff;border:1px solid #94a3b8"></span>
+            <span style="background:#e2e8f0"></span>
+            <span style="background:#0f172a"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+
+      <div class="nitro-card" data-theme="oled">
+        <div class="nitro-card-preview nitro-prev-oled">
+          <div class="nitro-mini-avatar"></div>
+          <div class="nitro-mini-badge">OLED PURE BLACK</div>
+        </div>
+        <div class="nitro-card-info">
+          <div class="nitro-card-name">OLED True Black</div>
+          <div class="nitro-card-desc">Đen Tuyệt Đối · Siêu Tiết Kiệm Pin · 120 FPS</div>
+          <div class="nitro-swatches">
+            <span style="background:#000000;border:1px solid #334155"></span>
+            <span style="background:#0a0a0f"></span>
+            <span style="background:#38bdf8"></span>
+          </div>
+        </div>
+        <div class="nitro-active-tag">✓ ĐANG CHỌN</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CROSS-DEVICE CYBER QR CODE MODAL (Wave 49) -->
+  <div class="nitro-theme-backdrop" id="qrModalBackdrop" style="display:none"></div>
+  <div class="cyber-qr-modal" id="cyberQrModal" style="display:none">
+    <div class="cqm-header">
+      <div class="cqm-title">📱 QUÉT MÃ KẾT NỐI DI ĐỘNG</div>
+      <button class="cqm-close" id="qrModalClose">✕</button>
+    </div>
+    <div class="cqm-body">
+      <div class="cqm-qr-wrap">
+        <canvas id="cyberQrCanvas" width="180" height="180"></canvas>
+      </div>
+      <div class="cqm-desc" id="qrModalDesc">Quét mã bằng Camera điện thoại để mở liên kết ngay lập tức!</div>
+      <div class="cqm-link-box">
+        <span class="cqm-url" id="qrModalUrlText">https://duyzoz.github.io/...</span>
+        <button class="cqm-copy-btn cyber-sound-btn" id="qrModalCopyBtn">📋 Sao Chép</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CROSS-DEVICE CONFIG SYNC MODAL (Wave 86) -->
+  <div class="nitro-theme-backdrop" id="configModalBackdrop" style="display:none"></div>
+  <div class="cyber-config-modal" id="cyberConfigModal" style="display:none">
+    <div class="cqm-header">
+      <div class="cqm-title">🔄 ĐỒNG BỘ CẤU HÌNH CLOUD &amp; VPS</div>
+      <button class="cqm-close" id="configModalClose">✕</button>
+    </div>
+    <div class="cqm-body">
+      <div class="cqm-desc" id="configModalDesc">Dán mã cấu hình để nhập hoặc sao chép mã xuất để chuyển sang thiết bị khác:</div>
+      <textarea class="config-modal-textarea" id="configModalTextarea" rows="6" placeholder="Dán chuỗi cấu hình JSON tại đây..."></textarea>
+      <div class="config-modal-actions" style="display:flex;gap:8px;margin-top:10px">
+        <button class="bp-btn cyber-sound-btn" id="btnConfigApply" style="flex:1"><span>✅ Áp Dụng (Nhập)</span></button>
+        <button class="proj-btn proj-gh cyber-sound-btn" id="btnConfigCopy" style="flex:1"><span>📋 Sao Chép</span></button>
+      </div>
+      <div id="configModalStatus" style="font-size:0.75rem;margin-top:8px;text-align:center;display:none"></div>
+    </div>
+  </div>
+
+  <!-- DISCORD NITRO AVATAR FRAME MODAL (Wave 62) -->
+  <div class="nitro-theme-backdrop" id="avatarModalBackdrop" style="display:none"></div>
+  <div class="avatar-deco-modal" id="avatarDecoModal" style="display:none">
+    <div class="nitro-theme-header">
+      <div class="nitro-theme-title-wrap">
+        <div class="nitro-theme-title">✨ KHUNG TRANG TRÍ AVATAR NITRO</div>
+        <div class="nitro-theme-sub">Chọn khung hào quang động bao quanh Avatar cá nhân</div>
+      </div>
+      <button class="nitro-theme-close" id="avatarDecoClose">✕</button>
+    </div>
+    <div class="avatar-deco-grid">
+      <div class="deco-card active" data-deco="none">
+        <div class="deco-preview deco-prev-none">
+          <img src="assets/avatar.png" class="deco-prev-avt" alt="avatar" />
+        </div>
+        <div class="deco-name">Mặc Định (Clean)</div>
+      </div>
+      <div class="deco-card" data-deco="sakura">
+        <div class="deco-preview deco-prev-sakura">
+          <div class="deco-ring sakura-ring"></div>
+          <img src="assets/avatar.png" class="deco-prev-avt" alt="avatar" />
+        </div>
+        <div class="deco-name">🌸 Sakura Orbit</div>
+      </div>
+      <div class="deco-card" data-deco="lightning">
+        <div class="deco-preview deco-prev-lightning">
+          <div class="deco-ring lightning-ring"></div>
+          <img src="assets/avatar.png" class="deco-prev-avt" alt="avatar" />
+        </div>
+        <div class="deco-name">⚡ Cyber Lightning</div>
+      </div>
+      <div class="deco-card" data-deco="ice">
+        <div class="deco-preview deco-prev-ice">
+          <div class="deco-ring ice-ring"></div>
+          <img src="assets/avatar.png" class="deco-prev-avt" alt="avatar" />
+        </div>
+        <div class="deco-name">❄️ Băng Tinh Thể</div>
+      </div>
+      <div class="deco-card" data-deco="flame">
+        <div class="deco-preview deco-prev-flame">
+          <div class="deco-ring flame-ring"></div>
+          <img src="assets/avatar.png" class="deco-prev-avt" alt="avatar" />
+        </div>
+        <div class="deco-name">🔥 Dragon Flame</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HARDWARE BENCHMARK MODAL (Wave 65) -->
+  <div class="nitro-theme-backdrop" id="benchModalBackdrop" style="display:none"></div>
+  <div class="cyber-bench-modal" id="benchmarkModal" style="display:none">
+    <div class="nitro-theme-header">
+      <div class="nitro-theme-title-wrap">
+        <div class="nitro-theme-title">⚡ ĐO HIỆU NĂNG THIẾT BỊ (CYBER BENCHMARK)</div>
+        <div class="nitro-theme-sub">Kiểm tra khả năng render GPU, màn hình và độ trễ DOM thực tế</div>
+      </div>
+      <button class="nitro-theme-close" id="benchModalClose">✕</button>
+    </div>
+    <div class="bench-body">
+      <div class="bench-score-card">
+        <div class="bench-score-num" id="benchScoreVal">--</div>
+        <div class="bench-score-label">ĐIỂM HIỆU NĂNG MƯỢT (PEAK FPS)</div>
+        <div class="bench-rating-tag" id="benchRatingTag">ĐANG KIỂM TRA...</div>
+      </div>
+      <div class="bench-grid bench-grid-2x2">
+        <div class="bench-item" id="benchItemCpu">
+          <span class="bi-label">🖥️ CPU</span>
+          <span class="bi-val" id="benchCpuVal">Đang nhận diện...</span>
+        </div>
+        <div class="bench-item" id="benchItemGpu">
+          <span class="bi-label">🎮 GPU</span>
+          <span class="bi-val" id="benchGpuVal">Đang nhận diện...</span>
+        </div>
+        <div class="bench-item" id="benchItemRam">
+          <span class="bi-label">🧠 RAM</span>
+          <span class="bi-val" id="benchRamVal">Đang nhận diện...</span>
+        </div>
+        <div class="bench-item" id="benchItemSsd">
+          <span class="bi-label">💾 SSD (LƯU TRỮ)</span>
+          <span class="bi-val" id="benchSsdVal">Đang nhận diện...</span>
+        </div>
+        <div class="bench-item" id="benchItemHz">
+          <span class="bi-label">📺 TẦN SỐ QUÉT (HZ)</span>
+          <span class="bi-val" id="benchHzVal">Đang đo VSync...</span>
+        </div>
+        <div class="bench-item" id="benchItemBattery">
+          <span class="bi-label">🔋 PIN &amp; NGUỒN</span>
+          <span class="bi-val" id="benchBatteryVal">Đang kiểm tra...</span>
+        </div>
+      </div>
+      <button class="bp-btn cyber-sound-btn" id="btnRunBenchAgain" style="margin-top:12px">
+        <span>🔄 Đo lại ngay</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+  <script src="app_nd.js?v=20260920_v58"></script>
+<textarea id="rawWorkflowYaml" style="display:none" readonly>name: 🚀 SEVER AI STV NGROK RDP
+
+on:
+  workflow_dispatch:
+    inputs:
+      duration:
+        description: '🕐 Thời gian sử dụng'
+        required: false
+        default: '5h40m'
+        type: choice
+        options:
+        - '1h'
+        - '3h' 
+        - '5h40m'
+
+permissions:
+  contents: write
+
+jobs:
+  Ngrok-RDP-Setup:
+    runs-on: windows-latest
+    timeout-minutes: 340
+    
+    steps:
+      - name: 🎯 CHECKOUT
+        uses: actions/checkout@v4
+
+      - name: 🔧 CẤU HÌNH HỆ THỐNG RDP
+        run: |
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0 -Force
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 0 -Force
+          netsh advfirewall firewall add rule name="RDP-Premium" dir=in action=allow protocol=TCP localport=3389 profile=any
+          Start-Service -Name TermService -ErrorAction SilentlyContinue
+
+      - name: 👤 TẠO TÀI KHOẢN WINDOWS
+        run: |
+          net user duyzoz Admin@123456 /add /expires:never
+          net localgroup administrators duyzoz /add
+          net localgroup "Remote Desktop Users" duyzoz /add
+
+      - name: 🚀 THIẾT LẬP NGROK TCP TUNNEL CHO RDP
+        env:
+          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+        shell: powershell
+        run: |
+          Write-Host "=========================================="
+          Write-Host "DOWNLOADING NGROK V3..."
+          Write-Host "=========================================="
+          $ngrokZip = "$env:TEMP\ngrok.zip"
+          $ngrokDir = "$env:TEMP\ngrok"
+          Invoke-WebRequest -Uri "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip" -OutFile $ngrokZip
+          Expand-Archive -Path $ngrokZip -DestinationPath $ngrokDir -Force
+          $ngrokExe = "$ngrokDir\ngrok.exe"
+
+          Write-Host "CONFIGURING NGROK AUTHTOKEN..."
+          & $ngrokExe config add-authtoken $env:NGROK_AUTH_TOKEN
+
+          Write-Host "STARTING NGROK TCP TUNNEL ON PORT 3389..."
+          Start-Process -FilePath $ngrokExe -ArgumentList "tcp", "3389", "--region", "ap", "--log=stdout" -WindowStyle Hidden
+
+          Start-Sleep -Seconds 6
+
+          Write-Host "FETCHING NGROK PUBLIC RDP ADDRESS..."
+          $cleanHostPort = ""
+          for ($i = 0; $i -lt 15; $i++) {
+            try {
+              $resp = Invoke-RestMethod -Uri "http://127.0.0.1:4040/api/tunnels" -TimeoutSec 3
+              if ($resp.tunnels -and $resp.tunnels.Count -gt 0) {
+                $publicUrl = $resp.tunnels[0].public_url
+                $cleanHostPort = $publicUrl -replace "^tcp://", ""
+                break
+              }
+            } catch {
+              Start-Sleep -Seconds 2
+            }
+          }
+
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+          if (-not $cleanHostPort) {
+            Write-Host "ERROR: Ngrok tunnel failed to start"
+            Set-Content -Path ip.txt -Value "ERROR: Ngrok tunnel failed"
+            git add ip.txt
+            git commit -m "VPS_ERROR"
+            git push origin main
+            throw "ERROR: Ngrok tunnel failed"
+          }
+
+          Write-Host "=========================================="
+          Write-Host "NGROK RDP ADDRESS: $cleanHostPort"
+          Write-Host "=========================================="
+          Set-Content -Path ip.txt -Value $cleanHostPort
+          git add ip.txt
+          git commit -m "VPS_READY"
+          git push origin main
+
+      - name: ⏳ DUY TRÌ PHIÊN LÀM VIỆC
+        run: Start-Sleep -Seconds 20400</textarea>
+
+<!-- SVG gradient defs for MFB ring (Wave 87) -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;pointer-events:none">
+  <defs>
+    <linearGradient id="mfbGradStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<script>
+/* WAVE 87 - FLOATING MUSIC BUBBLE CONTROLLER */
+(function initMusicFloatBubble() {
+  'use strict';
+  var isMobile = function() { return window.innerWidth <= 768 || ('ontouchstart' in window); };
+  if (!isMobile()) return;
+  var wrap = document.getElementById('mobileMiniPlayer');
+  var bubble = document.getElementById('mfbBubble');
+  var drawer = document.getElementById('mfbDrawer');
+  var ringFill = document.getElementById('mfbRingFill');
+  if (!wrap || !bubble || !drawer) return;
+  var CIRC = 157.08;
+  var drawerOpen = false, isDragging = false, dragMoved = false;
+  var startX = 0, startY = 0, origLeft = 0, origTop = 0;
+  var THRESH = 6;
+  function openDrawer() { drawerOpen = true; drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); }
+  function closeDrawer() { drawerOpen = false; drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); }
+  function toggleDrawer() { if (drawerOpen) closeDrawer(); else openDrawer(); }
+  document.addEventListener('pointerdown', function(e) { if (drawerOpen && !wrap.contains(e.target)) closeDrawer(); }, { passive: true });
+  function clamp(x, y) { var W = window.innerWidth, H = window.innerHeight, S = 68; return { x: Math.max(8, Math.min(x, W - S)), y: Math.max(8, Math.min(y, H - S)) }; }
+  var dragRaf = null, curDragX = 0, curDragY = 0;
+  function applyPos() { wrap.style.right = 'auto'; wrap.style.bottom = 'auto'; wrap.style.left = curDragX + 'px'; wrap.style.top = curDragY + 'px'; dragRaf = null; }
+  function setPos(x, y) { curDragX = x; curDragY = y; if (!dragRaf) dragRaf = requestAnimationFrame(applyPos); }
+  bubble.addEventListener('pointerdown', function(e) {
+    if (e.button && e.button !== 0) return;
+    isDragging = true; dragMoved = false;
+    var rect = wrap.getBoundingClientRect(); origLeft = rect.left; origTop = rect.top;
+    startX = e.clientX; startY = e.clientY;
+    bubble.setPointerCapture(e.pointerId); e.preventDefault();
+  }, { passive: false });
+  bubble.addEventListener('pointermove', function(e) {
+    if (!isDragging) return;
+    var dx = e.clientX - startX, dy = e.clientY - startY;
+    if (!dragMoved && Math.sqrt(dx*dx + dy*dy) > THRESH) { dragMoved = true; wrap.classList.add('dragging'); closeDrawer(); }
+    if (dragMoved) { var c = clamp(origLeft + dx, origTop + dy); setPos(c.x, c.y); }
+  }, { passive: true });
+  bubble.addEventListener('pointerup', function() {
+    if (!isDragging) return; isDragging = false; wrap.classList.remove('dragging');
+    if (!dragMoved) toggleDrawer(); dragMoved = false;
+  }, { passive: true });
+  bubble.addEventListener('pointercancel', function() { isDragging = false; dragMoved = false; wrap.classList.remove('dragging'); }, { passive: true });
+  var pf = document.getElementById('mmpProgress');
+  if (pf && ringFill) {
+    var mo = new MutationObserver(function() { var p = parseFloat(pf.style.width) || 0; ringFill.style.strokeDashoffset = CIRC * (1 - p / 100); });
+    mo.observe(pf, { attributes: true, attributeFilter: ['style'] });
+  }
+  window.addEventListener('resize', function() { if (wrap.style.left) { var c = clamp(parseFloat(wrap.style.left), parseFloat(wrap.style.top)); setPos(c.x, c.y); } closeDrawer(); }, { passive: true });
+})();
+</script>
+</body>
+</html>

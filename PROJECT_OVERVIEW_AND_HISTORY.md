@@ -216,13 +216,15 @@ Khi bạn (AI Agent / Developer) thực hiện bất kỳ yêu cầu mới nào 
 
 ## 🎯 7. TRẠNG THÁI HIỆN TẠI & HƯỚNG PHÁT TRIỂN TIẾP THEO
 
-* **Phiên bản hiện tại**: `v20260929_v60` (Hoàn tất Wave 88).
+* **Phiên bản hiện tại**: `v20260929_v61` (Hoàn tất Wave 89).
 * **Trạng thái hệ thống**: 
-  - Đã dọn dẹp sạch sẽ thanh HUD Mobile (ẩn nút random theme, nút sfx, nút theme discord; giữ nguyên nút video nền và nút 8 themes nitro).
-  - Vòng tròn âm nhạc Floating Music Bubble trên smartphone hiển thị trọn vẹn ảnh bìa bài hát với hiệu ứng đĩa vinyl quay tròn, hỗ trợ kéo thả mượt mà bằng `requestAnimationFrame` không giật lag hay drop khung hình.
-  - Xóa bỏ triệt để hiện tượng thẻ phụ bị thò mép cấn viền trên smartphone khi đang ở tab Profile.
-  - Tối ưu căn chỉnh tự động cho Profile Card trên các dòng điện thoại màn hình dài hiện đại.
-  - Khóa chặt lớp nền background ngăn rò rỉ hình ảnh nhạc ra phía sau.
-  - Cân bằng ngoặc CSS đạt 1567/1567 (100% Balanced), đồng bộ băm byte-for-byte SHA256 giữa `app_nd.js` và `app.js`.
+  - Khắc phục triệt để lỗi ảnh bìa đĩa nhạc (`pic1.jpg`) bị bung kích thước đè lên hình nền background và video nền trên máy tính (Desktop).
+  - Khóa chết kích thước toàn cục cho Album Art (`#mmpArt`, `.mfb-vinyl` tối đa 58px; `#mpArt`, `.mp-art` tối đa 28px), tuyệt đối không để ảnh bung tràn màn hình.
+  - Khóa chặt `#mobileMiniPlayer` trên Desktop (`min-width: 769px`) với `display: none !important; left: -9999px !important; pointer-events: none !important;`, đồng thời bổ sung kiểm tra `window.innerWidth <= 768` trong hàm `updateMmpState()` của JS để không bao giờ hiện trên Desktop.
+  - Phân tầng Z-Index chuẩn xác cho hệ thống hình nền: Lớp bọc `.bg-wrap` (z:0) -> Video nền `#bgVideo` (z:1) -> Ảnh nền tĩnh `#bgImage` (z:2) -> Lớp phủ chuyển sắc `.bg-overlay` (z:3) -> Hiệu ứng tuyết/bụi Canvas (z:4) -> Sân khấu giao diện `#stage` (z:10) -> HUD & Trình phát nhạc (z:20).
+  - Bảo toàn 100% hiệu ứng trôi ra trôi vào (hover, slide-in, peek float) của card phụ hông `.tool-card` trên Desktop.
+  - Giữ vững nguyên tắc Không Bịa Đặt Phần Cứng (Zero Fabrication) cho iPhone, Android, Laptop, PC.
+  - Đảm bảo cân bằng tuyệt đối dấu ngoặc nhọn `{` và `}` trong `style.css` (1576/1576) và đồng bộ băm byte-for-byte SHA256 giữa `app_nd.js` và `app.js`.
 * **Sẵn sàng tiếp nhận**: Các chỉ đạo và tính năng tiếp theo từ người dùng.
+
 

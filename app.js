@@ -7924,7 +7924,16 @@ Respond accurately with this ground truth knowledge:
   const MMP_PAUSE_SVG = `<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>`;
 
   if(audio && mmp){
+    function isMobileViewport(){
+      return window.innerWidth <= 768;
+    }
+
     function updateMmpState(isPlaying){
+      if(!isMobileViewport()){
+        mmp.style.display = 'none';
+        mmp.classList.remove('is-playing');
+        return;
+      }
       if(isPlaying){
         mmp.style.display = 'block';
         mmp.classList.add('is-playing');
@@ -7934,6 +7943,17 @@ Respond accurately with this ground truth knowledge:
         if(mmpPlayIcon) mmpPlayIcon.innerHTML = MMP_PLAY_SVG;
       }
     }
+
+    // Luôn ẩn mmp trên màn hình Desktop khi resize
+    window.addEventListener('resize', () => {
+      if(!isMobileViewport()){
+        mmp.style.display = 'none';
+        mmp.classList.remove('is-playing');
+      } else if(audio && !audio.paused){
+        mmp.style.display = 'block';
+        mmp.classList.add('is-playing');
+      }
+    }, { passive: true });
 
     function syncMmpTrack(){
       const marquee = document.getElementById('mpMarquee');

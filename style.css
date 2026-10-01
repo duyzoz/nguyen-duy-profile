@@ -8949,29 +8949,126 @@ html[data-theme="snow"] .config-modal-textarea {
 }
 
 /* 5. Khóa chặt Background & Wallpaper ngăn rò rỉ hình ảnh nhạc hoặc cover ra ngoài */
+/* ══════════════════════════════════════════════════════════════
+   WAVE 89: ZERO MUSIC COVER BACKGROUND LEAKAGE & AIRTIGHT LAYERS
+   ══════════════════════════════════════════════════════════════ */
+
+/* 1. KHÓA CHẶT BẢNG NHẠC MOBI TRÊN DESKTOP: Tuyệt đối không để Bubble hay Album Art xuất hiện trên màn hình lớn */
+@media (min-width: 769px) {
+  #mobileMiniPlayer,
+  .music-float-bubble {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    max-width: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    z-index: -9999 !important;
+  }
+}
+
+/* 2. KHÓA KÍCH THƯỚC ALBUM ART TOÀN CỤC: Triệt tiêu hoàn toàn khả năng cover bung to 1080x1080 đè lên nền */
+#mmpArt,
+.mfb-vinyl {
+  max-width: 58px !important;
+  max-height: 58px !important;
+  width: calc(100% - 6px) !important;
+  height: calc(100% - 6px) !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+}
+
+.mp-vinyl-label #mpArt,
+.mp-art {
+  max-width: 28px !important;
+  max-height: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+}
+
+/* 3. KHÓA CHẶT LỚP NỀN BACKGROUND & WALLPAPER: Chuẩn phân tầng z-index, không để lộ bất kỳ hình ảnh nào */
 .bg-wrap {
   position: fixed !important;
   inset: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: -10 !important;
+  z-index: 0 !important;
   overflow: hidden !important;
   background-color: #06060a !important;
+  pointer-events: none !important;
 }
 
-#bgVideo, #bgImage {
+#bgVideo {
   position: absolute !important;
   inset: 0 !important;
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
+  opacity: 0.45;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+#bgImage,
+.bg-static-img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  opacity: 0;
+  z-index: 2 !important;
+  pointer-events: none !important;
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  image-rendering: high-quality;
+}
+
+body.perf-mode #bgVideo {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+body.perf-mode #bgImage,
+body.perf-mode .bg-static-img {
+  opacity: 0.88 !important;
 }
 
 .bg-overlay {
   position: absolute !important;
   inset: 0 !important;
-  background: rgba(6, 6, 10, 0.45) !important;
-  z-index: 1 !important;
+  background: linear-gradient(135deg, rgba(6, 6, 20, 0.7), rgba(6, 6, 14, 0.4)) !important;
+  z-index: 3 !important;
   pointer-events: none !important;
+}
+
+#snowCanvas,
+#dustCanvas,
+#matrixCanvas {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 4 !important;
+  pointer-events: none !important;
+}
+
+.stage,
+#stage {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.hud-top-left,
+#hudTopLeft,
+.music-player,
+#musicPlayer {
+  z-index: 20 !important;
 }
 
