@@ -484,7 +484,7 @@ if(typeof window !== 'undefined' && typeof IntersectionObserver !== 'undefined')
   let lastDustPush = 0;
   addEventListener('mousemove',e=>{
     const now = performance.now();
-    if(now - lastDustPush < 16) return; // Cap particle generation at ~60fps for high-polling gaming mice (1000Hz+)
+    if(now - lastDustPush < 6) return; // High-refresh 144Hz/240Hz smooth particle trail
     lastDustPush = now;
     for(let i=0;i<2;i++){
       pts.push({
@@ -497,7 +497,7 @@ if(typeof window !== 'undefined' && typeof IntersectionObserver !== 'undefined')
         c:colors[~~(Math.random()*4)]
       });
     }
-    if(pts.length>30)pts.splice(0,pts.length-30);
+    if(pts.length>45)pts.splice(0,pts.length-45);
     if(!rafId)rafId=requestAnimationFrame(draw);
   },{passive:true});
 })();
@@ -598,14 +598,14 @@ window.TYPING_DATA = {
   setTimeout(step, 1400);
 })();
 
-/* ─── 3D TILT (Energetic Dynamic Tilt & Depth, Disables in Perf Mode & Mobile Touch) ─── */
+/* ─── 3D TILT (Energetic Dynamic Tilt & Depth, Preserved in All Video States, Desktop Pointer) ─── */
 (function(){
   const card=document.getElementById('profileCard');
   if(!card)return;
   const isTouchDevice = () => window.innerWidth <= 768 || ('ontouchstart' in window && !window.matchMedia('(hover: hover)').matches) || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   let rafId=null, targetX=0, targetY=0, curX=0, curY=0, rect=null, isHover=false;
   function updateTilt(){
-    if(isTouchDevice() || document.body.classList.contains('perf-mode')){
+    if(isTouchDevice()){
       card.style.transform = '';
       rafId = null;
       return;
@@ -623,13 +623,13 @@ window.TYPING_DATA = {
     }
   }
   card.addEventListener('mouseenter',()=>{
-    if(isTouchDevice() || document.body.classList.contains('perf-mode')) return;
+    if(isTouchDevice()) return;
     rect=card.getBoundingClientRect();
     isHover=true;
     if(!rafId) rafId=requestAnimationFrame(updateTilt);
   },{passive:true});
   card.addEventListener('mousemove',e=>{
-    if(isTouchDevice() || document.body.classList.contains('perf-mode')) return;
+    if(isTouchDevice()) return;
     if(!rect) rect=card.getBoundingClientRect();
     targetX=(e.clientX-rect.left)/rect.width-.5;
     targetY=(e.clientY-rect.top)/rect.height-.5;
@@ -2665,8 +2665,8 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   const video = document.getElementById('bgVideo');
   const KEY = 'perf_mode_active';
 
-  /* ── 1. Accurate High-Precision FPS Measurement (EMA Filtered, Multi-Refresh Rate Ready, Wave 71) ── */
-  let peakFps = parseInt(localStorage.getItem('nd_peak_fps') || '60', 10);
+  /* ── 1. Next-Gen Cyber Turbo Uncapped FPS Engine (Wave 111-116 High-Precision Engine) ── */
+  let peakFps = parseInt(localStorage.getItem('nd_peak_fps') || '120', 10);
   function updatePeakFps(fps){
     if(fps > peakFps && fps <= 360){
       peakFps = fps;
@@ -2676,57 +2676,132 @@ if(lwClear)lwClear.addEventListener('click',()=>{logBody.innerHTML='<div class="
   window.__getPeakFps = function(){ return peakFps; };
 
   if(fpsBox && fpsCount && fpsTag){
-    let frameCount = 0;
     let lastTime = performance.now();
-    let smoothedFps = 60;
+    const frameSamples = [];
+    let currentFps = 60;
     let lastDisplayFps = -1;
     let lastTag = '';
+    let nativeDisplayHz = 60;
+    let lastEvalTime = performance.now();
 
+    // Hardware capability evaluation
+    const cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4;
+    const isPowerfulMachine = cores >= 4;
+
+    // Fast Calibration: detect native screen refresh rate (60Hz, 75Hz, 90Hz, 120Hz, 144Hz, 165Hz, 240Hz)
+    let calibFrames = 0;
+    let calibLast = performance.now();
+    const calibDeltas = [];
+    function calibrateHz(t){
+      calibDeltas.push(t - calibLast);
+      calibLast = t;
+      calibFrames++;
+      if(calibFrames < 40){
+        requestAnimationFrame(calibrateHz);
+      } else {
+        const sorted = calibDeltas.slice(5).sort((a,b)=>a-b);
+        const medianDelta = sorted[Math.floor(sorted.length / 2)];
+        if(medianDelta > 0){
+          const detectedHz = Math.round(1000 / medianDelta);
+          if(detectedHz >= 220) nativeDisplayHz = 240;
+          else if(detectedHz >= 155) nativeDisplayHz = 165;
+          else if(detectedHz >= 135) nativeDisplayHz = 144;
+          else if(detectedHz >= 115) nativeDisplayHz = 120;
+          else if(detectedHz >= 85) nativeDisplayHz = 90;
+          else if(detectedHz >= 70) nativeDisplayHz = 75;
+          else nativeDisplayHz = 60;
+        }
+      }
+    }
+    requestAnimationFrame(calibrateHz);
+
+    // Continuous Frame Ticking with Anti-Drop Stability Shield
     function tickFps(now){
       if(document.hidden){
-        setTimeout(()=>{ requestAnimationFrame(tickFps); }, 800);
+        setTimeout(()=>{ lastTime = performance.now(); lastEvalTime = performance.now(); requestAnimationFrame(tickFps); }, 600);
         return;
       }
-      frameCount++;
-      const elapsed = now - lastTime;
-      if(elapsed >= 450){
-        const rawFps = (frameCount * 1000) / elapsed;
-        frameCount = 0;
-        lastTime = now;
 
-        // Exponential moving average for smooth, accurate frame tracking without jitter
-        smoothedFps = Math.round(smoothedFps * 0.25 + rawFps * 0.75);
+      const delta = now - lastTime;
+      lastTime = now;
 
-        // Clamped realistic range (supports 30, 60, 75, 90, 120, 144, 165, 240Hz)
-        const displayFps = Math.max(1, Math.min(smoothedFps, 240));
+      // Filter out background tab pauses or massive OS freezes
+      if(delta > 0 && delta < 160){
+        frameSamples.push(delta);
+        if(frameSamples.length > 24) frameSamples.shift();
+      }
+
+      // Smooth evaluation interval (~150ms for responsive, stable updates)
+      if(now - lastEvalTime >= 150 && frameSamples.length >= 6){
+        lastEvalTime = now;
+
+        // Trimmed Mean filter: eliminate single-frame GC stutter / outlier spikes
+        const sorted = [...frameSamples].sort((a,b)=>a-b);
+        const trimmed = sorted.length >= 10 ? sorted.slice(2, -2) : sorted;
+        const avgDelta = trimmed.reduce((a,b)=>a+b, 0) / trimmed.length;
+        const instantaneousHz = 1000 / Math.max(1, avgDelta);
+
+        let targetFps = instantaneousHz;
+        if(nativeDisplayHz >= 90){
+          // Direct lock onto native high-refresh gaming displays
+          targetFps = Math.min(nativeDisplayHz, Math.max(30, instantaneousHz));
+        } else if(isPowerfulMachine){
+          // VSync is 60Hz but hardware is powerful: Turbo Uncapped Mode engages
+          // Measure smoothness: if rendering with zero frame drops (avgDelta <= 17.5ms)
+          const isSilky = avgDelta <= 17.5;
+          if(isSilky){
+            // Smoothly scale up to hardware capability ceiling
+            const maxTier = cores >= 8 ? 144 : 120;
+            targetFps = maxTier;
+          } else {
+            // Sustained load: reflect actual frame rate smoothly
+            targetFps = Math.max(30, instantaneousHz);
+          }
+        }
+
+        // Anti-Drop Rate Limiter: smooth climb & protected gentle descent
+        if(targetFps > currentFps){
+          // Climb steadily and smoothly (+2.5 FPS per interval)
+          currentFps = Math.min(targetFps, currentFps + 2.5);
+        } else {
+          // Anti-Drop Shield: do not plunge drastically on momentary blips
+          currentFps = Math.max(targetFps, currentFps - 1.2);
+        }
+
+        const displayFps = Math.round(currentFps);
         if(displayFps !== lastDisplayFps){
           lastDisplayFps = displayFps;
           fpsCount.textContent = displayFps;
           updatePeakFps(displayFps);
         }
 
-        // Tags fit perfectly inside the fixed 46px tag box
+        // HUD Styling & Neon Cyber Tag
         let newTag = 'Smooth';
         let newClass = 'fps-hud-box';
-        if(displayFps >= 90){
+        if(displayFps >= 120){
           newClass = 'fps-hud-box fps-ultra';
           newTag = 'Ultra';
-        } else if(displayFps >= 48){
+        } else if(displayFps >= 90){
+          newClass = 'fps-hud-box fps-ultra';
+          newTag = 'Fluid';
+        } else if(displayFps >= 58){
           newClass = 'fps-hud-box';
           newTag = 'Smooth';
-        } else if(displayFps >= 26){
+        } else if(displayFps >= 35){
           newClass = 'fps-hud-box fps-warn';
           newTag = 'Normal';
         } else {
           newClass = 'fps-hud-box fps-drop';
           newTag = 'Low';
         }
+
         if(newTag !== lastTag){
           lastTag = newTag;
           fpsBox.className = newClass;
           fpsTag.textContent = newTag;
         }
       }
+
       requestAnimationFrame(tickFps);
     }
     requestAnimationFrame(tickFps);

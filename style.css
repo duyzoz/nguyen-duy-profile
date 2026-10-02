@@ -838,7 +838,6 @@ body.perf-mode .perf-toggle-btn{
   -webkit-backdrop-filter:none !important;
 }
 body.perf-mode #snowCanvas,
-body.perf-mode #dustCanvas,
 body.perf-mode #avatarOrbit,
 body.perf-mode #avatarSnowC{
   display:none !important;
