@@ -446,9 +446,19 @@ a{text-decoration:none;}
 .mp-track{
   flex:1;
   position:relative;
-  height:4px;
+  height:5px;
   border-radius:99px;
   background:rgba(255,255,255,.14);
+  cursor:pointer;
+  touch-action:none;
+}
+.mp-track::before{
+  content:'';
+  position:absolute;
+  top:-12px;
+  bottom:-12px;
+  left:0;
+  right:0;
   cursor:pointer;
 }
 .mp-fill{
@@ -459,7 +469,8 @@ a{text-decoration:none;}
   border-radius:99px;
   background:linear-gradient(90deg,var(--a3),var(--a1));
   pointer-events:none;
-  transition:width .2s linear;
+  will-change:width;
+  box-shadow:0 0 8px var(--theme-accent, #00f0ff);
 }
 .mp-seek{
   position:absolute;
@@ -505,6 +516,14 @@ a{text-decoration:none;}
 }
 .mp-play svg{width:12px;height:12px;}
 .mp-play:hover{background:rgba(0,212,255,.3);box-shadow:0 0 14px rgba(0,212,255,.4);transform:scale(1.08);}
+.mp-play.loading-pulse,
+.mfb-play-btn.loading-pulse {
+  animation: audioBufferPulse 0.7s infinite ease-in-out !important;
+}
+@keyframes audioBufferPulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(0.91); filter: brightness(1.4) drop-shadow(0 0 10px var(--theme-accent, #00f0ff)); }
+}
 
 /* ══ KEYFRAMES ══ */
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -8922,8 +8941,8 @@ html[data-theme="snow"] .bench-item .bi-val {
 
 @media (max-width: 768px) {
   /* === HIDE OLD VINYL DECK ON MOBILE — replaced by Wave 87 bubble === */
-  #musicPlayer,
-  .music-player {
+  #musicPlayer:not(.mp-open),
+  .music-player:not(.mp-open) {
     display: none !important;
     opacity: 0 !important;
     pointer-events: none !important;
@@ -9074,19 +9093,33 @@ html[data-theme="snow"] .bench-item .bi-val {
     pointer-events: auto;
   }
 
-  /* Drawer progress bar */
+  /* Drawer progress bar (Interactive Touch-Scrubbable) */
   .mfb-dp-track {
     width: 100%;
-    height: 2px;
-    background: rgba(255,255,255,0.07);
+    height: 4px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.12);
+    position: relative;
+    cursor: pointer;
+    touch-action: none;
+  }
+  .mfb-dp-track::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    cursor: pointer;
   }
 
   .mfb-dp-fill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #00f0ff, #a855f7);
-    box-shadow: 0 0 6px #00f0ff;
-    transition: width 0.15s linear;
+    border-radius: 99px;
+    background: var(--theme-accent-gradient, linear-gradient(90deg, #00f0ff, #a855f7));
+    box-shadow: 0 0 8px var(--theme-accent, #00f0ff);
+    will-change: width;
   }
 
   .mfb-drawer-inner {
