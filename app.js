@@ -123,6 +123,17 @@
   const detectedOS = detectOS();
   window.ND_OS = detectedOS;
 
+  // Wave 117: Mobile Video Auto-Sleep & GPU Offload (Zero Video Decoding on Smartphones)
+  if (detectedOS.isMobile || (typeof window !== 'undefined' && window.innerWidth <= 768)) {
+    const bgVid = document.getElementById('bgVideo');
+    if (bgVid) {
+      try {
+        bgVid.pause();
+        bgVid.removeAttribute('autoplay');
+      } catch(e){}
+    }
+  }
+
   const termTitleBar = document.getElementById('termTitleBar');
   if (termTitleBar) termTitleBar.textContent = detectedOS.termTitle;
 
@@ -347,7 +358,7 @@
   let lastT=0;
   (function draw(now){
     requestAnimationFrame(draw);
-    if(document.hidden || document.body.classList.contains('perf-mode'))return;
+    if(document.hidden || document.body.classList.contains('perf-mode') || (window.innerWidth <= 768 && document.body.classList.contains('mob-sheet-open'))) return;
     const interval = isMob ? 48 : 38;
     if(now-lastT<interval)return; // adaptive frame throttling for smooth performance
     lastT=now;
@@ -418,7 +429,7 @@ if(typeof window !== 'undefined' && typeof IntersectionObserver !== 'undefined')
   let tick=0,lastT=0;
   (function draw(now){
     requestAnimationFrame(draw);
-    if(document.hidden || document.body.classList.contains('perf-mode') || !__avatarInView)return;
+    if(document.hidden || document.body.classList.contains('perf-mode') || !__avatarInView || (window.innerWidth <= 768 && document.body.classList.contains('mob-sheet-open'))) return;
     if(now-lastT<33)return;
     lastT=now;tick++;
     ctx.clearRect(0,0,S,S);
@@ -439,7 +450,7 @@ if(typeof window !== 'undefined' && typeof IntersectionObserver !== 'undefined')
   let lastT=0;
   (function draw(now){
     requestAnimationFrame(draw);
-    if(document.hidden || document.body.classList.contains('perf-mode') || !__avatarInView)return;
+    if(document.hidden || document.body.classList.contains('perf-mode') || !__avatarInView || (window.innerWidth <= 768 && document.body.classList.contains('mob-sheet-open'))) return;
     if(now-lastT<33)return;
     lastT=now;
     ctx.clearRect(0,0,S,S);ctx.save();
@@ -6533,6 +6544,7 @@ Respond accurately with this ground truth knowledge:
       if (!isMobile()) return;
       startY = e.touches[0].clientY;
       isDragging = true;
+      toolCard.style.willChange = 'transform';
       toolCard.style.transition = 'none';
     }, { passive: true });
 
@@ -6541,7 +6553,7 @@ Respond accurately with this ground truth knowledge:
       currentY = e.touches[0].clientY;
       const deltaY = currentY - startY;
       if (deltaY > 0) {
-        toolCard.style.transform = `translateY(${deltaY}px)`;
+        toolCard.style.transform = `translate3d(0, ${deltaY}px, 0)`;
       }
     }, { passive: true });
 
@@ -6549,18 +6561,21 @@ Respond accurately with this ground truth knowledge:
       if (!isDragging || !isMobile()) return;
       isDragging = false;
       const deltaY = currentY - startY;
-      toolCard.style.transition = 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)';
-      if (deltaY > 65) {
-        toolCard.style.transform = 'translateY(100%)';
+      toolCard.style.transition = 'transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)';
+      if (deltaY > 60) {
+        toolCard.style.transform = 'translate3d(0, 100%, 0)';
+        if (typeof navigator !== 'undefined' && navigator.vibrate) try { navigator.vibrate(12); } catch(_){}
         setTimeout(() => {
           toolCard.style.transform = '';
+          toolCard.style.willChange = 'auto';
           if (window.setMobileTab) window.setMobileTab('profile');
-        }, 220);
+        }, 240);
       } else {
-        toolCard.style.transform = 'translateY(0)';
+        toolCard.style.transform = 'translate3d(0, 0, 0)';
         setTimeout(() => {
           toolCard.style.transform = '';
-        }, 220);
+          toolCard.style.willChange = 'auto';
+        }, 240);
       }
       startY = 0;
       currentY = 0;
@@ -6700,8 +6715,9 @@ Respond accurately with this ground truth knowledge:
           const nextPanel = document.getElementById(nextPanelId);
           if (nextPanel) {
             nextPanel.classList.remove('slide-right', 'slide-left');
-            void nextPanel.offsetWidth;
-            nextPanel.classList.add(slideClass);
+            requestAnimationFrame(() => {
+              nextPanel.classList.add(slideClass);
+            });
           }
         }
       }
